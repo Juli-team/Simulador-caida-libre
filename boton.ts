@@ -11,11 +11,11 @@ export class Boton implements IDibujable {
     private alPresionar: () => void;
 
     // Colores naranjas según especificación
-    private readonly colorFondo: string = '#f97316';       // Naranja vibrante
-    private readonly colorHover: string = '#fb923c';       // Naranja claro al pasar cursor
-    private readonly colorPresionado: string = '#ea580c';  // Naranja oscuro al presionar
-    private readonly colorBorde: string = '#18181b';       // Borde oscuro marcado
-    private readonly colorIcono: string = '#18181b';       // Flecha oscura
+    private readonly colorFondo: string = '#f97316';
+    private readonly colorHover: string = '#fb923c';
+    private readonly colorPresionado: string = '#ea580c';
+    private readonly colorBorde: string = '#18181b';
+    private readonly colorIcono: string = '#18181b';
 
     private estaPresionado: boolean = false;
     private estaHover: boolean = false;
@@ -88,36 +88,35 @@ export class Boton implements IDibujable {
         const y = this.y + offsetY;
         const radioBorde = Math.max(4, Math.round(12 * escala));
 
-        // Selección de color de fondo según estado
         let colorActual = this.colorFondo;
         if (!this.habilitado) {
-            colorActual = '#fdba74'; // Naranja desaturado/atenuado
+            colorActual = '#fdba74';
         } else if (this.estaPresionado) {
             colorActual = this.colorPresionado;
         } else if (this.estaHover) {
             colorActual = this.colorHover;
         }
 
-        // Sombra cuando no está presionado
         if (!this.estaPresionado && this.habilitado) {
             ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
             ctx.shadowBlur = 6 * escala;
             ctx.shadowOffsetY = 4 * escala;
         }
 
-        // Fondo redondeado del botón
         ctx.beginPath();
-        ctx.roundRect(x, y, this.ancho, this.alto, radioBorde);
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(x, y, this.ancho, this.alto, radioBorde);
+        } else {
+            ctx.rect(x, y, this.ancho, this.alto);
+        }
         ctx.fillStyle = colorActual;
         ctx.fill();
 
-        // Borde
         ctx.shadowColor = 'transparent';
         ctx.lineWidth = Math.max(1.5, 3 * escala);
         ctx.strokeStyle = this.habilitado ? this.colorBorde : 'rgba(24, 24, 27, 0.4)';
         ctx.stroke();
 
-        // Flecha / Triángulo interior
         this.dibujarTriangulo(ctx, x, y, escala);
 
         ctx.restore();
@@ -130,12 +129,10 @@ export class Boton implements IDibujable {
 
         ctx.beginPath();
         if (this.direccion === 'arriba') {
-            // Triángulo apuntando hacia arriba △
             ctx.moveTo(centroX, centroY - tamano);
             ctx.lineTo(centroX + tamano, centroY + tamano * 0.8);
             ctx.lineTo(centroX - tamano, centroY + tamano * 0.8);
         } else {
-            // Triángulo apuntando hacia abajo ▽
             ctx.moveTo(centroX, centroY + tamano);
             ctx.lineTo(centroX + tamano, centroY - tamano * 0.8);
             ctx.lineTo(centroX - tamano, centroY - tamano * 0.8);

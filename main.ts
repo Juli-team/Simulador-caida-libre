@@ -1,26 +1,27 @@
 import { Pantalla } from './pantalla';
-import { Circulo } from './circulo';
-import { Bucle } from './bucle';
-import { POC } from './poc';
+import { Mapa } from './mapa';
+import { Garra } from './garra';
+import { ControlesNavegacion } from './controlesNavegacion';
 import { Gravedad } from './gravedad';
 import { Formulas } from './formulas';
-import { Calculadora } from './calculadora';
+import { HUD } from './hud';
+import { Bucle } from './bucle';
+import { ControladorSimulacion } from './controladorSimulacion';
 
-const pantalla = new Pantalla();
-const circulo = new Circulo(pantalla);
-const bucle = new Bucle(pantalla, circulo);
-
-// Inicialización de las nuevas clases siguiendo SOLID
-const poc = new POC();
-const gravedad = new Gravedad();
+// 1. Instanciación e Inyección de Dependencias (DIP / Composition Root)
+const pantalla = new Pantalla('app');
+const mapa = new Mapa(pantalla.getAncho(), pantalla.getAlto(), 5000);
+const garra = new Garra();
+const controles = new ControlesNavegacion(pantalla, mapa);
+const gravedad = new Gravedad(9.8);
 const formulas = new Formulas(gravedad);
-const calculadora = new Calculadora(pantalla, poc, formulas);
+const hud = new HUD(formulas);
 
-// Sin modificar las clases anteriores, integramos el dibujado de la calculadora en el ciclo
-const dibujarCirculoOriginal = circulo.dibujar.bind(circulo);
-circulo.dibujar = () => {
-    dibujarCirculoOriginal();
-    calculadora.dibujar();
-};
+const bucle = new Bucle(pantalla, mapa, garra, controles, gravedad, hud);
 
-bucle.buclear();
+// 2. Controlador de eventos e interacción del usuario
+const controlador = new ControladorSimulacion(pantalla, garra, mapa, controles, bucle);
+controlador.iniciar();
+
+// 3. Inicio del ciclo de renderizado continuo
+bucle.iniciar();

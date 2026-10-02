@@ -6,11 +6,10 @@ export class ControlesNavegacion implements IDibujable, IActualizable {
     private botonBajar: Boton;
     private navegable: INavegable;
     private canvas: HTMLCanvasElement;
+    private bloqueado: boolean = false;
 
-    // Velocidad de desplazamiento continuo cuando el botón se mantiene presionado
-    private readonly velocidadScrollContinuo: number = 10;
-    // Salto inmediato al dar un click
-    private readonly saltoPorClick: number = 35;
+    private readonly velocidadScrollContinuo: number = 12;
+    private readonly saltoPorClick: number = 40;
 
     constructor(pantalla: IPantalla, navegable: INavegable) {
         this.navegable = navegable;
@@ -22,7 +21,11 @@ export class ControlesNavegacion implements IDibujable, IActualizable {
             62,
             62,
             'arriba',
-            () => this.navegable.subir(this.saltoPorClick)
+            () => {
+                if (!this.bloqueado) {
+                    this.navegable.subir(this.saltoPorClick);
+                }
+            }
         );
 
         this.botonBajar = new Boton(
@@ -31,11 +34,23 @@ export class ControlesNavegacion implements IDibujable, IActualizable {
             62,
             62,
             'abajo',
-            () => this.navegable.bajar(this.saltoPorClick)
+            () => {
+                if (!this.bloqueado) {
+                    this.navegable.bajar(this.saltoPorClick);
+                }
+            }
         );
 
         this.sincronizarConPantalla(pantalla.getAncho(), pantalla.getAlto());
         this.configurarEventos();
+    }
+
+    public setBloqueado(bloqueado: boolean): void {
+        this.bloqueado = bloqueado;
+    }
+
+    public isBloqueado(): boolean {
+        return this.bloqueado;
     }
 
     public sincronizarConPantalla(anchoPantalla: number, altoPantalla: number): void {
@@ -66,21 +81,17 @@ export class ControlesNavegacion implements IDibujable, IActualizable {
         };
 
         this.canvas.addEventListener('mousemove', (e: MouseEvent) => {
+            if (this.bloqueado) return;
             const { x, y } = obtenerCoordenadas(e);
             const sobreSubir = this.botonSubir.contienePunto(x, y);
             const sobreBajar = this.botonBajar.contienePunto(x, y);
 
             this.botonSubir.setHover(sobreSubir);
             this.botonBajar.setHover(sobreBajar);
-
-            if (sobreSubir || sobreBajar) {
-                this.canvas.style.cursor = 'pointer';
-            } else {
-                this.canvas.style.cursor = 'default';
-            }
         });
 
         this.canvas.addEventListener('mousedown', (e: MouseEvent) => {
+            if (this.bloqueado) return;
             const { x, y } = obtenerCoordenadas(e);
             if (this.botonSubir.contienePunto(x, y)) {
                 this.botonSubir.setPresionado(true);
@@ -96,8 +107,8 @@ export class ControlesNavegacion implements IDibujable, IActualizable {
             this.botonBajar.setPresionado(false);
         });
 
-        // Soporte adicional para rueda del mouse para comodidad del usuario
         this.canvas.addEventListener('wheel', (e: WheelEvent) => {
+            if (this.bloqueado) return;
             e.preventDefault();
             if (e.deltaY < 0) {
                 this.navegable.subir(25);
@@ -107,17 +118,24 @@ export class ControlesNavegacion implements IDibujable, IActualizable {
         }, { passive: false });
     }
 
-    public actualizar(): void {
-        // Habilitar / Deshabilitar según límites del mapa
-        this.botonSubir.setHabilitado(this.navegable.puedeSubir());
-        this.botonBajar.setHabilitado(this.navegable.puedeBajar());
+    public contienePunto(x: number, y: number): boolean {
+        return this.botonSubir.contienePunto(x, y) || this.botonBajar.contienePunto(x, y);
+    }
 
-        // Si se mantiene presionado, realiza desplazamiento fluido continuo
-        if (this.botonSubir.isPresionado()) {
-            this.navegable.subir(this.velocidadScrollContinuo);
-        }
-        if (this.botonBajar.isPresionado()) {
-            this.navegable.bajar(this.velocidadScrollContinuo);
+    public actualizar(): void {
+        const puedeSubir = !this.bloqueado && this.navegable.puedeSubir();
+        const puedeBajar = !this.bloqueado && this.navegable.puedeBajar();
+
+        this.botonSubir.setHabilitado(puedeSubir);
+        this.botonBajar.setHabilitado(puedeBajar);
+
+        if (!this.bloqueado) {
+            if (this.botonSubir.isPresionado()) {
+                this.navegable.subir(this.velocidadScrollContinuo);
+            }
+            if (this.botonBajar.isPresionado()) {
+                this.navegable.bajar(this.velocidadScrollContinuo);
+            }
         }
     }
 

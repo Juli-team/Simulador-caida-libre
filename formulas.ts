@@ -1,11 +1,7 @@
-import { Gravedad, IGravedad } from './gravedad';
-import { IPOC } from './poc';
+import { IFormulas, IPOC, IGravedad } from './interfaces';
+import { Gravedad } from './gravedad';
 
-export interface IFormulas {
-    calcularTiempo(h0: number): number;
-    calcularVelocidad(v0: number, t: number): number;
-    resolver(poc: IPOC): void;
-}
+export type { IFormulas };
 
 /**
  * Clase Formulas
@@ -21,10 +17,10 @@ export class Formulas implements IFormulas {
     }
 
     /**
-     * Fórmula: t = √(h0 : 1/2g)
+     * Fórmula: t = √(h0 / (1/2·g)) = √(2·h0 / g)
      * Donde:
-     * - h0: altura inicial
-     * - g: gravedad (constante = 9.8)
+     * - h0: altura inicial en metros
+     * - g: gravedad (constante = 9.8 m/s²)
      */
     public calcularTiempo(h0: number): number {
         const g = this.gravedad.getValor();
@@ -38,11 +34,11 @@ export class Formulas implements IFormulas {
     }
 
     /**
-     * Fórmula: v = v0 - g . t
+     * Fórmula: v = v0 + g · t
      * Donde:
-     * - v0: velocidad inicial
-     * - g: gravedad (constante = 9.8)
-     * - t: tiempo calculado
+     * - v0: velocidad inicial (m/s)
+     * - g: gravedad (constante = 9.8 m/s²)
+     * - t: tiempo calculado (s)
      */
     public calcularVelocidad(v0: number, t: number): number {
         const g = this.gravedad.getValor();
@@ -50,7 +46,7 @@ export class Formulas implements IFormulas {
     }
 
     /**
-     * Resuelve las dos fórmulas usando los valores h0 y v0 provenientes de POC,
+     * Resuelve las fórmulas usando los valores h0 y v0 provenientes de POC,
      * y guarda los valores resultantes de v y t dentro del mismo POC.
      */
     public resolver(poc: IPOC): void {

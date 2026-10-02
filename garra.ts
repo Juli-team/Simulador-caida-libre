@@ -2,16 +2,15 @@ import { IDibujable, IActualizable } from './interfaces';
 
 /**
  * Representa la Pieza 1 de la estructura (columna vertical de soporte).
- * Cumple con el Principio de Responsabilidad Única (SRP):
- * Se encarga de gestionar la altura, estiramiento y contracción de la columna negra.
+ * Cumple con SRP: Gestiona la altura, estiramiento y contracción de la columna negra.
  */
 export class Pieza1 implements IDibujable {
     private posX: number = 110;
     private ancho: number = 26;
-    private readonly color: string = '#18181b';         // Color negro según especificación
-    private ySuperior: number = 90; // Conexión con el brazo horizontal
-    private yInferior: number = 688; // Altura actual en pantalla (cambia al subir/bajar)
-    private alturaMundo: number = 574; // Longitud real en el mundo de 5000px
+    private readonly color: string = '#18181b'; // Color negro estructura
+    private ySuperior: number = 90;
+    private yInferior: number = 688;
+    private alturaMundo: number = 574;
     private altoPantalla: number = 768;
     private escala: number = 1;
 
@@ -34,9 +33,7 @@ export class Pieza1 implements IDibujable {
         const yBaseMundo = altoMundo - altoBase;
         const yBasePantalla = yBaseMundo - camaraY;
 
-        // La parte inferior de la pieza 1 se ancla a la base del suelo
         this.yInferior = Math.max(this.ySuperior, yBasePantalla);
-        // Altura real estirada en coordenadas de mundo
         this.alturaMundo = Math.max(50, yBaseMundo - (camaraY + this.ySuperior));
     }
 
@@ -61,28 +58,29 @@ export class Pieza1 implements IDibujable {
             return;
         }
 
-        // Columna negra principal (Pieza 1)
+        // Columna negra principal
         ctx.fillStyle = this.color;
         ctx.fillRect(this.posX, this.ySuperior, this.ancho, altoVisible);
 
-        // Borde oscuro marcado para estilo mecánico industrial
+        // Borde oscuro
         ctx.strokeStyle = '#000000';
         ctx.lineWidth = Math.max(1, 2 * this.escala);
         ctx.strokeRect(this.posX, this.ySuperior, this.ancho, altoVisible);
 
-        // Detalles estructurales / juntas telescópicas que evidencian el estiramiento
+        // Detalles telescópicos
         ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
         ctx.fillRect(this.posX + 3 * this.escala, this.ySuperior, Math.max(1, 3 * this.escala), altoVisible);
 
-        // Líneas de segmentos que acompañan el estiramiento
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.lineWidth = Math.max(1, 2 * this.escala);
         const pasoSegmento = 80 * this.escala;
         for (let y = this.ySuperior + pasoSegmento; y < this.ySuperior + altoVisible; y += pasoSegmento) {
-            ctx.beginPath();
-            ctx.moveTo(this.posX, y);
-            ctx.lineTo(this.posX + this.ancho, y);
-            ctx.stroke();
+            if (y >= -10 && y <= this.altoPantalla + 10) {
+                ctx.beginPath();
+                ctx.moveTo(this.posX, y);
+                ctx.lineTo(this.posX + this.ancho, y);
+                ctx.stroke();
+            }
         }
 
         ctx.restore();
@@ -90,16 +88,13 @@ export class Pieza1 implements IDibujable {
 }
 
 /**
- * Representa el Objeto Garra y su estructura de soporte.
- * Cumple con el Principio de Responsabilidad Única (SRP) y Composición (POO).
- * La garra es de color gris, no realiza acciones por el momento,
- * y la pieza 1 (negra) se estira o contrae al subir o bajar la pantalla.
- * Todas sus dimensiones y posiciones son relativas al tamaño de pantalla.
+ * Representa la Garra mecánica y su estructura de soporte.
+ * Cumple con SRP y Composición en POO.
  */
 export class Garra implements IDibujable, IActualizable {
     private pieza1: Pieza1;
 
-    // Colores de la garra (Gris según especificación)
+    // Colores mecánicos
     private readonly colorGarra: string = '#64748b';        // Gris pizarra metálico
     private readonly colorGarraOscuro: string = '#475569';  // Gris sombra
     private readonly colorGarraClaro: string = '#94a3b8';   // Gris reflejo
@@ -119,6 +114,9 @@ export class Garra implements IDibujable, IActualizable {
     private pinzaCentroX: number = 410;
     private pinzaCentroY: number = 155;
 
+    // Posición congelada en coordenadas de mundo cuando la bola es soltada
+    private yMundoFijado: number | null = null;
+
     // Estado del mapa actual
     private camaraY: number = 0;
     private altoPantalla: number = 768;
@@ -129,7 +127,27 @@ export class Garra implements IDibujable, IActualizable {
     }
 
     public actualizar(): void {
-        // La garra por el momento no realiza acciones activas (física/soltado en el futuro)
+        // Estado dinámico si se requiere en el futuro
+    }
+
+    public fijarPosicionMundo(yMundo?: number): void {
+        if (yMundo !== undefined) {
+            this.yMundoFijado = yMundo;
+        } else {
+            this.yMundoFijado = this.camaraY + this.brazoY;
+        }
+    }
+
+    public liberarPosicionMundo(): void {
+        this.yMundoFijado = null;
+    }
+
+    public isPosicionFijada(): boolean {
+        return this.yMundoFijado !== null;
+    }
+
+    public getYMundoFijado(): number | null {
+        return this.yMundoFijado;
     }
 
     public sincronizarConMapa(
@@ -142,23 +160,29 @@ export class Garra implements IDibujable, IActualizable {
         this.altoPantalla = altoPantalla;
         this.altoMundo = altoMundo;
 
-        // Escala proporcional basada en la resolución de referencia 1024x768
+        // Escala proporcional basada en 1024x768
         this.escala = Math.min(anchoPantalla / 1024, altoPantalla / 768);
 
-        // Posiciones y dimensiones en relación con la pantalla
         this.columnaPosX = anchoPantalla * (110 / 1024);
         this.columnaAncho = 26 * this.escala;
         this.altoBase = 80 * this.escala;
 
-        this.brazoY = altoPantalla * (90 / 768);
+        // Si la posición está fijada en el mundo, permanece en esa cota absoluta
+        // y no acompaña el movimiento de la cámara al caer la bola
+        if (this.yMundoFijado !== null) {
+            this.brazoY = this.yMundoFijado - camaraY;
+        } else {
+            this.brazoY = altoPantalla * (90 / 768);
+        }
+
         this.brazoEspesor = 24 * this.escala;
         this.brazoInicioX = this.columnaPosX - 15 * this.escala;
 
         this.pinzaCentroX = anchoPantalla * (410 / 1024);
-        this.pinzaCentroY = altoPantalla * (155 / 768);
+        // Distancia constante relativa entre el brazo y el cabezal de la garra
+        this.pinzaCentroY = this.brazoY + (65 * this.escala);
         this.brazoFinX = this.pinzaCentroX + 30 * this.escala;
 
-        // Actualizar la extensión y geometría de la Pieza 1
         this.pieza1.actualizarDimensionesYLongitud(
             this.columnaPosX,
             this.brazoY,
@@ -175,24 +199,94 @@ export class Garra implements IDibujable, IActualizable {
         return this.pieza1;
     }
 
+    public getEscala(): number {
+        return this.escala;
+    }
+
+    public getAltoBase(): number {
+        return this.altoBase;
+    }
+
+    public getPinzaCentroX(): number {
+        return this.pinzaCentroX;
+    }
+
+    public getPinzaCentroY(): number {
+        return this.pinzaCentroY;
+    }
+
+    /**
+     * Retorna las coordenadas de pantalla donde debe sujetarse la esfera física (centrada entre las pinzas)
+     */
+    public getPosicionSujecion(): { x: number; y: number } {
+        const s = this.escala;
+        const altoCabezal = 30 * s;
+        return {
+            x: this.pinzaCentroX,
+            y: this.pinzaCentroY + altoCabezal + (32 * s)
+        };
+    }
+
+    /**
+     * Comprueba si unas coordenadas de click en pantalla intersectan la garra o sus pinzas
+     */
+    public contienePunto(x: number, y: number): boolean {
+        const s = this.escala;
+        const anchoCabezal = 140 * s;
+        const xMinPinzas = this.pinzaCentroX - anchoCabezal / 2;
+        const xMaxPinzas = this.pinzaCentroX + anchoCabezal / 2;
+        const yMinPinzas = this.pinzaCentroY - (10 * s);
+        const yMaxPinzas = this.pinzaCentroY + (110 * s);
+
+        const enPinzas = x >= xMinPinzas && x <= xMaxPinzas && y >= yMinPinzas && y <= yMaxPinzas;
+
+        const enBrazo = x >= this.brazoInicioX && x <= this.brazoFinX &&
+                        y >= this.brazoY && y <= this.brazoY + this.brazoEspesor + (30 * s);
+
+        return enPinzas || enBrazo;
+    }
+
     public dibujar(ctx: CanvasRenderingContext2D): void {
         ctx.save();
 
-        // 1. Dibujar la base del suelo (si está visible en pantalla)
+        // 1. Base del suelo
         this.dibujarBaseSuelo(ctx);
 
-        // 2. Dibujar la Pieza 1 (columna negra estirable)
+        // 2. Columna extensible (Pieza 1)
         this.pieza1.dibujar(ctx);
 
-        // 3. Dibujar el brazo horizontal superior (negro)
+        // 3. Brazo horizontal
         this.dibujarBrazoHorizontal(ctx);
 
-        // 4. Dibujar el vástago/conector vertical que sostiene la garra (negro)
+        // 4. Conector vertical
         this.dibujarConector(ctx);
 
-        // 5. Dibujar la Garra mecánica (objeto gris según especificación)
+        // 5. Garra mecánica completa
         this.dibujarGarraGris(ctx);
 
+        ctx.restore();
+    }
+
+    /**
+     * Dibuja la estructura y el cabezal de la garra, permitiendo intercalar
+     * la esfera para que las pinzas la envuelvan por delante.
+     */
+    public dibujarSoporteYCabezal(ctx: CanvasRenderingContext2D): void {
+        ctx.save();
+        this.dibujarBaseSuelo(ctx);
+        this.pieza1.dibujar(ctx);
+        this.dibujarBrazoHorizontal(ctx);
+        this.dibujarConector(ctx);
+        this.dibujarCabezal(ctx);
+        ctx.restore();
+    }
+
+    /**
+     * Dibuja los dedos/pinzas por delante del objeto sujeto
+     */
+    public dibujarDedosPinzas(ctx: CanvasRenderingContext2D): void {
+        ctx.save();
+        this.dibujarPinzasSolas(ctx);
         ctx.restore();
     }
 
@@ -201,10 +295,9 @@ export class Garra implements IDibujable, IActualizable {
         const yBaseMundo = this.altoMundo - altoBase;
         const yBasePantalla = yBaseMundo - this.camaraY;
 
-        // Solo se dibuja si entra en el campo de visión de la pantalla
         if (yBasePantalla <= this.altoPantalla) {
             ctx.save();
-            ctx.fillStyle = this.colorEstructura; // Negro base
+            ctx.fillStyle = this.colorEstructura;
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = Math.max(1, 2 * this.escala);
 
@@ -218,7 +311,6 @@ export class Garra implements IDibujable, IActualizable {
             const xSupIzq = centroColumna - mitadAnchoSuperior;
 
             ctx.beginPath();
-            // Trapecio industrial de la base perfectamente centrado con la columna
             ctx.moveTo(xInfIzq, this.altoPantalla);
             ctx.lineTo(xInfDer, this.altoPantalla);
             ctx.lineTo(xSupDer, yBasePantalla);
@@ -227,7 +319,6 @@ export class Garra implements IDibujable, IActualizable {
             ctx.fill();
             ctx.stroke();
 
-            // Refuerzos mecánicos de la base
             ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.fillRect(xSupIzq, yBasePantalla, mitadAnchoSuperior * 2, 8 * this.escala);
 
@@ -245,7 +336,6 @@ export class Garra implements IDibujable, IActualizable {
         ctx.fillRect(this.brazoInicioX, this.brazoY, anchoBrazo, this.brazoEspesor);
         ctx.strokeRect(this.brazoInicioX, this.brazoY, anchoBrazo, this.brazoEspesor);
 
-        // Reflejo metálico en el brazo
         ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.fillRect(this.brazoInicioX, this.brazoY + 3 * this.escala, anchoBrazo, 4 * this.escala);
 
@@ -269,26 +359,27 @@ export class Garra implements IDibujable, IActualizable {
         ctx.restore();
     }
 
-    private dibujarGarraGris(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
+    private dibujarCabezal(ctx: CanvasRenderingContext2D): void {
         const cx = this.pinzaCentroX;
         const cy = this.pinzaCentroY;
         const s = this.escala;
 
-        // Sombra de la garra para realce tridimensional
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
-        ctx.shadowBlur = 8 * s;
-        ctx.shadowOffsetY = 4 * s;
-
-        // --- A. Cabezal horizontal de la garra (Gris) ---
         const anchoCabezal = 130 * s;
         const altoCabezal = 30 * s;
         const xCabezal = cx - anchoCabezal / 2;
         const yCabezal = cy;
 
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+        ctx.shadowBlur = 8 * s;
+        ctx.shadowOffsetY = 4 * s;
+
         ctx.beginPath();
-        ctx.roundRect(xCabezal, yCabezal, anchoCabezal, altoCabezal, [8 * s, 8 * s, 4 * s, 4 * s]);
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(xCabezal, yCabezal, anchoCabezal, altoCabezal, [8 * s, 8 * s, 4 * s, 4 * s]);
+        } else {
+            ctx.rect(xCabezal, yCabezal, anchoCabezal, altoCabezal);
+        }
         ctx.fillStyle = this.colorGarra;
         ctx.fill();
 
@@ -297,14 +388,28 @@ export class Garra implements IDibujable, IActualizable {
         ctx.strokeStyle = this.colorGarraOscuro;
         ctx.stroke();
 
-        // Brillo superior del cabezal gris
         ctx.fillStyle = this.colorGarraClaro;
         ctx.fillRect(xCabezal + 10 * s, yCabezal + 4 * s, anchoCabezal - 20 * s, 4 * s);
 
-        // --- B. Dedo / Pinza izquierda (Gris) ---
+        ctx.restore();
+    }
+
+    private dibujarPinzasSolas(ctx: CanvasRenderingContext2D): void {
+        const cx = this.pinzaCentroX;
+        const cy = this.pinzaCentroY;
+        const s = this.escala;
+
+        const anchoCabezal = 130 * s;
+        const altoCabezal = 30 * s;
+        const xCabezal = cx - anchoCabezal / 2;
+        const yCabezal = cy;
+        const xDer = xCabezal + anchoCabezal;
+
+        ctx.save();
+
+        // Pinza Izquierda
         ctx.beginPath();
         ctx.moveTo(xCabezal, yCabezal + altoCabezal);
-        // Descenso y curvatura hacia adentro
         ctx.lineTo(xCabezal, yCabezal + altoCabezal + 55 * s);
         ctx.lineTo(xCabezal + 25 * s, yCabezal + altoCabezal + 68 * s);
         ctx.lineTo(xCabezal + 25 * s, yCabezal + altoCabezal + 50 * s);
@@ -317,15 +422,12 @@ export class Garra implements IDibujable, IActualizable {
         ctx.lineWidth = Math.max(1, 2.5 * s);
         ctx.stroke();
 
-        // Bisel de sombra en la pinza izquierda
         ctx.fillStyle = this.colorGarraOscuro;
         ctx.fillRect(xCabezal + 3 * s, yCabezal + altoCabezal + 4 * s, 3 * s, 46 * s);
 
-        // --- C. Dedo / Pinza derecha (Gris) ---
-        const xDer = xCabezal + anchoCabezal;
+        // Pinza Derecha
         ctx.beginPath();
         ctx.moveTo(xDer, yCabezal + altoCabezal);
-        // Descenso y curvatura hacia adentro
         ctx.lineTo(xDer, yCabezal + altoCabezal + 55 * s);
         ctx.lineTo(xDer - 25 * s, yCabezal + altoCabezal + 68 * s);
         ctx.lineTo(xDer - 25 * s, yCabezal + altoCabezal + 50 * s);
@@ -338,11 +440,10 @@ export class Garra implements IDibujable, IActualizable {
         ctx.lineWidth = Math.max(1, 2.5 * s);
         ctx.stroke();
 
-        // Bisel de sombra en la pinza derecha
         ctx.fillStyle = this.colorGarraOscuro;
         ctx.fillRect(xDer - 6 * s, yCabezal + altoCabezal + 4 * s, 3 * s, 46 * s);
 
-        // Pernos / remaches de unión mecánicos
+        // Pernos / remaches mecánicos
         ctx.fillStyle = '#cbd5e1';
         ctx.beginPath();
         ctx.arc(xCabezal + 14 * s, yCabezal + 15 * s, 4 * s, 0, Math.PI * 2);
@@ -350,5 +451,10 @@ export class Garra implements IDibujable, IActualizable {
         ctx.fill();
 
         ctx.restore();
+    }
+
+    private dibujarGarraGris(ctx: CanvasRenderingContext2D): void {
+        this.dibujarCabezal(ctx);
+        this.dibujarPinzasSolas(ctx);
     }
 }
