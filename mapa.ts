@@ -5,15 +5,15 @@ export class Mapa implements IDibujable, INavegable {
     private readonly altoTotal: number = 5000;
     private altoVisible: number = 768;
 
-    // Posición Y de la cámara dentro del mapa (0 = arriba del todo, maxCamaraY = base)
+    // Posición Y de la cámara en el mapa (0 = arriba, maxCamaraY = base)
     private camaraY: number;
-    private readonly velocidadDefecto: number = 12;
+    private readonly velocidadDefecto: number = 14;
 
     constructor(ancho: number = 1024, altoVisible: number = 768, altoTotal: number = 5000) {
         this.ancho = ancho;
         this.altoVisible = altoVisible;
         this.altoTotal = altoTotal;
-        // Iniciar en la base para ver la base del suelo y la garra al inicio
+        // Iniciar en la base para ver la base y la garra al inicio
         this.camaraY = this.getMaxCamaraY();
     }
 
@@ -60,30 +60,26 @@ export class Mapa implements IDibujable, INavegable {
     }
 
     public dibujar(ctx: CanvasRenderingContext2D): void {
-        // Degradado lineal a lo largo de los 5000px:
-        // En y = 0 (cielo) es morado y en y = 5000 (base) degrada a azul
+        // Degradado lineal de 5000px: morado en el cielo hacia azul profundo en la base
         const gradiente = ctx.createLinearGradient(0, -this.camaraY, 0, this.altoTotal - this.camaraY);
-        
-        // Morado en la parte superior (cielo) hacia azul en la base
-        gradiente.addColorStop(0.0, '#180642');   // Morado oscuro en el cielo
-        gradiente.addColorStop(0.25, '#3b0764');  // Morado
-        gradiente.addColorStop(0.55, '#4f46e5');  // Azul índigo
-        gradiente.addColorStop(0.80, '#2563eb');  // Azul vibrante
-        gradiente.addColorStop(1.0, '#1e3a8a');   // Azul profundo en la base   
+        gradiente.addColorStop(0.0, '#180642');
+        gradiente.addColorStop(0.25, '#3b0764');
+        gradiente.addColorStop(0.55, '#4f46e5');
+        gradiente.addColorStop(0.80, '#2563eb');
+        gradiente.addColorStop(1.0, '#1e3a8a');
 
         ctx.fillStyle = gradiente;
         ctx.fillRect(0, 0, this.ancho, this.altoVisible);
 
-        // Líneas sutiles de referencia de altura para apreciar el desplazamiento del mapa
         this.dibujarLineasReferencia(ctx);
     }
 
     private dibujarLineasReferencia(ctx: CanvasRenderingContext2D): void {
         const escala = Math.min(this.ancho / 1024, this.altoVisible / 768);
         ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = Math.max(1, Math.round(1 * escala));
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
         ctx.font = `${Math.max(10, Math.round(12 * escala))}px monospace`;
 
         const paso = 250;
@@ -95,9 +91,10 @@ export class Mapa implements IDibujable, INavegable {
                 ctx.lineTo(this.ancho - 20 * escala, yPantalla);
                 ctx.stroke();
 
-                // Altura medida desde la base (0 px en la base hasta 5000 px arriba)
-                const alturaDesdeBase = this.altoTotal - yMundo;
-                ctx.fillText(`${alturaDesdeBase} px`, 30 * escala, yPantalla - 5 * escala);
+                // Altura medida desde el suelo
+                const alturaDesdeBasePx = this.altoTotal - yMundo;
+                const alturaMetros = alturaDesdeBasePx / 10;
+                ctx.fillText(`${alturaMetros} m (${alturaDesdeBasePx} px)`, 30 * escala, yPantalla - 6 * escala);
             }
         }
         ctx.restore();
