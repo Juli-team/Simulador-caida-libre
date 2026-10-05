@@ -1,9 +1,7 @@
 import { IPOC, IDibujable, EstadoPOC } from './interfaces';
+import { PIXELES_POR_METRO } from './constantes';
 
-/**
- * Escala del simulador: 1 metro equivale exactamente a 10 píxeles.
- */
-export const PIXELES_POR_METRO = 10;
+export { PIXELES_POR_METRO };
 
 /**
  * Clase POC (Fusión de Círculo y POC)

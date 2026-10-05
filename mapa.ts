@@ -1,4 +1,5 @@
 import { IDibujable, INavegable } from './interfaces';
+import { PIXELES_POR_METRO, pixelesAMetros } from './constantes';
 
 export class Mapa implements IDibujable, INavegable {
     private ancho: number = 1024;
@@ -82,7 +83,9 @@ export class Mapa implements IDibujable, INavegable {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
         ctx.font = `${Math.max(10, Math.round(12 * escala))}px monospace`;
 
-        const paso = 250;
+        // Paso métrico: marcas cada 2 metros
+        const pasoMetros = 2;
+        const paso = Math.max(50, pasoMetros * PIXELES_POR_METRO);
         for (let yMundo = 0; yMundo <= this.altoTotal; yMundo += paso) {
             const yPantalla = yMundo - this.camaraY;
             if (yPantalla >= -20 && yPantalla <= this.altoVisible + 20) {
@@ -93,8 +96,9 @@ export class Mapa implements IDibujable, INavegable {
 
                 // Altura medida desde el suelo
                 const alturaDesdeBasePx = this.altoTotal - yMundo;
-                const alturaMetros = alturaDesdeBasePx / 10;
-                ctx.fillText(`${alturaMetros} m (${alturaDesdeBasePx} px)`, 30 * escala, yPantalla - 6 * escala);
+                const alturaMetros = pixelesAMetros(alturaDesdeBasePx);
+                const textoMetros = alturaMetros % 1 === 0 ? `${alturaMetros}` : alturaMetros.toFixed(1);
+                ctx.fillText(`${textoMetros} m (${alturaDesdeBasePx} px)`, 30 * escala, yPantalla - 6 * escala);
             }
         }
         ctx.restore();
