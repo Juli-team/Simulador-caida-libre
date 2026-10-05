@@ -1,6 +1,7 @@
 import { IDibujable } from './interfaces';
 import { POC } from './poc';
 import { IFormulas } from './formulas';
+import { PIXELES_POR_METRO } from './constantes';
 
 /**
  * Clase HUD
@@ -92,6 +93,12 @@ export class HUD implements IDibujable {
         ctx.font = 'bold 16px monospace';
         ctx.fillText('--- SIMULADOR CAÍDA LIBRE ---', xTexto, y);
         y += interlineado;
+
+        ctx.font = '12px monospace';
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(`Escala: 1 m = ${PIXELES_POR_METRO} px`, xTexto, y);
+        y += interlineado + 2;
+        ctx.fillStyle = '#FFFFFF';
 
         if (!poc) {
             ctx.font = '14px monospace';
