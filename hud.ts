@@ -105,17 +105,19 @@ export class HUD implements IDibujable {
             ctx.fillText('Estado: Esperando objeto', xTexto, y);
             y += interlineado;
             ctx.fillStyle = '#cbd5e1';
-            ctx.fillText('👉 Haz click en la garra para generar la bola', xTexto, y);
+            ctx.fillText('Haz click para colocar la bola en el suelo', xTexto, y);
             y += interlineado + 6;
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText('Subir / Bajar: Botones o rueda del mouse', xTexto, y);
+            ctx.fillText('Mouse: mover garra   |   W/S: subir/bajar base', xTexto, y);
             ctx.restore();
             return;
         }
 
         // Estado del objeto
         let textoEstado = '';
-        if (poc.esSujeto()) {
+        if (poc.esEnSuelo()) {
+            textoEstado = 'En el suelo (acerca la garra)';
+        } else if (poc.esSujeto()) {
             textoEstado = 'Sujeto en la garra (Listo)';
         } else if (poc.esCayendo()) {
             textoEstado = 'Cayendo (MRUV)...';
@@ -160,6 +162,10 @@ export class HUD implements IDibujable {
         // Ayuda de teclas
         ctx.fillStyle = '#f8fafc';
         ctx.font = 'italic 12px monospace';
+        ctx.fillText('[MOUSE]: Mover garra', xTexto, y);
+        y += 18;
+        ctx.fillText('[W]/[S]: Subir/Bajar base', xTexto, y);
+        y += 18;
         ctx.fillText('[ESPACIO]: Soltar / Pausar', xTexto, y);
         y += 18;
         ctx.fillText('[R]: Reiniciar simulación', xTexto, y);

@@ -1,7 +1,5 @@
-import { IPOC, IDibujable, EstadoPOC } from './interfaces';
+import { IPOC, IDibujable, EstadoPOC, IFormulas } from './interfaces';
 import { PIXELES_POR_METRO } from './constantes';
-
-export { PIXELES_POR_METRO };
 
 /**
  * Clase POC (Fusión de Círculo y POC)
@@ -10,6 +8,9 @@ export { PIXELES_POR_METRO };
  * como sus propiedades visuales y cinemáticas (radio, color, posición de mundo, dibujo).
  */
 export class POC implements IPOC, IDibujable {
+    // Fuente única de las fórmulas físicas (DIP)
+    private formulas: IFormulas;
+
     // Parámetros físicos (en unidades estándar: metros, segundos, m/s)
     private h0: number = 0;
     private v0: number = 0;
@@ -26,12 +27,14 @@ export class POC implements IPOC, IDibujable {
     private estado: EstadoPOC = 'sujeto';
 
     constructor(
+        formulas: IFormulas,
         xMundo: number = 0,
         yMundo: number = 0,
         h0: number = 0,
         escala: number = 1,
         color: string = '#f59e0b'
     ) {
+        this.formulas = formulas;
         this.xMundo = xMundo;
         this.yMundo = yMundo;
         this.h0 = Math.max(0, h0);
@@ -48,16 +51,8 @@ export class POC implements IPOC, IDibujable {
         return this.h0;
     }
 
-    public setH0(h0: number): void {
-        this.h0 = Math.max(0, h0);
-    }
-
     public getV0(): number {
         return this.v0;
-    }
-
-    public setV0(v0: number): void {
-        this.v0 = v0;
     }
 
     public getT(): number {
@@ -76,25 +71,29 @@ export class POC implements IPOC, IDibujable {
         this.v = v;
     }
 
-    public getEstado(): EstadoPOC {
-        return this.estado;
-    }
-
-    public setEstado(estado: EstadoPOC): void {
-        this.estado = estado;
-    }
-
     // Métodos de control del estado
-    public soltar(): void {
-        if (this.estado === 'sujeto') {
-            this.estado = 'cayendo';
+    /**
+     * Coloca la esfera reposando sobre el suelo, sin estar sujeta a la garra.
+     * Es el estado inicial del ciclo tipo grúa: el usuario debe acercar la garra.
+     */
+    public colocarEnSuelo(): void {
+        this.estado = 'enSuelo';
+        this.t = 0;
+        this.v = 0;
+        this.h0 = 0;
+    }
+
+    /**
+     * Sujeta la esfera a la garra cuando el usuario hace click dentro del rango.
+     */
+    public sujetar(): void {
+        if (this.estado === 'enSuelo') {
+            this.estado = 'sujeto';
         }
     }
 
-    public alternarPausa(): void {
-        if (this.estado === 'cayendo') {
-            this.estado = 'pausado';
-        } else if (this.estado === 'pausado') {
+    public soltar(): void {
+        if (this.estado === 'sujeto') {
             this.estado = 'cayendo';
         }
     }
@@ -109,6 +108,10 @@ export class POC implements IPOC, IDibujable {
         if (this.estado === 'pausado') {
             this.estado = 'cayendo';
         }
+    }
+
+    public esEnSuelo(): boolean {
+        return this.estado === 'enSuelo';
     }
 
     public esSujeto(): boolean {
@@ -132,29 +135,12 @@ export class POC implements IPOC, IDibujable {
         return this.radio;
     }
 
-    public setRadio(radio: number): void {
-        this.radio = radio;
-    }
-
-    public getColor(): string {
-        return this.color;
-    }
-
-    public setColor(color: string): void {
-        this.color = color;
-    }
-
     public getXMundo(): number {
         return this.xMundo;
     }
 
     public getYMundo(): number {
         return this.yMundo;
-    }
-
-    public setPosicionMundo(x: number, y: number): void {
-        this.xMundo = x;
-        this.yMundo = y;
     }
 
     /**
@@ -186,18 +172,18 @@ export class POC implements IPOC, IDibujable {
      * Actualiza la cinemática de caída libre con MRUV frame a frame:
      * v(t) = v0 + g · t
      * y(t) = y0 + v(t) · dt
+     * La velocidad y el tiempo final los resuelve la clase Formulas (fuente única).
      * @param dt Delta time en segundos
      * @param ySueloMundo Coordenada Y del suelo en píxeles del mundo
-     * @param g Constante de aceleración gravitatoria (m/s²)
      */
-    public actualizar(dt: number, ySueloMundo: number, g: number = 9.8): void {
+    public actualizar(dt: number, ySueloMundo: number): void {
         if (this.estado !== 'cayendo') return;
 
         // Incrementar tiempo transcurrido
         this.t += dt;
 
         // Actualizar velocidad en m/s (MRUV con v0 = 0)
-        this.v = this.v0 + (g * this.t);
+        this.v = this.formulas.calcularVelocidad(this.v0, this.t);
 
         // Convertir velocidad a píxeles/segundo y actualizar posición Y en el mundo
         const velocidadPxPorSegundo = this.v * PIXELES_POR_METRO;
@@ -208,8 +194,8 @@ export class POC implements IPOC, IDibujable {
         if (this.yMundo >= yDetencion) {
             this.yMundo = yDetencion;
             // Al detenerse en el suelo, fijar la velocidad final exacta y tiempo final
-            this.t = Math.sqrt(this.h0 / (0.5 * g));
-            this.v = g * this.t;
+            this.t = this.formulas.calcularTiempo(this.h0);
+            this.v = this.formulas.calcularVelocidad(this.v0, this.t);
             this.estado = 'detenido';
         }
     }

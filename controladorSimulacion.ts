@@ -1,35 +1,39 @@
-import { IControlador, IPantalla } from './interfaces';
+import { IControlador, IPantalla, IFormulas } from './interfaces';
 import { Garra } from './garra';
 import { Mapa } from './mapa';
-import { ControlesNavegacion } from './controlesNavegacion';
 import { Bucle } from './bucle';
 import { POC } from './poc';
 
 /**
  * Clase ControladorSimulacion
  * Responsabilidad única (SRP): Gestionar los eventos de entrada del usuario
- * (click del mouse, movimiento del cursor y teclado) y coordinar las acciones
- * de la garra y la simulación física sin contaminar el archivo principal.
+ * (click y teclado) y coordinar el ciclo de juego tipo grúa:
+ *   1. Click inicial: la bola aparece reposando en el suelo, en el centro del mapa.
+ *   2. Acercar la garra (mouse / W-S) hasta la bola.
+ *   3. Click a corta distancia: la garra sujeta la bola.
+ *   4. [ESPACIO]: suelta la bola en caída libre.
  * Cumple con DIP al implementar la abstracción IControlador.
  */
 export class ControladorSimulacion implements IControlador {
     private garra: Garra;
     private mapa: Mapa;
-    private controles: ControlesNavegacion;
     private bucle: Bucle;
+    private formulas: IFormulas;
     private canvas: HTMLCanvasElement;
+
+    private readonly distanciaAgarreBase: number = 48;
 
     constructor(
         pantalla: IPantalla,
         garra: Garra,
         mapa: Mapa,
-        controles: ControlesNavegacion,
-        bucle: Bucle
+        bucle: Bucle,
+        formulas: IFormulas
     ) {
         this.garra = garra;
         this.mapa = mapa;
-        this.controles = controles;
         this.bucle = bucle;
+        this.formulas = formulas;
         this.canvas = pantalla.getCanvas();
     }
 
@@ -55,49 +59,38 @@ export class ControladorSimulacion implements IControlador {
         };
     }
 
-    private manejarClick = (e: MouseEvent): void => {
-        // Si ya hay una bola presente, ignorar clicks en la garra
-        if (this.bucle.getPOC() !== null) {
+    private manejarClick = (): void => {
+        const bola = this.bucle.getPOC();
+
+        // Sin bola (o tras el impacto): crear una nueva reposando en el suelo
+        if (bola === null || bola.esDetenido()) {
+            if (bola !== null) {
+                this.bucle.setPOC(null);
+            }
+            this.crearBolaEnSuelo();
             return;
         }
 
-        const { x, y } = this.obtenerCoordenadas(e);
-
-        // Si el usuario hace click en la estructura de la garra, crear y sujetar la esfera
-        if (this.garra.contienePunto(x, y)) {
-            const posSujecion = this.garra.getPosicionSujecion();
-            const sueloY = this.mapa.getAltoTotal() - this.garra.getAltoBase();
-            const escala = this.garra.getEscala();
-
-            const nuevaBola = new POC(
-                posSujecion.x,
-                this.mapa.getCamaraY() + posSujecion.y,
-                0,
-                escala
-            );
-
-            nuevaBola.sincronizarConGarra(
-                posSujecion.x,
-                posSujecion.y,
-                this.mapa.getCamaraY(),
-                sueloY,
-                escala
-            );
-
-            this.bucle.setPOC(nuevaBola);
+        // Solo se puede agarrar una bola que está en el suelo y a corta distancia
+        if (bola.esEnSuelo() && this.garraCercaDeBola(bola)) {
+            bola.sujetar();
         }
     };
 
     private manejarMouseMove = (e: MouseEvent): void => {
         const { x, y } = this.obtenerCoordenadas(e);
-        const sobreBotones = this.controles.contienePunto(x, y);
-        const sobreGarraSinBola = this.bucle.getPOC() === null && this.garra.contienePunto(x, y);
+        const bola = this.bucle.getPOC();
 
-        if (sobreBotones || sobreGarraSinBola) {
-            this.canvas.style.cursor = 'pointer';
-        } else {
-            this.canvas.style.cursor = 'default';
+        let pointer = false;
+        if (bola === null || bola.esDetenido()) {
+            pointer = true; // El click colocará una nueva bola
+        } else if (bola.esEnSuelo()) {
+            pointer = this.garraCercaDeBola(bola) || this.garra.contienePunto(x, y);
+        } else if (bola.esSujeto()) {
+            pointer = this.garra.contienePunto(x, y);
         }
+
+        this.canvas.style.cursor = pointer ? 'pointer' : 'default';
     };
 
     private manejarKeyDown = (e: KeyboardEvent): void => {
@@ -105,16 +98,14 @@ export class ControladorSimulacion implements IControlador {
 
         if (e.code === 'Space') {
             e.preventDefault();
-            if (bola) {
-                if (bola.esSujeto()) {
-                    // La garra fija su cota en el mundo y la bola inicia caída libre
-                    this.garra.fijarPosicionMundo();
-                    bola.soltar();
-                } else if (bola.esCayendo()) {
-                    bola.pausar();
-                } else if (bola.esPausado()) {
-                    bola.reanudar();
-                }
+            if (bola?.esSujeto()) {
+                // La garra fija su cota en el mundo y la bola inicia caída libre
+                this.garra.fijarPosicionMundo();
+                bola.soltar();
+            } else if (bola?.esCayendo()) {
+                bola.pausar();
+            } else if (bola?.esPausado()) {
+                bola.reanudar();
             }
         } else if (e.key === 'r' || e.key === 'R') {
             e.preventDefault();
@@ -122,4 +113,31 @@ export class ControladorSimulacion implements IControlador {
             this.bucle.setPOC(null);
         }
     };
+
+    private crearBolaEnSuelo(): void {
+        const escala = this.garra.getEscala();
+        const radio = Math.max(16, Math.round(32 * escala));
+        const sueloY = this.mapa.getAltoTotal() - this.garra.getAltoBase();
+
+        const nuevaBola = new POC(
+            this.formulas,
+            this.canvas.width / 2,
+            sueloY - radio,
+            0,
+            escala
+        );
+        nuevaBola.colocarEnSuelo();
+        this.bucle.setPOC(nuevaBola);
+    }
+
+    /**
+     * Comprueba si el punto de agarre de la garra está a corta distancia de la bola.
+     * La distancia se compara en coordenadas de pantalla.
+     */
+    private garraCercaDeBola(bola: POC): boolean {
+        const xPantalla = bola.getXMundo();
+        const yPantalla = bola.getYMundo() - this.mapa.getCamaraY();
+        const tolerancia = Math.max(this.distanciaAgarreBase, bola.getRadio() * 2);
+        return this.garra.distanciaAlPunto(xPantalla, yPantalla) <= tolerancia;
+    }
 }

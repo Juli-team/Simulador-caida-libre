@@ -2,7 +2,6 @@ import { Pantalla } from './pantalla';
 import { Mapa } from './mapa';
 import { Garra } from './garra';
 import { ControlesNavegacion } from './controlesNavegacion';
-import { Gravedad } from './gravedad';
 import { Formulas } from './formulas';
 import { HUD } from './hud';
 import { Bucle } from './bucle';
@@ -12,15 +11,14 @@ import { ControladorSimulacion } from './controladorSimulacion';
 const pantalla = new Pantalla('app');
 const mapa = new Mapa(pantalla.getAncho(), pantalla.getAlto(), 5000);
 const garra = new Garra();
-const controles = new ControlesNavegacion(pantalla, mapa);
-const gravedad = new Gravedad(9.8);
-const formulas = new Formulas(gravedad);
+const controles = new ControlesNavegacion(pantalla, mapa, garra);
+const formulas = new Formulas();
 const hud = new HUD(formulas);
 
-const bucle = new Bucle(pantalla, mapa, garra, controles, gravedad, hud);
+const bucle = new Bucle(pantalla, mapa, garra, controles, hud);
 
 // 2. Controlador de eventos e interacción del usuario
-const controlador = new ControladorSimulacion(pantalla, garra, mapa, controles, bucle);
+const controlador = new ControladorSimulacion(pantalla, garra, mapa, bucle, formulas);
 controlador.iniciar();
 
 // 3. Inicio del ciclo de renderizado continuo

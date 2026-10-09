@@ -1,16 +1,16 @@
-import { IDibujable, IActualizable } from './interfaces';
+import { IDibujable, IActualizable, IControlGarra } from './interfaces';
 
 /**
- * Representa la Pieza 1 de la estructura (columna vertical de soporte).
+ * Representa la Pieza 1 de la estructura (columna vertical de soporte / base).
  * Cumple con SRP: Gestiona la altura, estiramiento y contracción de la columna negra.
+ * Su longitud visible cambia cuando las teclas W/S desplazan la cámara por el mapa.
  */
-export class Pieza1 implements IDibujable {
+class Pieza1 implements IDibujable {
     private posX: number = 110;
     private ancho: number = 26;
     private readonly color: string = '#18181b'; // Color negro estructura
     private ySuperior: number = 90;
     private yInferior: number = 688;
-    private alturaMundo: number = 574;
     private altoPantalla: number = 768;
     private escala: number = 1;
 
@@ -34,19 +34,6 @@ export class Pieza1 implements IDibujable {
         const yBasePantalla = yBaseMundo - camaraY;
 
         this.yInferior = Math.max(this.ySuperior, yBasePantalla);
-        this.alturaMundo = Math.max(50, yBaseMundo - (camaraY + this.ySuperior));
-    }
-
-    public getAlturaMundo(): number {
-        return this.alturaMundo;
-    }
-
-    public getPosX(): number {
-        return this.posX;
-    }
-
-    public getAncho(): number {
-        return this.ancho;
     }
 
     public dibujar(ctx: CanvasRenderingContext2D): void {
@@ -90,8 +77,14 @@ export class Pieza1 implements IDibujable {
 /**
  * Representa la Garra mecánica y su estructura de soporte.
  * Cumple con SRP y Composición en POO.
+ *
+ * Control:
+ *  - Mouse X: mueve horizontalmente la garra a lo largo del brazo.
+ *  - Mouse Y: estira o contrae la pieza negra (conector) que sostiene la garra gris.
+ *  - Teclas W/S: desplazan la cámara por el mapa, estirando la base (columna),
+ *    de modo que la altura de la garra en el mundo crece sin límite de pantalla.
  */
-export class Garra implements IDibujable, IActualizable {
+export class Garra implements IDibujable, IActualizable, IControlGarra {
     private pieza1: Pieza1;
 
     // Colores mecánicos
@@ -114,6 +107,22 @@ export class Garra implements IDibujable, IActualizable {
     private pinzaCentroX: number = 410;
     private pinzaCentroY: number = 155;
 
+    // Objetivo de agarre marcado por el mouse (coordenadas de pantalla)
+    private objetivoGripX: number = 512;
+    private objetivoGripY: number = 160;
+    private objetivoInicializado: boolean = false;
+
+    // Longitud de la pieza negra que sostiene la garra gris (en píxeles de pantalla)
+    private longitudCable: number = 0;
+
+    // Separaciones verticales de la estructura (en unidades base, se escalan)
+    private readonly sepGripCabezal: number = 62; // Punto de agarre -> cabezal de pinzas
+    private readonly sepCabezalBrazo: number = 65; // Cabezal de pinzas -> barra horizontal
+
+    // Límites de estiramiento de la pieza negra
+    private readonly longitudCableMin: number = 0;
+    private readonly longitudCableMax: number = 520;
+
     // Posición congelada en coordenadas de mundo cuando la bola es soltada
     private yMundoFijado: number | null = null;
 
@@ -121,6 +130,7 @@ export class Garra implements IDibujable, IActualizable {
     private camaraY: number = 0;
     private altoPantalla: number = 768;
     private altoMundo: number = 5000;
+    private anchoPantalla: number = 1024;
 
     constructor() {
         this.pieza1 = new Pieza1();
@@ -130,6 +140,26 @@ export class Garra implements IDibujable, IActualizable {
         // Estado dinámico si se requiere en el futuro
     }
 
+    // ---------------------------------------------------------------------
+    // IControlGarra: la garra sigue al mouse (X horizontal y Y del cable)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Establece el objetivo de agarre a partir del mouse.
+     * La X desplaza la garra; la Y estira/contrae la pieza negra.
+     * Si la garra está congelada (bola en caída) ignora la entrada.
+     */
+    public seguirMouse(x: number, y: number): void {
+        if (this.yMundoFijado !== null) return;
+        this.objetivoGripX = x;
+        this.objetivoGripY = y;
+        this.recalcularDesdeObjetivo();
+    }
+
+    // ---------------------------------------------------------------------
+    // Posición congelada (al soltar la bola)
+    // ---------------------------------------------------------------------
+
     public fijarPosicionMundo(yMundo?: number): void {
         if (yMundo !== undefined) {
             this.yMundoFijado = yMundo;
@@ -138,17 +168,21 @@ export class Garra implements IDibujable, IActualizable {
         }
     }
 
-    public liberarPosicionMundo(): void {
+    public reiniciar(): void {
         this.yMundoFijado = null;
+        this.longitudCable = 0;
+        this.objetivoGripX = this.anchoPantalla * 0.5;
+        this.objetivoGripY = this.brazoY + (this.sepCabezalBrazo + this.sepGripCabezal) * this.escala;
+        this.recalcularDesdeObjetivo();
     }
 
     public isPosicionFijada(): boolean {
         return this.yMundoFijado !== null;
     }
 
-    public getYMundoFijado(): number | null {
-        return this.yMundoFijado;
-    }
+    // ---------------------------------------------------------------------
+    // Sincronización con el mapa / pantalla
+    // ---------------------------------------------------------------------
 
     public sincronizarConMapa(
         camaraY: number,
@@ -159,6 +193,7 @@ export class Garra implements IDibujable, IActualizable {
         this.camaraY = camaraY;
         this.altoPantalla = altoPantalla;
         this.altoMundo = altoMundo;
+        this.anchoPantalla = anchoPantalla;
 
         // Escala proporcional basada en 1024x768
         this.escala = Math.min(anchoPantalla / 1024, altoPantalla / 768);
@@ -166,21 +201,54 @@ export class Garra implements IDibujable, IActualizable {
         this.columnaPosX = anchoPantalla * (110 / 1024);
         this.columnaAncho = 26 * this.escala;
         this.altoBase = 80 * this.escala;
+        this.brazoEspesor = 24 * this.escala;
 
-        // Si la posición está fijada en el mundo, permanece en esa cota absoluta
-        // y no acompaña el movimiento de la cámara al caer la bola
-        if (this.yMundoFijado !== null) {
-            this.brazoY = this.yMundoFijado - camaraY;
-        } else {
-            this.brazoY = altoPantalla * (90 / 768);
+        // La barra horizontal permanece sujeta a una cota fija de pantalla
+        this.brazoY = altoPantalla * (90 / 768);
+
+        // Posición inicial centrada en el ancho para coincidir con la bola en el suelo
+        if (!this.objetivoInicializado) {
+            this.objetivoGripX = anchoPantalla * 0.5;
+            this.objetivoGripY = this.brazoY + (this.sepCabezalBrazo + this.sepGripCabezal) * this.escala;
+            this.objetivoInicializado = true;
         }
 
-        this.brazoEspesor = 24 * this.escala;
-        this.brazoInicioX = this.columnaPosX - 15 * this.escala;
+        if (this.yMundoFijado !== null) {
+            // La cota del mundo permanece absoluta y no acompaña la cámara
+            this.brazoY = this.yMundoFijado - camaraY;
+            this.pinzaCentroX = this.clamp(this.objetivoGripX, this.getLimiteXMin(), this.getLimiteXMax());
+            this.pinzaCentroY = this.brazoY + this.sepCabezalBrazo * this.escala + this.longitudCable;
+        } else {
+            this.recalcularDesdeObjetivo();
+        }
 
-        this.pinzaCentroX = anchoPantalla * (410 / 1024);
-        // Distancia constante relativa entre el brazo y el cabezal de la garra
-        this.pinzaCentroY = this.brazoY + (65 * this.escala);
+        this.actualizarDerivados();
+    }
+
+    /**
+     * Aplica el objetivo del mouse: limita la X al área alcanzable y deriva
+     * la longitud de la pieza negra (cable) a partir de la Y objetivo.
+     */
+    private recalcularDesdeObjetivo(): void {
+        this.pinzaCentroX = this.clamp(this.objetivoGripX, this.getLimiteXMin(), this.getLimiteXMax());
+
+        const offsetBase = (this.sepCabezalBrazo + this.sepGripCabezal) * this.escala;
+        let cable = this.objetivoGripY - this.brazoY - offsetBase;
+        cable = this.clamp(cable, this.longitudCableMin * this.escala, this.longitudCableMax * this.escala);
+
+        // El punto de agarre nunca desciende por debajo del suelo
+        const sueloPantalla = (this.altoMundo - this.altoBase) - this.camaraY;
+        const gripY = this.brazoY + offsetBase + cable;
+        if (gripY > sueloPantalla) {
+            cable = Math.max(this.longitudCableMin * this.escala, sueloPantalla - this.brazoY - offsetBase);
+        }
+
+        this.longitudCable = cable;
+        this.pinzaCentroY = this.brazoY + this.sepCabezalBrazo * this.escala + this.longitudCable;
+    }
+
+    private actualizarDerivados(): void {
+        this.brazoInicioX = this.columnaPosX - 15 * this.escala;
         this.brazoFinX = this.pinzaCentroX + 30 * this.escala;
 
         this.pieza1.actualizarDimensionesYLongitud(
@@ -188,16 +256,29 @@ export class Garra implements IDibujable, IActualizable {
             this.brazoY,
             this.columnaAncho,
             this.escala,
-            camaraY,
-            altoPantalla,
-            altoMundo,
+            this.camaraY,
+            this.altoPantalla,
+            this.altoMundo,
             this.altoBase
         );
     }
 
-    public getPieza1(): Pieza1 {
-        return this.pieza1;
+    private getLimiteXMin(): number {
+        // No puede invadir la columna vertical de soporte
+        return this.columnaPosX + this.columnaAncho + 70 * this.escala;
     }
+
+    private getLimiteXMax(): number {
+        return this.anchoPantalla - 75 * this.escala;
+    }
+
+    private clamp(valor: number, min: number, max: number): number {
+        return Math.max(min, Math.min(max, valor));
+    }
+
+    // ---------------------------------------------------------------------
+    // Consultas geométricas
+    // ---------------------------------------------------------------------
 
     public getEscala(): number {
         return this.escala;
@@ -207,24 +288,24 @@ export class Garra implements IDibujable, IActualizable {
         return this.altoBase;
     }
 
-    public getPinzaCentroX(): number {
-        return this.pinzaCentroX;
-    }
-
-    public getPinzaCentroY(): number {
-        return this.pinzaCentroY;
+    /**
+     * Retorna las coordenadas de pantalla donde debe sujetarse la esfera física
+     * (centrada entre las pinzas).
+     */
+    public getPosicionSujecion(): { x: number; y: number } {
+        return {
+            x: this.pinzaCentroX,
+            y: this.pinzaCentroY + this.sepGripCabezal * this.escala
+        };
     }
 
     /**
-     * Retorna las coordenadas de pantalla donde debe sujetarse la esfera física (centrada entre las pinzas)
+     * Distancia euclidiana de pantalla entre el punto de agarre y un punto dado.
+     * La usa el controlador para decidir si la garra está lo bastante cerca de la bola.
      */
-    public getPosicionSujecion(): { x: number; y: number } {
-        const s = this.escala;
-        const altoCabezal = 30 * s;
-        return {
-            x: this.pinzaCentroX,
-            y: this.pinzaCentroY + altoCabezal + (32 * s)
-        };
+    public distanciaAlPunto(x: number, y: number): number {
+        const p = this.getPosicionSujecion();
+        return Math.hypot(p.x - x, p.y - y);
     }
 
     /**
@@ -258,7 +339,7 @@ export class Garra implements IDibujable, IActualizable {
         // 3. Brazo horizontal
         this.dibujarBrazoHorizontal(ctx);
 
-        // 4. Conector vertical
+        // 4. Pieza negra vertical (conector) que sostiene la garra gris
         this.dibujarConector(ctx);
 
         // 5. Garra mecánica completa
@@ -349,12 +430,23 @@ export class Garra implements IDibujable, IActualizable {
         ctx.lineWidth = Math.max(1, 2 * this.escala);
 
         const anchoConector = 20 * this.escala;
-        const altoConector = this.pinzaCentroY - (this.brazoY + this.brazoEspesor);
+        const altoConector = Math.max(0, this.pinzaCentroY - (this.brazoY + this.brazoEspesor));
         const xConector = this.pinzaCentroX - anchoConector / 2;
         const yConector = this.brazoY + this.brazoEspesor;
 
         ctx.fillRect(xConector, yConector, anchoConector, altoConector);
         ctx.strokeRect(xConector, yConector, anchoConector, altoConector);
+
+        // Eslabones de cadena para reforzar el aspecto de pieza extensible
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = Math.max(1, 1.5 * this.escala);
+        const eslabon = 18 * this.escala;
+        for (let y = yConector + eslabon; y < yConector + altoConector; y += eslabon) {
+            ctx.beginPath();
+            ctx.moveTo(xConector, y);
+            ctx.lineTo(xConector + anchoConector, y);
+            ctx.stroke();
+        }
 
         ctx.restore();
     }

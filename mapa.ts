@@ -48,10 +48,6 @@ export class Mapa implements IDibujable, INavegable {
         return this.altoTotal;
     }
 
-    public getAltoVisible(): number {
-        return this.altoVisible;
-    }
-
     public puedeSubir(): boolean {
         return this.camaraY > 0;
     }
