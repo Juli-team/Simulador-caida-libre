@@ -3,7 +3,6 @@ import { Mapa } from './mapa';
 import { Garra } from './garra';
 import { ControlesNavegacion } from './controlesNavegacion';
 import { POC } from './poc';
-import { Gravedad } from './gravedad';
 import { HUD } from './hud';
 
 export class Bucle {
@@ -11,38 +10,32 @@ export class Bucle {
     private mapa: Mapa;
     private garra: Garra;
     private controles: ControlesNavegacion;
-    private gravedad: Gravedad;
     private hud: HUD;
 
     private poc: POC | null = null;
     private ejecutando: boolean = false;
     private ultimoTimestamp: number = 0;
-    private camaraYAlSoltar: number | null = null;
 
     constructor(
         pantalla: IPantalla,
         mapa: Mapa,
         garra: Garra,
         controles: ControlesNavegacion,
-        gravedad: Gravedad,
         hud: HUD
     ) {
         this.pantalla = pantalla;
         this.mapa = mapa;
         this.garra = garra;
         this.controles = controles;
-        this.gravedad = gravedad;
         this.hud = hud;
     }
 
     public setPOC(poc: POC | null): void {
         this.poc = poc;
         if (poc === null) {
-            this.garra.liberarPosicionMundo();
-            if (this.camaraYAlSoltar !== null) {
-                this.mapa.setCamaraY(this.camaraYAlSoltar);
-                this.camaraYAlSoltar = null;
-            }
+            // Reinicio: baja la base/cámara al suelo y devuelve la garra a su estado inicial
+            this.garra.reiniciar();
+            this.mapa.setCamaraY(this.mapa.getMaxCamaraY());
         }
     }
 
@@ -71,11 +64,14 @@ export class Bucle {
         const ctx = this.pantalla.getContext();
         const anchoPantalla = this.pantalla.getAncho();
         const altoPantalla = this.pantalla.getAlto();
-        const sueloY = this.mapa.getAltoTotal() - this.garra.getAltoBase();
 
         // 1. Sincronizar dimensiones con la pantalla
         this.mapa.sincronizarConPantalla(anchoPantalla, altoPantalla);
-        this.controles.sincronizarConPantalla(anchoPantalla, altoPantalla);
+
+        // 2. Entrada de navegación (W/S desplaza la cámara antes de dibujar)
+        this.controles.actualizar();
+
+        // 3. Sincronizar la garra con la cámara ya actualizada
         this.garra.sincronizarConMapa(
             this.mapa.getCamaraY(),
             anchoPantalla,
@@ -84,7 +80,9 @@ export class Bucle {
         );
         this.garra.actualizar();
 
-        // 2. Gestionar cinemática y cámara según estado de la bola POC
+        const sueloY = this.mapa.getAltoTotal() - this.garra.getAltoBase();
+
+        // 4. Gestionar cinemática y cámara según estado de la bola POC
         if (this.poc) {
             if (this.poc.esSujeto()) {
                 this.controles.setBloqueado(false);
@@ -100,32 +98,30 @@ export class Bucle {
                 // Al caer la pelota, la garra queda fija en el mundo y no sigue la caída
                 if (!this.garra.isPosicionFijada()) {
                     this.garra.fijarPosicionMundo();
-                    this.camaraYAlSoltar = this.mapa.getCamaraY();
                 }
 
                 this.controles.setBloqueado(true);
-                this.poc.actualizar(dt, sueloY, this.gravedad.getValor());
+                this.poc.actualizar(dt, sueloY);
 
                 // Seguimiento fluido de la cámara mientras cae la bola
                 const targetCamaraY = this.poc.getYMundo() - (altoPantalla * 0.45);
                 if (targetCamaraY > this.mapa.getCamaraY()) {
                     this.mapa.setCamaraY(targetCamaraY);
                 }
-            } else if (this.poc.esDetenido()) {
+            } else if (this.poc.esDetenido() || this.poc.esEnSuelo()) {
                 this.controles.setBloqueado(false);
             }
         } else {
             this.controles.setBloqueado(false);
         }
 
-        // 3. Actualizar controles interactivos y HUD
-        this.controles.actualizar();
+        // 5. Actualizar HUD
         this.hud.actualizar(dt, this.poc);
 
-        // 4. Limpiar pantalla
+        // 6. Limpiar pantalla
         this.pantalla.limpiar();
 
-        // 5. Dibujar en capas ordenadas:
+        // 7. Dibujar en capas ordenadas:
         // Capa A: Mapa de fondo con degradado y cotas de altura
         this.mapa.dibujar(ctx);
 
@@ -145,9 +141,6 @@ export class Bucle {
                 this.poc.dibujar(ctx, this.mapa.getCamaraY());
             }
         }
-
-        // Capa C: Controles de navegación en pantalla
-        this.controles.dibujar(ctx);
 
         // Capa D: Telemetría y fórmulas físicas arriba a la derecha (HUD)
         this.hud.dibujar(ctx, anchoPantalla, this.poc);

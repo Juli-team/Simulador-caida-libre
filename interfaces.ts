@@ -12,9 +12,17 @@ export interface INavegable {
     getCamaraY(): number;
     setCamaraY(y: number): void;
     getAltoTotal(): number;
-    getAltoVisible(): number;
     puedeSubir(): boolean;
     puedeBajar(): boolean;
+}
+
+/**
+ * Abstracción de control de la garra (DIP).
+ * Permite que los controles de navegación muevan la garra con el mouse
+ * sin depender de su implementación concreta.
+ */
+export interface IControlGarra {
+    seguirMouse(x: number, y: number): void;
 }
 
 export interface IPantalla {
@@ -26,28 +34,20 @@ export interface IPantalla {
     actualizarDimensiones(): void;
 }
 
-export type EstadoPOC = 'sujeto' | 'cayendo' | 'pausado' | 'detenido';
+export type EstadoPOC = 'enSuelo' | 'sujeto' | 'cayendo' | 'pausado' | 'detenido';
 
 export interface IPOC {
     getH0(): number;
-    setH0(h0: number): void;
     getV0(): number;
-    setV0(v0: number): void;
     getT(): number;
     setT(t: number): void;
     getV(): number;
     setV(v: number): void;
-    getEstado(): EstadoPOC;
-}
-
-export interface IGravedad {
-    getValor(): number;
 }
 
 export interface IFormulas {
     calcularTiempo(h0: number): number;
     calcularVelocidad(v0: number, t: number): number;
-    resolver(poc: IPOC): void;
 }
 
 export interface IControlador {

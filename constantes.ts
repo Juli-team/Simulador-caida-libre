@@ -14,13 +14,6 @@ export const PIXELES_POR_METRO: number = 100;
 export const GRAVEDAD_DEFECTO: number = 9.8;
 
 /**
- * Convierte una distancia en metros a su equivalente en píxeles de pantalla.
- */
-export function metrosAPixeles(metros: number): number {
-    return metros * PIXELES_POR_METRO;
-}
-
-/**
  * Convierte una distancia en píxeles de pantalla a su equivalente físico en metros.
  */
 export function pixelesAMetros(pixeles: number): number {
