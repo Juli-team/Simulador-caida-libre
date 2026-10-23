@@ -1,9 +1,9 @@
 import { IDibujable, INavegable } from './interfaces';
-import { PIXELES_POR_METRO, pixelesAMetros } from './constantes';
+import { PIXELES_POR_METRO } from './constantes';
 
 export class Mapa implements IDibujable, INavegable {
     private ancho: number = 1024;
-    private readonly altoTotal: number = 5000;
+    private readonly altoTotal: number = 300000;
     private altoVisible: number = 768;
 
     // Posición Y de la cámara en el mapa (0 = arriba, maxCamaraY = base)
@@ -92,7 +92,7 @@ export class Mapa implements IDibujable, INavegable {
 
                 // Altura medida desde el suelo
                 const alturaDesdeBasePx = this.altoTotal - yMundo;
-                const alturaMetros = pixelesAMetros(alturaDesdeBasePx);
+                const alturaMetros = alturaDesdeBasePx / PIXELES_POR_METRO;
                 const textoMetros = alturaMetros % 1 === 0 ? `${alturaMetros}` : alturaMetros.toFixed(1);
                 ctx.fillText(`${textoMetros} m (${alturaDesdeBasePx} px)`, 30 * escala, yPantalla - 6 * escala);
             }

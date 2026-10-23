@@ -19,7 +19,7 @@ export class ControlesNavegacion implements IActualizable {
     private bloqueado: boolean = false;
 
     // Velocidad (en píxeles por frame) del desplazamiento vertical de la cámara
-    private readonly velocidadTeclado: number = 14;
+    private readonly velocidadTeclado: number = 140;
 
     constructor(pantalla: IPantalla, navegable: INavegable, garra: IControlGarra) {
         this.navegable = navegable;

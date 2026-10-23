@@ -9,7 +9,7 @@ import { ControladorSimulacion } from './controladorSimulacion';
 
 // 1. Instanciación e Inyección de Dependencias (DIP / Composition Root)
 const pantalla = new Pantalla('app');
-const mapa = new Mapa(pantalla.getAncho(), pantalla.getAlto(), 5000);
+const mapa = new Mapa(pantalla.getAncho(), pantalla.getAlto(), 300000);
 const garra = new Garra();
 const controles = new ControlesNavegacion(pantalla, mapa, garra);
 const formulas = new Formulas();
