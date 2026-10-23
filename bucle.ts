@@ -2,6 +2,7 @@ import { IPantalla } from './interfaces';
 import { Mapa } from './mapa';
 import { Garra } from './garra';
 import { ControlesNavegacion } from './controlesNavegacion';
+import { Calculos } from './calculos';
 import { POC } from './poc';
 import { HUD } from './hud';
 
@@ -12,7 +13,7 @@ export class Bucle {
     private controles: ControlesNavegacion;
     private hud: HUD;
 
-    private poc: POC | null = null;
+    private calculos: Calculos | null = null;
     private ejecutando: boolean = false;
     private ultimoTimestamp: number = 0;
 
@@ -30,17 +31,26 @@ export class Bucle {
         this.hud = hud;
     }
 
-    public setPOC(poc: POC | null): void {
-        this.poc = poc;
-        if (poc === null) {
+    public setCalculos(calculos: Calculos | null): void {
+        this.calculos = calculos;
+        if (calculos === null) {
             // Reinicio: baja la base/cámara al suelo y devuelve la garra a su estado inicial
             this.garra.reiniciar();
             this.mapa.setCamaraY(this.mapa.getMaxCamaraY());
         }
     }
 
+    public getCalculos(): Calculos | null {
+        return this.calculos;
+    }
+
+    // Compatibilidad con el getter y setter del objeto físico POC
+    public setPOC(objeto: Calculos | null): void {
+        this.setCalculos(objeto);
+    }
+
     public getPOC(): POC | null {
-        return this.poc;
+        return (this.calculos?.getPOC() as POC) ?? null;
     }
 
     public iniciar(): void {
@@ -82,33 +92,33 @@ export class Bucle {
 
         const sueloY = this.mapa.getAltoTotal() - this.garra.getAltoBase();
 
-        // 4. Gestionar cinemática y cámara según estado de la bola POC
-        if (this.poc) {
-            if (this.poc.esSujeto()) {
+        // 4. Gestionar cinemática y cámara según estado del objeto en Calculos
+        if (this.calculos) {
+            if (this.calculos.esSujeto()) {
                 this.controles.setBloqueado(false);
                 const posSujecion = this.garra.getPosicionSujecion();
-                this.poc.sincronizarConGarra(
+                this.calculos.sincronizarConGarra(
                     posSujecion.x,
                     posSujecion.y,
                     this.mapa.getCamaraY(),
                     sueloY,
                     this.garra.getEscala()
                 );
-            } else if (this.poc.esCayendo()) {
+            } else if (this.calculos.esCayendo()) {
                 // Al caer la pelota, la garra queda fija en el mundo y no sigue la caída
                 if (!this.garra.isPosicionFijada()) {
                     this.garra.fijarPosicionMundo();
                 }
 
                 this.controles.setBloqueado(true);
-                this.poc.actualizar(dt, sueloY);
+                this.calculos.actualizar(dt, sueloY);
 
                 // Seguimiento fluido de la cámara mientras cae la bola
-                const targetCamaraY = this.poc.getYMundo() - (altoPantalla * 0.45);
+                const targetCamaraY = this.calculos.getYMundo() - (altoPantalla * 0.45);
                 if (targetCamaraY > this.mapa.getCamaraY()) {
                     this.mapa.setCamaraY(targetCamaraY);
                 }
-            } else if (this.poc.esDetenido() || this.poc.esEnSuelo()) {
+            } else if (this.calculos.esDetenido() || this.calculos.esEnSuelo()) {
                 this.controles.setBloqueado(false);
             }
         } else {
@@ -116,7 +126,7 @@ export class Bucle {
         }
 
         // 5. Actualizar HUD
-        this.hud.actualizar(dt, this.poc);
+        this.hud.actualizar(dt, this.calculos);
 
         // 6. Limpiar pantalla
         this.pantalla.limpiar();
@@ -126,24 +136,24 @@ export class Bucle {
         this.mapa.dibujar(ctx);
 
         // Capa B: Garra y Bola sujeta / cayendo
-        if (this.poc && this.poc.esSujeto()) {
+        if (this.calculos && this.calculos.esSujeto()) {
             // Dibujar estructura y cabezal de la garra
             this.garra.dibujarSoporteYCabezal(ctx);
             // Dibujar esfera
-            this.poc.dibujar(ctx, this.mapa.getCamaraY());
+            this.calculos.dibujar(ctx, this.mapa.getCamaraY());
             // Dibujar pinzas por delante de la esfera (efecto de sujeción real)
             this.garra.dibujarDedosPinzas(ctx);
         } else {
             // Garra completa
             this.garra.dibujar(ctx);
             // Esfera cayendo o detenida en el suelo
-            if (this.poc) {
-                this.poc.dibujar(ctx, this.mapa.getCamaraY());
+            if (this.calculos) {
+                this.calculos.dibujar(ctx, this.mapa.getCamaraY());
             }
         }
 
-        // Capa D: Telemetría y fórmulas físicas arriba a la derecha (HUD)
-        this.hud.dibujar(ctx, anchoPantalla, this.poc);
+        // Capa D: Telemetría arriba a la derecha (HUD)
+        this.hud.dibujar(ctx, anchoPantalla, this.calculos);
 
         requestAnimationFrame(this.iterar);
     };

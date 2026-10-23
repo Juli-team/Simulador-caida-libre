@@ -1,17 +1,13 @@
-import { IDibujable } from './interfaces';
-import { POC } from './poc';
-import { IFormulas } from './formulas';
+import { IDibujable, ICalculos } from './interfaces';
 import { PIXELES_POR_METRO } from './constantes';
 
 /**
  * Clase HUD
  * Responsabilidad única (SRP): Mostrar en la esquina superior derecha los resultados
- * de las fórmulas físicas y los datos de la simulación en texto blanco,
- * actualizando el tiempo transcurrido y la velocidad cada 0.5 segundos para máxima legibilidad.
+ * en pantalla mostrando la altura, velocidad y el tiempo transcurrido en texto legible,
+ * refrescándose cada 0.5 segundos durante la caída.
  */
 export class HUD implements IDibujable {
-    private formulas: IFormulas;
-
     // Frecuencia de actualización de telemetría (cada 0.5 s)
     private readonly intervaloActualizacion: number = 0.5;
     private acumuladorTiempo: number = 0;
@@ -19,59 +15,55 @@ export class HUD implements IDibujable {
     // Valores congelados para el refresco legible cada 0.5s
     private tiempoMostrado: number = 0;
     private velocidadMostrada: number = 0;
+    private alturaMostrada: number = 0;
 
-    // Fórmulas teóricas calculadas
-    private tTeorico: number = 0;
-    private vTeorico: number = 0;
-
-    constructor(formulas: IFormulas) {
-        this.formulas = formulas;
-    }
+    constructor(_formulas?: any) {}
 
     /**
-     * Actualiza el temporizador de muestreo de 0.5 segundos
+     * Actualiza el temporizador de muestreo de telemetría
      * @param dt Delta time en segundos
-     * @param poc Instancia de POC (o null si no hay bola)
+     * @param calculos Instancia de ICalculos (o null si no hay objeto)
      */
-    public actualizar(dt: number, poc: POC | null): void {
-        if (!poc) {
-            this.tiempoMostrado = 0;
-            this.velocidadMostrada = 0;
-            this.tTeorico = 0;
-            this.vTeorico = 0;
-            this.acumuladorTiempo = 0;
-            return;
-        }
-
-        // Si la bola está en la garra (sujeta), calcular fórmulas teóricas de inmediato
-        if (poc.esSujeto()) {
-            this.tTeorico = this.formulas.calcularTiempo(poc.getH0());
-            this.vTeorico = this.formulas.calcularVelocidad(poc.getV0(), this.tTeorico);
+    public actualizar(dt: number, calculos: ICalculos | null): void {
+        if (!calculos) {
             this.tiempoMostrado = 0;
             this.velocidadMostrada = 0;
             this.acumuladorTiempo = 0;
             return;
         }
 
-        // Si la bola impactó el suelo, mostrar valores finales exactos
-        if (poc.esDetenido()) {
-            this.tiempoMostrado = poc.getT();
-            this.velocidadMostrada = poc.getV();
+        const poc = calculos.getPOC();
+
+        // En reposo (sujeto a la garra o en suelo), el tiempo y velocidad inician en cero
+        if (calculos.esSujeto() || calculos.esEnSuelo()) {
+            this.tiempoMostrado = 0;
+            this.velocidadMostrada = 0;
+            this.alturaMostrada = 0;
+            this.acumuladorTiempo = 0;
             return;
         }
 
-        // Si está cayendo o pausado, actualizar cada 0.5 segundos
-        if (poc.esCayendo()) {
+        // Al detenerse por impacto, mostrar los valores finales exactos
+        if (calculos.esDetenido()) {
+            this.tiempoMostrado = poc.getTiempoCaida();
+            this.velocidadMostrada = poc.getVelocidad();
+            this.alturaMostrada = poc.getAltura();
+            return;
+        }
+
+        // Durante la caída, refrescar los valores cada 0.5 segundos para facilitar la lectura
+        if (calculos.esCayendo()) {
             this.acumuladorTiempo += dt;
             if (this.acumuladorTiempo >= this.intervaloActualizacion) {
-                this.tiempoMostrado = poc.getT();
-                this.velocidadMostrada = poc.getV();
+                this.tiempoMostrado = poc.getTiempoCaida();
+                this.velocidadMostrada = poc.getVelocidad();
+                this.alturaMostrada = poc.getAltura();
                 this.acumuladorTiempo = 0;
             }
         }
     }
 
-    public dibujar(ctx: CanvasRenderingContext2D, anchoPantalla: number, poc: POC | null): void {
+    public dibujar(ctx: CanvasRenderingContext2D, anchoPantalla: number, calculos: ICalculos | null): void {
         ctx.save();
 
         const margenDerecho = 25;
@@ -100,7 +92,7 @@ export class HUD implements IDibujable {
         y += interlineado + 2;
         ctx.fillStyle = '#FFFFFF';
 
-        if (!poc) {
+        if (!calculos) {
             ctx.font = '14px monospace';
             ctx.fillText('Estado: Esperando objeto', xTexto, y);
             y += interlineado;
@@ -115,51 +107,36 @@ export class HUD implements IDibujable {
 
         // Estado del objeto
         let textoEstado = '';
-        if (poc.esEnSuelo()) {
+        if (calculos.esEnSuelo()) {
             textoEstado = 'En el suelo (acerca la garra)';
-        } else if (poc.esSujeto()) {
+        } else if (calculos.esSujeto()) {
             textoEstado = 'Sujeto en la garra (Listo)';
-        } else if (poc.esCayendo()) {
-            textoEstado = 'Cayendo (MRUV)...';
-        } else if (poc.esPausado()) {
+        } else if (calculos.esCayendo()) {
+            textoEstado = 'Cayendo...';
+        } else if (calculos.esPausado()) {
             textoEstado = 'PAUSADO';
-        } else if (poc.esDetenido()) {
+        } else if (calculos.esDetenido()) {
             textoEstado = 'IMPACTO EN EL SUELO';
         }
 
         ctx.font = '14px monospace';
         ctx.fillText(`Estado: ${textoEstado}`, xTexto, y);
-        y += interlineado;
-
-        // Altura inicial
-        ctx.fillText(`Altura inicial (h₀): ${poc.getH0().toFixed(2)} m`, xTexto, y);
-        y += interlineado;
-
-        // Velocidad inicial
-        ctx.fillText(`Velocidad inicial (v₀): ${poc.getV0().toFixed(2)} m/s`, xTexto, y);
-        y += interlineado;
-
-        // Telemetría en tiempo real (refrescada cada 0.5s)
-        ctx.font = 'bold 15px monospace';
-        ctx.fillText(`Tiempo actual (t): ${this.tiempoMostrado.toFixed(2)} s`, xTexto, y);
-        y += interlineado;
-
-        ctx.fillText(`Velocidad actual (v): ${this.velocidadMostrada.toFixed(2)} m/s`, xTexto, y);
         y += interlineado + 4;
 
-        // Resultados teóricos de las fórmulas
-        ctx.font = '13px monospace';
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fillText('--- FÓRMULAS TEÓRICAS ---', xTexto, y);
+        // Solo se muestra en pantalla la velocidad y el tiempo
+        ctx.font = 'bold 16px monospace';
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText(`Tiempo: ${this.tiempoMostrado.toFixed(2)} s`, xTexto, y);
         y += interlineado;
 
-        ctx.fillText(`t = √(h₀ / 0.5g) : ${this.tTeorico.toFixed(2)} s`, xTexto, y);
+        ctx.fillText(`Velocidad: ${this.velocidadMostrada.toFixed(2)} m/s`, xTexto, y);
         y += interlineado;
 
-        ctx.fillText(`v = v₀ + g·t     : ${this.vTeorico.toFixed(2)} m/s`, xTexto, y);
-        y += interlineado + 6;
+        ctx.fillStyle = '#4ade80';
+        ctx.fillText(`Altura: ${this.alturaMostrada.toFixed(2)} m`, xTexto, y);
+        y += interlineado + 8;
 
-        // Ayuda de teclas
+        // Guía de controles
         ctx.fillStyle = '#f8fafc';
         ctx.font = 'italic 12px monospace';
         ctx.fillText('[MOUSE]: Mover garra', xTexto, y);

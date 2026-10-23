@@ -1,245 +1,173 @@
-import { IPOC, IDibujable, EstadoPOC, IFormulas } from './interfaces';
-import { PIXELES_POR_METRO } from './constantes';
+import { IPOC, IResultadoCalculo } from './interfaces';
+
 
 /**
- * Clase POC (Fusión de Círculo y POC)
- * Cumple con SRP al encapsular tanto el estado físico del objeto
- * (altura inicial h0, velocidad inicial v0, tiempo t, velocidad v)
- * como sus propiedades visuales y cinemáticas (radio, color, posición de mundo, dibujo).
+ * Clase POC (Plain Object / Contenedor de Estado Físico)
+ * Responsabilidad única (SRP): Almacenar y encapsular los datos y parámetros físicos del objeto:
+ * - altura (y)
+ * - velocidad inicial (v0)
+ * - tiempo de caída (t)
+ * - masa (m = 10 kg por defecto)
+ * - radio del objeto en metros (r)
+ * - coeficiente de arrastre (Cd = 0.47 por defecto)
+ * - velocidad (v)
+ * - aceleración neta (a), fuerza de arrastre (Fd) y densidad del aire (d).
+ * Cumple con OCP, LSP e ISP a través de la interfaz IPOC.
  */
-export class POC implements IPOC, IDibujable {
-    // Fuente única de las fórmulas físicas (DIP)
-    private formulas: IFormulas;
-
-    // Parámetros físicos (en unidades estándar: metros, segundos, m/s)
-    private h0: number = 0;
-    private v0: number = 0;
-    private t: number = 0;
-    private v: number = 0;
-
-    // Propiedades visuales y espaciales (en píxeles)
-    private radio: number = 24;
-    private color: string = '#f59e0b'; // Ámbar metálico llamativo
-    private xMundo: number = 0;
-    private yMundo: number = 0;
-
-    // Estado del ciclo de vida de la bola
-    private estado: EstadoPOC = 'sujeto';
+export class POC implements IPOC {
+    private altura: number = 0;
+    private velocidadInicial: number = 0;
+    private tiempoCaida: number = 0;
+    private masa: number = 10;
+    private radio: number = 0.32;
+    private coeficienteArrastre: number = 0.47;
+    private velocidad: number = 0;
+    private aceleracion: number = 0;
+    private fuerzaArrastre: number = 0;
+    private densidadAire: number = 0;
 
     constructor(
-        formulas: IFormulas,
-        xMundo: number = 0,
-        yMundo: number = 0,
-        h0: number = 0,
-        escala: number = 1,
-        color: string = '#f59e0b'
+        altura: number = 0,
+        velocidadInicial: number = 0,
+        radio: number = 0.32,
+        masa: number = this.masa,
+        coeficienteArrastre: number = this.coeficienteArrastre
     ) {
-        this.formulas = formulas;
-        this.xMundo = xMundo;
-        this.yMundo = yMundo;
-        this.h0 = Math.max(0, h0);
-        this.v0 = 0;
-        this.t = 0;
-        this.v = 0;
-        this.color = color;
-        this.radio = Math.max(16, Math.round(32 * escala));
-        this.estado = 'sujeto';
+        this.altura = Math.max(0, altura);
+        this.velocidadInicial = velocidadInicial;
+        this.radio = Math.max(0.001, radio);
+        this.masa = Math.max(0.001, masa);
+        this.coeficienteArrastre = Math.max(0, coeficienteArrastre);
+        this.velocidad = velocidadInicial;
+        this.tiempoCaida = 0;
+        this.aceleracion = 0;
+        this.fuerzaArrastre = 0;
+        this.densidadAire = 0;
     }
 
-    // Getters y Setters de IPOC
-    public getH0(): number {
-        return this.h0;
+    public getAltura(): number {
+        return this.altura;
     }
 
-    public getV0(): number {
-        return this.v0;
+    public setAltura(altura: number): void {
+        this.altura = Math.max(0, altura);
     }
 
-    public getT(): number {
-        return this.t;
+    public getVelocidadInicial(): number {
+        return this.velocidadInicial;
     }
 
-    public setT(t: number): void {
-        this.t = t;
+    public setVelocidadInicial(v0: number): void {
+        this.velocidadInicial = v0;
     }
 
-    public getV(): number {
-        return this.v;
+    public getTiempoCaida(): number {
+        return this.tiempoCaida;
     }
 
-    public setV(v: number): void {
-        this.v = v;
+    public setTiempoCaida(t: number): void {
+        this.tiempoCaida = Math.max(0, t);
     }
 
-    // Métodos de control del estado
-    /**
-     * Coloca la esfera reposando sobre el suelo, sin estar sujeta a la garra.
-     * Es el estado inicial del ciclo tipo grúa: el usuario debe acercar la garra.
-     */
-    public colocarEnSuelo(): void {
-        this.estado = 'enSuelo';
-        this.t = 0;
-        this.v = 0;
-        this.h0 = 0;
+    public getMasa(): number {
+        return this.masa;
     }
 
-    /**
-     * Sujeta la esfera a la garra cuando el usuario hace click dentro del rango.
-     */
-    public sujetar(): void {
-        if (this.estado === 'enSuelo') {
-            this.estado = 'sujeto';
-        }
+    public setMasa(m: number): void {
+        this.masa = Math.max(0.001, m);
     }
 
-    public soltar(): void {
-        if (this.estado === 'sujeto') {
-            this.estado = 'cayendo';
-        }
-    }
-
-    public pausar(): void {
-        if (this.estado === 'cayendo') {
-            this.estado = 'pausado';
-        }
-    }
-
-    public reanudar(): void {
-        if (this.estado === 'pausado') {
-            this.estado = 'cayendo';
-        }
-    }
-
-    public esEnSuelo(): boolean {
-        return this.estado === 'enSuelo';
-    }
-
-    public esSujeto(): boolean {
-        return this.estado === 'sujeto';
-    }
-
-    public esCayendo(): boolean {
-        return this.estado === 'cayendo';
-    }
-
-    public esPausado(): boolean {
-        return this.estado === 'pausado';
-    }
-
-    public esDetenido(): boolean {
-        return this.estado === 'detenido';
-    }
-
-    // Dimensiones y posición
     public getRadio(): number {
         return this.radio;
     }
 
-    public getXMundo(): number {
-        return this.xMundo;
+    public setRadio(r: number): void {
+        this.radio = Math.max(0.001, r);
     }
 
-    public getYMundo(): number {
-        return this.yMundo;
+    public getCoeficienteArrastre(): number {
+        return this.coeficienteArrastre;
     }
 
-    /**
-     * Sincroniza la esfera con la garra cuando está sujeta,
-     * actualizando su posición en el mundo, radio relativo a la pantalla y la altura h0 calculada.
-     */
-    public sincronizarConGarra(
-        xSujecionPantalla: number,
-        ySujecionPantalla: number,
-        camaraY: number,
-        ySueloMundo: number,
-        escala: number
-    ): void {
-        if (this.estado !== 'sujeto') return;
-
-        this.radio = Math.max(16, Math.round(32 * escala));
-        this.xMundo = xSujecionPantalla;
-        this.yMundo = camaraY + ySujecionPantalla;
-
-        // Distancia en píxeles desde el centro de la bola hasta el suelo donde se detendrá
-        const yDetencion = ySueloMundo - this.radio;
-        const distanciaPx = Math.max(0, yDetencion - this.yMundo);
-
-        // 1 metro = 10 píxeles
-        this.h0 = distanciaPx / PIXELES_POR_METRO;
+    public setCoeficienteArrastre(cd: number): void {
+        this.coeficienteArrastre = Math.max(0, cd);
     }
 
-    /**
-     * Actualiza la cinemática de caída libre con MRUV frame a frame:
-     * v(t) = v0 + g · t
-     * y(t) = y0 + v(t) · dt
-     * La velocidad y el tiempo final los resuelve la clase Formulas (fuente única).
-     * @param dt Delta time en segundos
-     * @param ySueloMundo Coordenada Y del suelo en píxeles del mundo
-     */
-    public actualizar(dt: number, ySueloMundo: number): void {
-        if (this.estado !== 'cayendo') return;
+    public getVelocidad(): number {
+        return this.velocidad;
+    }
 
-        // Incrementar tiempo transcurrido
-        this.t += dt;
+    public setVelocidad(v: number): void {
+        this.velocidad = v;
+    }
 
-        // Actualizar velocidad en m/s (MRUV con v0 = 0)
-        this.v = this.formulas.calcularVelocidad(this.v0, this.t);
+    public getAceleracion(): number {
+        return this.aceleracion;
+    }
 
-        // Convertir velocidad a píxeles/segundo y actualizar posición Y en el mundo
-        const velocidadPxPorSegundo = this.v * PIXELES_POR_METRO;
-        this.yMundo += velocidadPxPorSegundo * dt;
+    public setAceleracion(a: number): void {
+        this.aceleracion = a;
+    }
 
-        // Detección de impacto con el suelo
-        const yDetencion = ySueloMundo - this.radio;
-        if (this.yMundo >= yDetencion) {
-            this.yMundo = yDetencion;
-            // Al detenerse en el suelo, fijar la velocidad final exacta y tiempo final
-            this.t = this.formulas.calcularTiempo(this.h0);
-            this.v = this.formulas.calcularVelocidad(this.v0, this.t);
-            this.estado = 'detenido';
-        }
+    public getFuerzaArrastre(): number {
+        return this.fuerzaArrastre;
+    }
+
+    public setFuerzaArrastre(fd: number): void {
+        this.fuerzaArrastre = fd;
+    }
+
+    public getDensidadAire(): number {
+        return this.densidadAire;
+    }
+
+    public setDensidadAire(d: number): void {
+        this.densidadAire = d;
     }
 
     /**
-     * Dibuja la esfera física con iluminación 3D, reflejo y borde
+     * Guarda en el objeto POC los resultados devueltos por la clase Cálculos.
+     * @param resultado Resultados calculados en el frame actual
      */
-    public dibujar(ctx: CanvasRenderingContext2D, camaraY: number = 0): void {
-        const x = this.xMundo;
-        const y = this.yMundo - camaraY;
-        const r = this.radio;
+    public guardarResultados(resultado: IResultadoCalculo): void {
+        this.altura = resultado.altura;
+        this.velocidad = resultado.velocidad;
+        this.tiempoCaida = resultado.tiempoCaida;
+        this.aceleracion = resultado.aceleracionNeta;
+        this.fuerzaArrastre = resultado.fuerzaArrastre;
+        this.densidadAire = resultado.densidadAire;
+    }
 
-        ctx.save();
+    // Métodos de compatibilidad y alias con el contrato IPOC
+    public getH0(): number {
+        return this.altura;
+    }
 
-        // Sombra de la esfera
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-        ctx.shadowBlur = r * 0.5;
-        ctx.shadowOffsetY = r * 0.2;
+    public setH0(h0: number): void {
+        this.setAltura(h0);
+    }
 
-        // Gradiente radial para efecto 3D esférico
-        const gradiente = ctx.createRadialGradient(
-            x - r * 0.35,
-            y - r * 0.35,
-            r * 0.1,
-            x,
-            y,
-            r
-        );
-        gradiente.addColorStop(0, '#fef08a'); // Punto de brillo blanco-amarillo
-        gradiente.addColorStop(0.3, this.color); // Color principal
-        gradiente.addColorStop(0.85, '#d97706'); // Sombra intermedia
-        gradiente.addColorStop(1, '#78350f');   // Borde oscuro sombreado
+    public getV0(): number {
+        return this.velocidadInicial;
+    }
 
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fillStyle = gradiente;
-        ctx.fill();
+    public setV0(v0: number): void {
+        this.setVelocidadInicial(v0);
+    }
 
-        // Borde nítido para resaltar
-        ctx.shadowColor = 'transparent';
-        ctx.lineWidth = Math.max(1, r * 0.08);
-        ctx.strokeStyle = '#451a03';
-        ctx.stroke();
+    public getT(): number {
+        return this.tiempoCaida;
+    }
 
-        ctx.restore();
+    public setT(t: number): void {
+        this.setTiempoCaida(t);
+    }
+
+    public getV(): number {
+        return this.velocidad;
+    }
+
+    public setV(v: number): void {
+        this.setVelocidad(v);
     }
 }
