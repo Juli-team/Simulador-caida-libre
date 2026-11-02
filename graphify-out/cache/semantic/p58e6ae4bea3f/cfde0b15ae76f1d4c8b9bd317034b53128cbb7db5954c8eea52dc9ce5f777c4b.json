@@ -1,0 +1,1 @@
+{"nodes": [{"id": "gemini_graphify", "label": "Graphify Instructions", "file_type": "document", "source_file": "GEMINI.md", "rationale": "Defines the operational rules for using graphify-out/ artifacts and the graphify CLI tool within the project environment.", "_origin": "semantic"}], "edges": [], "hyperedges": []}
