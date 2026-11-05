@@ -1,0 +1,433 @@
+================================================================================
+ESTRUCTURA DE CLASES, FUNCIONES ESPECÍFICAS Y RELACIONES DEL PROYECTO
+Generado con Graphify Knowledge Graph
+================================================================================
+
+Este informe detalla minuciosamente cada clase concreta del simulador, listando
+sus métodos y responsabilidades específicas, junto con las clases con las que
+se relaciona de forma directa.
+
+--------------------------------------------------------------------------------
+1. Bucle (bucle.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Orquesta el bucle principal de simulación y renderizado continuo mediante
+  requestAnimationFrame. Gestiona el paso del tiempo (delta time), la secuencia
+  de actualización y el dibujado en capas.
+
+Funciones específicas:
+  - constructor(pantalla, mapa, garra, controles, hud, sincronizadorGarra, dibujadorPOC):
+      Inicializa dependencias principales e inyecta colaboradores.
+  - setCalculos(calculos: Calculos | null): void:
+      Asigna o reinicia la entidad de cálculos físicos. Si es null, reinicia la
+      garra y sitúa la cámara en el suelo.
+  - getCalculos(): Calculos | null:
+      Retorna la instancia actual de Calculos o null si no existe.
+  - setPOC(objeto: Calculos | null): void:
+      Alias de compatibilidad con setCalculos.
+  - getPOC(): POC | null:
+      Retorna el objeto físico POC subyacente contenido en Calculos.
+  - iniciar(): void:
+      Arranca la ejecución del bucle continuo de animación si no está corriendo.
+  - detener(): void:
+      Pausa o frena el bucle de renderizado.
+  - iterar(timestamp: number): void (arrow function privada):
+      Ejecuta cada frame: calcula delta time, sincroniza mapa, actualiza navegación,
+      coordina garra y cinemática de Calculos (sujeto/cayendo), refresca HUD, limpia
+      canvas y dibuja las capas en orden.
+
+Relaciones simples:
+  - Se relaciona con: Pantalla, Mapa, Garra, ControlesNavegacion, HUD, Calculos,
+    POC, SincronizadorGarra, DibujarPOC, ControladorSimulacion.
+
+
+--------------------------------------------------------------------------------
+2. Calculos (calculos.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Realiza los cálculos físicos de cinemática y dinámica frame a frame guardando
+  los resultados en la entidad POC, y gestiona las coordenadas y radio de la
+  bola en el mundo físico.
+
+Funciones específicas:
+  - constructor(formulas, poc?, xMundo?, yMundo?, h0?, escala?, color?):
+      Configura fórmulas, dimensiones iniciales, radio visual/físico e instancia
+      la clase EstadoBola en estado 'sujeto'.
+  - getPOC(): IPOC:
+      Retorna la instancia de datos físicos POC.
+  - setPOC(poc: IPOC): void:
+      Actualiza la referencia de datos físicos POC.
+  - getEstadoBola(): IEstadoBola:
+      Retorna la instancia de control de ciclo de vida EstadoBola.
+  - getRadio(): number:
+      Retorna el radio visual de la esfera en píxeles.
+  - setRadioVisual(radio: number): void:
+      Actualiza el radio visual de la esfera en píxeles.
+  - getXMundo(): number:
+      Retorna la posición X en coordenadas del mundo.
+  - getYMundo(): number:
+      Retorna la posición Y en coordenadas del mundo.
+  - setPosicion(x: number, y: number): void:
+      Establece simultáneamente las coordenadas X e Y mundiales.
+  - getColor(): string:
+      Retorna el color base configurado para la bola.
+  - resetearFisica(): void:
+      Pone a cero la velocidad, aceleración, altura, tiempo y fuerza de arrastre en POC.
+  - actualizar(dt: number, ySueloMundo: number): void:
+      Calcula frame a frame la altura respecto al suelo, densidad del aire, fuerza
+      de arrastre, aceleración neta y velocidad mediante IFormulas, integra la posición
+      Y y detecta el impacto contra el suelo cambiando el estado a 'detenido'.
+
+Relaciones simples:
+  - Se relaciona con: Formulas, POC, EstadoBola, Bucle, ControladorSimulacion,
+    SincronizadorGarra, DibujarPOC, HUD.
+
+
+--------------------------------------------------------------------------------
+3. ControladorSimulacion (controladorSimulacion.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Maneja los eventos de usuario (clicks del mouse, movimiento del cursor y pulsación
+  de teclas como Espacio y R) para coordinar el ciclo interactivo de la simulación.
+
+Funciones específicas:
+  - constructor(pantalla, garra, mapa, bucle, formulas):
+      Registra las dependencias y almacena la referencia al canvas.
+  - iniciar(): void:
+      Suscribe los listeners de eventos DOM ('click', 'mousemove', 'keydown').
+  - detener(): void:
+      Remueve los listeners de eventos DOM.
+  - obtenerCoordenadas(e: MouseEvent): { x: number; y: number } (privado):
+      Traduce las coordenadas cliente del evento a coordenadas reales del canvas
+      teniendo en cuenta la escala actual.
+  - manejarClick(e: MouseEvent) (privado):
+      Si no hay bola o impactó, crea una nueva en el suelo; si está en el suelo y
+      la garra está cerca, sujeta la bola.
+  - manejarMouseMove(e: MouseEvent) (privado):
+      Determina y cambia dinámicamente el estilo del cursor (pointer o default) según
+      la cercanía de la garra y el estado de la bola.
+  - manejarKeyDown(e: KeyboardEvent) (privado):
+      Responde a 'Space' para soltar la bola o alternar pausa/reanudación, y a 'R'
+      para reiniciar la simulación completa.
+  - crearBolaEnSuelo(): void (privado):
+      Instancia un nuevo objeto POC y una nueva instancia de Calculos reposando
+      en el suelo en el centro horizontal de la pantalla.
+  - garraCercaDeBola(bola: Calculos): boolean (privado):
+      Calcula si la distancia en pantalla entre la garra y la bola está dentro de
+      la tolerancia para permitir el agarre.
+
+Relaciones simples:
+  - Se relaciona con: Pantalla, Garra, Mapa, Bucle, Formulas, Calculos, POC.
+
+
+--------------------------------------------------------------------------------
+4. ControlesNavegacion (controlesNavegacion.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Controla el desplazamiento vertical del mapa mediante teclado (W / S) y guía el
+  seguimiento horizontal/vertical de la garra hacia la posición del mouse.
+
+Funciones específicas:
+  - constructor(pantalla, navegable, garra):
+      Inicia dependencias y configura los escuchadores de teclado y mouse.
+  - configurarEventos(): void (privado):
+      Registra eventos keydown, keyup y mousemove sobre la ventana y canvas.
+  - obtenerCoordenadas(e: MouseEvent): { x: number; y: number } (privado):
+      Convierte coordenadas relativas del mouse a la resolución del canvas.
+  - setBloqueado(bloqueado: boolean): void:
+      Bloquea o desbloquea el movimiento de la cámara/base (usado durante la caída).
+  - isBloqueado(): boolean:
+      Informa si la navegación está actualmente bloqueada.
+  - actualizar(): void:
+      Aplica en cada frame el desplazamiento vertical de la cámara si las teclas W o S
+      están presionadas, y envía las coordenadas del mouse a la garra.
+
+Relaciones simples:
+  - Se relaciona con: Pantalla, Mapa (como INavegable), Garra (como IControlGarra), Bucle.
+
+
+--------------------------------------------------------------------------------
+5. DibujarPOC (dibujarPOC.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Renderizar la esfera física (POC) que cae en el canvas con efectos tridimensionales
+  de sombreado, gradientes radiales y borde.
+
+Funciones específicas:
+  - dibujar(ctx: CanvasRenderingContext2D, calculos: ICalculos, camaraY: number): void:
+      Obtiene las coordenadas del mundo y radio desde Calculos, ajusta por la posición
+      de la cámara y dibuja la esfera con sombreado proyectado y gradiente radial 3D.
+
+Relaciones simples:
+  - Se relaciona con: Calculos, Bucle.
+
+
+--------------------------------------------------------------------------------
+6. EstadoBola (estadoBola.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Gestionar el ciclo de vida y los estados por los que transita la bola
+  ('enSuelo', 'sujeto', 'cayendo', 'pausado', 'detenido'), proveyendo métodos
+  semánticos de transición y consulta.
+
+Funciones específicas:
+  - constructor(estadoInicial: EstadoPOC = 'sujeto'):
+      Inicializa el estado interno de la bola.
+  - get(): EstadoPOC:
+      Retorna el estado actual.
+  - set(nuevoEstado: EstadoPOC): void:
+      Fuerza un nuevo estado.
+  - es(estado: EstadoPOC): boolean:
+      Comprueba si coincide con el estado suministrado.
+  - colocarEnSuelo(): void:
+      Transiciona el estado a 'enSuelo'.
+  - sujetar(): void:
+      Transiciona a 'sujeto' si el estado actual es 'enSuelo'.
+  - soltar(): void:
+      Transiciona a 'cayendo' si el estado actual es 'sujeto'.
+  - pausar(): void:
+      Pausa la caída cambiando a 'pausado' si estaba 'cayendo'.
+  - reanudar(): void:
+      Reanuda la caída cambiando a 'cayendo' si estaba 'pausado'.
+  - alternarPausa(): void:
+      Alterna de forma fluida entre 'cayendo' y 'pausado'.
+  - detener(): void:
+      Establece el estado en 'detenido' al colisionar con el suelo.
+  - esEnSuelo(): boolean:
+      Consulta si está en el suelo.
+  - esSujeto(): boolean:
+      Consulta si está sujeta por la garra.
+  - esCayendo(): boolean:
+      Consulta si está en plena caída.
+  - esPausado(): boolean:
+      Consulta si la simulación está pausada.
+  - esDetenido(): boolean:
+      Consulta si la bola ya impactó en el suelo.
+
+Relaciones simples:
+  - Se relaciona con: Calculos, ControladorSimulacion, Bucle, HUD, SincronizadorGarra.
+
+
+--------------------------------------------------------------------------------
+7. Formulas (formulas.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Encapsula la matemática y física aerodinámica del sistema: cálculo de área frontal,
+  modelo barométrico de densidad del aire, arrastre y aceleración neta.
+
+Funciones específicas:
+  - calcularArea(radio: number): number:
+      Calcula el área de sección transversal circular (pi * r^2).
+  - calcularDensidadAire(altura: number): number:
+      Aplica el modelo barométrico exponencial para la densidad atmosférica.
+  - calcularFuerzaArrastre(densidad: number, velocidad: number, cd: number, area: number): number:
+      Calcula la fuerza resistiva aerodinámica según la ecuación de arrastre.
+  - calcularAceleracionNeta(fuerzaArrastre: number, masa: number, gravedad?: number): number:
+      Calcula la aceleración resultante considerando gravedad hacia abajo y arrastre hacia arriba.
+  - calcularVelocidad(velocidadActual: number, aceleracion: number, dt: number): number:
+      Integra la velocidad usando el método de Euler hacia adelante.
+  - calcularTiempo(h0: number, gravedad?: number): number:
+      Calcula el tiempo teórico de caída libre ideal en el vacío.
+
+Relaciones simples:
+  - Se relaciona con: Calculos, ControladorSimulacion, HUD.
+
+
+--------------------------------------------------------------------------------
+8. Garra (garra.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Modela el conjunto mecánico de la garra interactiva: columna telescópica, brazo
+  horizontal, cabezal, pinzas y fijación en el mundo al soltar el objeto.
+
+Funciones específicas:
+  - constructor():
+      Inicializa dimensiones, límites y la columna telescópica (Pieza1).
+  - fijarPosicionMundo(yMundo?: number): void:
+      Congela la altura mundial de la garra para que permanezca en su cota de lanzamiento.
+  - reiniciar(): void:
+      Descongela la garra y restaura los valores predeterminados de posición.
+  - isPosicionFijada(): boolean:
+      Informa si la garra está fija en el espacio mundial.
+  - sincronizarConMapa(camaraY, anchoPantalla, altoPantalla, altoMundo): void:
+      Adapta la posición vertical visible según el desplazamiento de la cámara.
+  - seguirMouse(x: number, y: number): void:
+      Establece los objetivos de posición hacia los que se moverá la garra.
+  - recalcularDesdeObjetivo(): void (privado):
+      Aplica interpolación y límites físicos horizontales al movimiento.
+  - actualizarDerivados(): void (privado):
+      Calcula coordenadas derivadas para el renderizado de piezas y punto de agarre.
+  - actualizar(): void:
+      Avanza la cinemática de la garra y actualiza la columna telescópica.
+  - clamp(valor, min, max): number (privado):
+      Limita un valor dentro de un rango cerrado.
+  - getLimiteXMin(): number / getLimiteXMax(): number (privados):
+      Calculan límites de movimiento horizontal para no salirse de la estructura.
+  - getEscala(): number:
+      Retorna el factor de escala visual actual.
+  - getAltoBase(): number:
+      Retorna la altura de la base del suelo de la estructura.
+  - getPosicionSujecion(): { x: number; y: number }:
+      Retorna las coordenadas de pantalla donde deben agarrarse los objetos.
+  - distanciaAlPunto(x: number, y: number): number:
+      Calcula la distancia euclídea entre el punto de agarre y un punto dado.
+  - contienePunto(x: number, y: number): boolean:
+      Comprueba si un punto cae dentro del bounding box interactivo de la garra.
+  - dibujar(ctx: CanvasRenderingContext2D): void:
+      Renderiza la estructura completa (soporte, base, cabezal y pinzas).
+  - dibujarSoporteYCabezal(ctx: CanvasRenderingContext2D): void:
+      Dibuja soporte y cabezal (usado en la capa detrás de la bola sujeta).
+  - dibujarDedosPinzas(ctx: CanvasRenderingContext2D): void:
+      Dibuja solo los dedos de las pinzas (usado en la capa delante de la bola).
+  - dibujarBaseSuelo, dibujarBrazoHorizontal, dibujarConector, dibujarCabezal,
+    dibujarPinzasSolas, dibujarGarraGris (privados):
+      Rutinas auxiliares de dibujado geométrico y sombreado metálico de cada pieza.
+
+Relaciones simples:
+  - Se relaciona con: Pieza1, Bucle, ControladorSimulacion, ControlesNavegacion, SincronizadorGarra.
+
+
+--------------------------------------------------------------------------------
+9. HUD (hud.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Presenta la telemetría y ayuda en la esquina superior derecha del canvas
+  (altura, velocidad y tiempo) refrescándose cada 0.5 segundos durante la caída.
+
+Funciones específicas:
+  - constructor(_formulas?):
+      Inicializa acumuladores de tiempo y variables de refresco.
+  - actualizar(dt: number, calculos: ICalculos | null): void:
+      Muestrea periódicamente los valores cinemáticos de Calculos/POC cada 0.5 s,
+      congelando o reiniciando los datos según el estado de la bola.
+  - dibujar(ctx: CanvasRenderingContext2D, anchoPantalla: number, calculos: ICalculos | null): void:
+      Dibuja los paneles de texto con sombra, estado descriptivo de la simulación,
+      telemetría física y la guía de controles de teclado/mouse.
+
+Relaciones simples:
+  - Se relaciona con: Calculos, EstadoBola, Bucle, Formulas.
+
+
+--------------------------------------------------------------------------------
+10. Mapa (mapa.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Representa el escenario vertical de hasta cientos de metros, gestionando
+  el desplazamiento de la cámara y el dibujado de cotas de altura y suelo.
+
+Funciones específicas:
+  - constructor(ancho?, altoVisible?, altoTotal?):
+      Configura dimensiones del mundo y ubica inicialmente la cámara en el suelo.
+  - getMaxCamaraY(): number:
+      Calcula el límite máximo inferior de desplazamiento vertical de cámara.
+  - getAltoTotal(): number:
+      Retorna la altura total del mapa en píxeles.
+  - getCamaraY(): number / setCamaraY(y: number): void:
+      Lee o modifica la posición vertical de la cámara restringiéndola a límites válidos.
+  - puedeSubir(): boolean / puedeBajar(): boolean:
+      Indica si la cámara puede seguir subiendo o bajando.
+  - subir(distancia?): void / bajar(distancia?): void:
+      Desplaza la cámara hacia arriba o abajo la distancia especificada.
+  - sincronizarConPantalla(ancho: number, altoVisible: number): void:
+      Actualiza las dimensiones visibles del mapa cuando cambia la ventana.
+  - dibujar(ctx: CanvasRenderingContext2D): void:
+      Dibuja el degradado del cielo, las líneas de cota de altura y el césped del suelo.
+  - dibujarLineasReferencia(ctx: CanvasRenderingContext2D): void (privado):
+      Traza líneas horizontales de referencia cada 5 y 10 metros con etiquetas legibles.
+
+Relaciones simples:
+  - Se relaciona con: Bucle, ControlesNavegacion, ControladorSimulacion, Garra.
+
+
+--------------------------------------------------------------------------------
+11. Pantalla (pantalla.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Encapsula el elemento HTML Canvas y su contexto 2D, gestionando su redimensionado
+  automático en pantalla completa y el borrado de fotogramas.
+
+Funciones específicas:
+  - constructor(containerId: string):
+      Crea o localiza el canvas y configura el listener de resize de la ventana.
+  - actualizarDimensiones(): void:
+      Ajusta el ancho y alto del canvas al tamaño del contenedor o ventana.
+  - limpiar(): void:
+      Borra el contenido completo del canvas para iniciar un nuevo frame.
+  - getContext(): CanvasRenderingContext2D:
+      Retorna el contexto de renderizado 2D.
+  - getAncho(): number / getAlto(): number:
+      Retornan las dimensiones en píxeles del canvas.
+  - getCanvas(): HTMLCanvasElement:
+      Retorna el elemento HTMLCanvasElement subyacente.
+
+Relaciones simples:
+  - Se relaciona con: Bucle, ControlesNavegacion, ControladorSimulacion, main.ts.
+
+
+--------------------------------------------------------------------------------
+12. Pieza1 (garra.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Representa la columna vertical telescópica de soporte mecánico de la garra,
+  calculando su elongación visible entre el cabezal superior y la base del suelo.
+
+Funciones específicas:
+  - actualizarDimensionesYLongitud(posX, ySuperior, ancho, escala, camaraY, altoPantalla, altoMundo, altoBase): void:
+      Calcula los puntos superior e inferior visibles según la cota de la cámara y del suelo.
+  - dibujar(ctx: CanvasRenderingContext2D): void:
+      Dibuja el cuerpo de la columna telescópica en pantalla.
+
+Relaciones simples:
+  - Se relaciona con: Garra.
+
+
+--------------------------------------------------------------------------------
+13. POC (poc.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Clase de datos puros (Plain Object Component) que encapsula todas las variables
+  físicas del proyectil: altura, velocidad inicial, tiempo, masa, radio, coeficiente
+  de arrastre, velocidad actual, aceleración, arrastre y densidad del aire.
+
+Funciones específicas:
+  - constructor(h0?, v0?, radio?, masa?, coeficienteArrastre?):
+      Inicializa magnitudes físicas y derivadas.
+  - getAltura() / setAltura(altura: number): void
+  - getVelocidadInicial() / setVelocidadInicial(v0: number): void
+  - getTiempoCaida() / setTiempoCaida(t: number): void
+  - getMasa() / setMasa(m: number): void
+  - getRadio() / setRadio(r: number): void
+  - getCoeficienteArrastre() / setCoeficienteArrastre(cd: number): void
+  - getVelocidad() / setVelocidad(v: number): void
+  - getAceleracion() / setAceleracion(a: number): void
+  - getFuerzaArrastre() / setFuerzaArrastre(fd: number): void
+  - getDensidadAire() / setDensidadAire(d: number): void
+  - getH0() / setH0(h0: number): void (alias de altura inicial)
+  - getV0() / setV0(v0: number): void (alias de velocidad inicial)
+  - getT() / setT(t: number): void (alias de tiempo de caída)
+  - getV() / setV(v: number): void (alias de velocidad actual)
+  - guardarResultados(resultado: IResultadoCalculo): void:
+      Actualiza en lote todas las variables calculadas de cinemática y dinámica.
+
+Relaciones simples:
+  - Se relaciona con: Calculos, Bucle, ControladorSimulacion.
+
+
+--------------------------------------------------------------------------------
+14. SincronizadorGarra (sincronizadorGarra.ts)
+--------------------------------------------------------------------------------
+Responsabilidad:
+  Acoplar y coordinar la posición en el mundo, radio físico/visual y cota en metros
+  de la entidad Calculos con las coordenadas de sujeción de la Garra.
+
+Funciones específicas:
+  - sincronizarConGarra(calculos, xSujecionPantalla, ySujecionPantalla, camaraY, ySueloMundo, escala): void:
+      Si el estado de la bola es 'sujeto', recalcula su radio, la traslada a la
+      posición de las pinzas de la garra y actualiza la altura correspondiente en POC.
+
+Relaciones simples:
+  - Se relaciona con: Calculos, EstadoBola, Garra, Bucle.
+
+================================================================================
+Fin del informe
+================================================================================

@@ -2,9 +2,7 @@ import { IControlador, IPantalla, IFormulas } from './interfaces';
 import { Garra } from './garra';
 import { Mapa } from './mapa';
 import { Bucle } from './bucle';
-import { Calculos } from './calculos';
-import { POC } from './poc';
-import { PIXELES_POR_METRO } from './constantes';
+import { EstadoBola } from './estadoBola';
 
 /**
  * Clase ControladorSimulacion
@@ -22,21 +20,29 @@ export class ControladorSimulacion implements IControlador {
     private bucle: Bucle;
     private formulas: IFormulas;
     private canvas: HTMLCanvasElement;
-
-    private readonly distanciaAgarreBase: number = 48;
+    private estadoBola: EstadoBola;
 
     constructor(
         pantalla: IPantalla,
         garra: Garra,
         mapa: Mapa,
         bucle: Bucle,
-        formulas: IFormulas
+        formulas: IFormulas,
+        estadoBola?: EstadoBola
     ) {
         this.garra = garra;
         this.mapa = mapa;
         this.bucle = bucle;
         this.formulas = formulas;
         this.canvas = pantalla.getCanvas();
+        this.estadoBola = estadoBola ?? new EstadoBola(
+            'sujeto',
+            garra,
+            mapa,
+            formulas,
+            this.canvas,
+            bucle
+        );
     }
 
     public iniciar(): void {
@@ -65,17 +71,17 @@ export class ControladorSimulacion implements IControlador {
         const bola = this.bucle.getCalculos();
 
         // Sin bola (o tras el impacto): crear una nueva reposando en el suelo
-        if (bola === null || bola.esDetenido()) {
+        if (bola === null || bola.getEstadoBola().esDetenido()) {
             if (bola !== null) {
                 this.bucle.setCalculos(null);
             }
-            this.crearBolaEnSuelo();
+            this.estadoBola.crearBolaEnSuelo(this.garra, this.mapa, this.formulas, this.canvas, this.bucle);
             return;
         }
 
         // Solo se puede agarrar una bola que está en el suelo y a corta distancia
-        if (bola.esEnSuelo() && this.garraCercaDeBola(bola)) {
-            bola.sujetar();
+        if (bola.getEstadoBola().esEnSuelo() && this.estadoBola.cercaDeBola(bola, this.garra, this.mapa)) {
+            bola.getEstadoBola().sujetar();
         }
     };
 
@@ -84,11 +90,11 @@ export class ControladorSimulacion implements IControlador {
         const bola = this.bucle.getCalculos();
 
         let pointer = false;
-        if (bola === null || bola.esDetenido()) {
+        if (bola === null || bola.getEstadoBola().esDetenido()) {
             pointer = true; // El click colocará una nueva bola
-        } else if (bola.esEnSuelo()) {
-            pointer = this.garraCercaDeBola(bola) || this.garra.contienePunto(x, y);
-        } else if (bola.esSujeto()) {
+        } else if (bola.getEstadoBola().esEnSuelo()) {
+            pointer = this.estadoBola.cercaDeBola(bola, this.garra, this.mapa) || this.garra.contienePunto(x, y);
+        } else if (bola.getEstadoBola().esSujeto()) {
             pointer = this.garra.contienePunto(x, y);
         }
 
@@ -100,14 +106,16 @@ export class ControladorSimulacion implements IControlador {
 
         if (e.code === 'Space') {
             e.preventDefault();
-            if (bola?.esSujeto()) {
+            if (!bola) return;
+            const estado = bola.getEstadoBola();
+            if (estado.esSujeto()) {
                 // La garra fija su cota en el mundo y la bola inicia caída libre
                 this.garra.fijarPosicionMundo();
-                bola.soltar();
-            } else if (bola?.esCayendo()) {
-                bola.pausar();
-            } else if (bola?.esPausado()) {
-                bola.reanudar();
+                estado.soltar();
+            } else if (estado.esCayendo()) {
+                estado.pausar();
+            } else if (estado.esPausado()) {
+                estado.reanudar();
             }
         } else if (e.key === 'r' || e.key === 'R') {
             e.preventDefault();
@@ -115,37 +123,4 @@ export class ControladorSimulacion implements IControlador {
             this.bucle.setCalculos(null);
         }
     };
-
-    private crearBolaEnSuelo(): void {
-        const escala = this.garra.getEscala();
-        const radioPx = Math.max(16, Math.round(32 * escala));
-        const radioMetros = radioPx / PIXELES_POR_METRO;
-        const sueloY = this.mapa.getAltoTotal() - this.garra.getAltoBase();
-
-        // 1. Instanciar la clase de datos físicos POC (usa sus valores por defecto internos)
-        const poc = new POC(0, 0, radioMetros);
-
-        // 2. Instanciar la clase Calculos (antigua poc) pasando formulas y poc
-        const nuevaBola = new Calculos(
-            this.formulas,
-            poc,
-            this.canvas.width / 2,
-            sueloY - radioPx,
-            0,
-            escala
-        );
-        nuevaBola.colocarEnSuelo();
-        this.bucle.setCalculos(nuevaBola);
-    }
-
-    /**
-     * Comprueba si el punto de agarre de la garra está a corta distancia de la bola.
-     * La distancia se compara en coordenadas de pantalla.
-     */
-    private garraCercaDeBola(bola: Calculos): boolean {
-        const xPantalla = bola.getXMundo();
-        const yPantalla = bola.getYMundo() - this.mapa.getCamaraY();
-        const tolerancia = Math.max(this.distanciaAgarreBase, bola.getRadio() * 2);
-        return this.garra.distanciaAlPunto(xPantalla, yPantalla) <= tolerancia;
-    }
 }

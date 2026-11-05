@@ -33,9 +33,10 @@ export class HUD implements IDibujable {
         }
 
         const poc = calculos.getPOC();
+        const estado = calculos.getEstadoBola();
 
         // En reposo (sujeto a la garra o en suelo), el tiempo y velocidad inician en cero
-        if (calculos.esSujeto() || calculos.esEnSuelo()) {
+        if (estado.esSujeto() || estado.esEnSuelo()) {
             this.tiempoMostrado = 0;
             this.velocidadMostrada = 0;
             this.alturaMostrada = 0;
@@ -44,7 +45,7 @@ export class HUD implements IDibujable {
         }
 
         // Al detenerse por impacto, mostrar los valores finales exactos
-        if (calculos.esDetenido()) {
+        if (estado.esDetenido()) {
             this.tiempoMostrado = poc.getTiempoCaida();
             this.velocidadMostrada = poc.getVelocidad();
             this.alturaMostrada = poc.getAltura();
@@ -52,7 +53,7 @@ export class HUD implements IDibujable {
         }
 
         // Durante la caída, refrescar los valores cada 0.5 segundos para facilitar la lectura
-        if (calculos.esCayendo()) {
+        if (estado.esCayendo()) {
             this.acumuladorTiempo += dt;
             if (this.acumuladorTiempo >= this.intervaloActualizacion) {
                 this.tiempoMostrado = poc.getTiempoCaida();
@@ -106,16 +107,17 @@ export class HUD implements IDibujable {
         }
 
         // Estado del objeto
+        const estado = calculos.getEstadoBola();
         let textoEstado = '';
-        if (calculos.esEnSuelo()) {
+        if (estado.esEnSuelo()) {
             textoEstado = 'En el suelo (acerca la garra)';
-        } else if (calculos.esSujeto()) {
+        } else if (estado.esSujeto()) {
             textoEstado = 'Sujeto en la garra (Listo)';
-        } else if (calculos.esCayendo()) {
+        } else if (estado.esCayendo()) {
             textoEstado = 'Cayendo...';
-        } else if (calculos.esPausado()) {
+        } else if (estado.esPausado()) {
             textoEstado = 'PAUSADO';
-        } else if (calculos.esDetenido()) {
+        } else if (estado.esDetenido()) {
             textoEstado = 'IMPACTO EN EL SUELO';
         }
 

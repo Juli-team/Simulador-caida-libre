@@ -1,0 +1,153 @@
+{
+  ".gemini/settings.json": {
+    "mtime": 1793358781.9791374,
+    "seen": 1793359219.4669917,
+    "ast_hash": "63c9faf51c878fdc44f48a8c5266d113",
+    "semantic_hash": "63c9faf51c878fdc44f48a8c5266d113",
+    "ast_empty": true
+  },
+  "bucle.ts": {
+    "mtime": 1793360888.9613101,
+    "seen": 1793360947.0848765,
+    "ast_hash": "18f86a8b8130030455aee09fa15b4790",
+    "semantic_hash": ""
+  },
+  "calculos.ts": {
+    "mtime": 1793360875.051128,
+    "seen": 1793360947.0848818,
+    "ast_hash": "e18cd0a3f9c0e7602e4d99662b4647e0",
+    "semantic_hash": ""
+  },
+  "constantes.ts": {
+    "mtime": 1793014153.150349,
+    "seen": 1793359219.4670997,
+    "ast_hash": "76ad6c200d878834c06a28c3d5541323",
+    "semantic_hash": "76ad6c200d878834c06a28c3d5541323"
+  },
+  "controladorSimulacion.ts": {
+    "mtime": 1793360903.0594938,
+    "seen": 1793360947.0848901,
+    "ast_hash": "850519df63ead6a92823d557391912fc",
+    "semantic_hash": ""
+  },
+  "controlesNavegacion.ts": {
+    "mtime": 1792759049.0122528,
+    "seen": 1793359219.4671786,
+    "ast_hash": "0ed634988342dab33bb02d8a6a6ea0bb",
+    "semantic_hash": "0ed634988342dab33bb02d8a6a6ea0bb"
+  },
+  "dibujarPOC.ts": {
+    "mtime": 1793360834.4675922,
+    "seen": 1793360947.0848968,
+    "ast_hash": "88002214d37cd23b6dacebac887fcc7d",
+    "semantic_hash": ""
+  },
+  "estadoBola.ts": {
+    "mtime": 1793360827.4674993,
+    "seen": 1793360947.0849,
+    "ast_hash": "9498071738b02a38e5cd5a21d1ca0b82",
+    "semantic_hash": ""
+  },
+  "formulas.ts": {
+    "mtime": 1792755557.6628666,
+    "seen": 1793359219.4672937,
+    "ast_hash": "4c5f61176ccf1982b80b1bdd6571f183",
+    "semantic_hash": "4c5f61176ccf1982b80b1bdd6571f183"
+  },
+  "garra.ts": {
+    "mtime": 1793360153.063218,
+    "seen": 1793360947.0849054,
+    "ast_hash": "d999ef6e491b740ec2614d74ae14c315",
+    "semantic_hash": ""
+  },
+  "hud.ts": {
+    "mtime": 1793360923.0947537,
+    "seen": 1793360947.084908,
+    "ast_hash": "ee3ce726e223ea955906baca45459265",
+    "semantic_hash": ""
+  },
+  "interfaces.ts": {
+    "mtime": 1793360863.2789733,
+    "seen": 1793360947.0849104,
+    "ast_hash": "7f65d9ea98443904df7d1a644d04077f",
+    "semantic_hash": ""
+  },
+  "main.ts": {
+    "mtime": 1793360929.5538373,
+    "seen": 1793360947.0849133,
+    "ast_hash": "4c8bbefe9226bff23f1a573684286bb5",
+    "semantic_hash": "4c8bbefe9226bff23f1a573684286bb5"
+  },
+  "mapa.ts": {
+    "mtime": 1792759022.269802,
+    "seen": 1793359219.467497,
+    "ast_hash": "ec9d794ac71923103fab8975c6366734",
+    "semantic_hash": "ec9d794ac71923103fab8975c6366734"
+  },
+  "package.json": {
+    "mtime": 1791198874.0797255,
+    "seen": 1793359219.467534,
+    "ast_hash": "f2f7d6a68c32380eaa6b93a954139b57",
+    "semantic_hash": "f2f7d6a68c32380eaa6b93a954139b57"
+  },
+  "pantalla.ts": {
+    "mtime": 1791198874.079842,
+    "seen": 1793359219.467572,
+    "ast_hash": "5a1206aa8f43dbc74019ded11ba03ef1",
+    "semantic_hash": "5a1206aa8f43dbc74019ded11ba03ef1"
+  },
+  "poc.ts": {
+    "mtime": 1793014153.1515708,
+    "seen": 1793359219.4676096,
+    "ast_hash": "8f9e954c38ef235eee5ef3cedb5f5810",
+    "semantic_hash": "8f9e954c38ef235eee5ef3cedb5f5810"
+  },
+  "sincronizadorGarra.ts": {
+    "mtime": 1793360841.9396915,
+    "seen": 1793360947.0849264,
+    "ast_hash": "86c19f90cdb734b337b98e14c2b98ac0",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1791198874.0804632,
+    "seen": 1793359219.467684,
+    "ast_hash": "105df805490d6aa154511cf4d8963bf0",
+    "semantic_hash": "105df805490d6aa154511cf4d8963bf0"
+  },
+  "GEMINI.md": {
+    "mtime": 1793358781.978887,
+    "seen": 1793359219.4677215,
+    "ast_hash": "67d88e9d0760c3ba54c75dfd9551c1c5",
+    "semantic_hash": "67d88e9d0760c3ba54c75dfd9551c1c5"
+  },
+  "README.md": {
+    "mtime": 1793014221.718426,
+    "seen": 1793359219.467759,
+    "ast_hash": "d3c52e034e24d0faea594739a197eb0e",
+    "semantic_hash": "d3c52e034e24d0faea594739a197eb0e"
+  },
+  "docs/EVALUACION.md": {
+    "mtime": 1793014221.718994,
+    "seen": 1793359219.4677958,
+    "ast_hash": "f3ddd41cf24a0f27b752fd0e2f66e5a9",
+    "semantic_hash": "f3ddd41cf24a0f27b752fd0e2f66e5a9"
+  },
+  "index.html": {
+    "mtime": 1791198874.0790582,
+    "seen": 1793359219.4678397,
+    "ast_hash": "08fc2b751eca9cb4b0de84b1f8a61045",
+    "semantic_hash": "08fc2b751eca9cb4b0de84b1f8a61045"
+  },
+  "Esta es la imagen de referencia sabes.png": {
+    "mtime": 1793360153.060218,
+    "seen": 1793360947.0849414,
+    "ast_hash": "ced5fc50cfca2dfe17144fa79c63f2d5",
+    "semantic_hash": ""
+  },
+  "package-lock.json": {
+    "mtime": 1791198874.079617,
+    "seen": 1793359631.0065513,
+    "ast_hash": "72093a740c7163a7b1e1e22d78e25e54",
+    "semantic_hash": ""
+  }
+}

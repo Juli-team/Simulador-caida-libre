@@ -1,5 +1,5 @@
 import { IDibujable, INavegable } from './interfaces';
-import { PIXELES_POR_METRO } from './constantes';
+import { DibujarMapa } from './dibujarMapa';
 
 export class Mapa implements IDibujable, INavegable {
     private ancho: number = 1024;
@@ -9,11 +9,18 @@ export class Mapa implements IDibujable, INavegable {
     // Posición Y de la cámara en el mapa (0 = arriba, maxCamaraY = base)
     private camaraY: number;
     private readonly velocidadDefecto: number = 14;
+    private dibujadorMapa: DibujarMapa;
 
-    constructor(ancho: number = 1024, altoVisible: number = 768, altoTotal: number = 5000) {
+    constructor(
+        ancho: number = 1024,
+        altoVisible: number = 768,
+        altoTotal: number = 5000,
+        dibujadorMapa: DibujarMapa = new DibujarMapa()
+    ) {
         this.ancho = ancho;
         this.altoVisible = altoVisible;
         this.altoTotal = altoTotal;
+        this.dibujadorMapa = dibujadorMapa;
         // Iniciar en la base para ver la base y la garra al inicio
         this.camaraY = this.getMaxCamaraY();
     }
@@ -48,6 +55,14 @@ export class Mapa implements IDibujable, INavegable {
         return this.altoTotal;
     }
 
+    public getAncho(): number {
+        return this.ancho;
+    }
+
+    public getAltoVisible(): number {
+        return this.altoVisible;
+    }
+
     public puedeSubir(): boolean {
         return this.camaraY > 0;
     }
@@ -57,46 +72,6 @@ export class Mapa implements IDibujable, INavegable {
     }
 
     public dibujar(ctx: CanvasRenderingContext2D): void {
-        // Degradado lineal de 5000px: morado en el cielo hacia azul profundo en la base
-        const gradiente = ctx.createLinearGradient(0, -this.camaraY, 0, this.altoTotal - this.camaraY);
-        gradiente.addColorStop(0.0, '#180642');
-        gradiente.addColorStop(0.25, '#3b0764');
-        gradiente.addColorStop(0.55, '#4f46e5');
-        gradiente.addColorStop(0.80, '#2563eb');
-        gradiente.addColorStop(1.0, '#1e3a8a');
-
-        ctx.fillStyle = gradiente;
-        ctx.fillRect(0, 0, this.ancho, this.altoVisible);
-
-        this.dibujarLineasReferencia(ctx);
-    }
-
-    private dibujarLineasReferencia(ctx: CanvasRenderingContext2D): void {
-        const escala = Math.min(this.ancho / 1024, this.altoVisible / 768);
-        ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-        ctx.lineWidth = Math.max(1, Math.round(1 * escala));
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-        ctx.font = `${Math.max(10, Math.round(12 * escala))}px monospace`;
-
-        // Paso métrico: marcas cada 2 metros
-        const pasoMetros = 2;
-        const paso = Math.max(50, pasoMetros * PIXELES_POR_METRO);
-        for (let yMundo = 0; yMundo <= this.altoTotal; yMundo += paso) {
-            const yPantalla = yMundo - this.camaraY;
-            if (yPantalla >= -20 && yPantalla <= this.altoVisible + 20) {
-                ctx.beginPath();
-                ctx.moveTo(20 * escala, yPantalla);
-                ctx.lineTo(this.ancho - 20 * escala, yPantalla);
-                ctx.stroke();
-
-                // Altura medida desde el suelo
-                const alturaDesdeBasePx = this.altoTotal - yMundo;
-                const alturaMetros = alturaDesdeBasePx / PIXELES_POR_METRO;
-                const textoMetros = alturaMetros % 1 === 0 ? `${alturaMetros}` : alturaMetros.toFixed(1);
-                ctx.fillText(`${textoMetros} m (${alturaDesdeBasePx} px)`, 30 * escala, yPantalla - 6 * escala);
-            }
-        }
-        ctx.restore();
+        this.dibujadorMapa.dibujar(ctx, this);
     }
 }

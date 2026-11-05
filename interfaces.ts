@@ -37,6 +37,27 @@ export interface IPantalla {
 export type EstadoPOC = 'enSuelo' | 'sujeto' | 'cayendo' | 'pausado' | 'detenido';
 
 /**
+ * Contrato para el control del ciclo de vida y estado de la bola (ISP/DIP).
+ */
+export interface IEstadoBola {
+    get(): EstadoPOC;
+    set(nuevoEstado: EstadoPOC): void;
+    es(estado: EstadoPOC): boolean;
+    colocarEnSuelo(): void;
+    sujetar(): void;
+    soltar(): void;
+    pausar(): void;
+    reanudar(): void;
+    alternarPausa(): void;
+    detener(): void;
+    esEnSuelo(): boolean;
+    esSujeto(): boolean;
+    esCayendo(): boolean;
+    esPausado(): boolean;
+    esDetenido(): boolean;
+}
+
+/**
  * Contrato de la clase POC (Plain Object / Estado físico del objeto) (ISP/DIP).
  * Encapsula los datos del objeto físico.
  */
@@ -99,32 +120,40 @@ export interface IResultadoCalculo {
 }
 
 /**
- * Contrato para la orquestación de cálculos físicos y entidad en la simulación.
+ * Contrato para la orquestación de cálculos físicos y entidad espacial en la simulación.
  */
-export interface ICalculos extends IDibujable {
+export interface ICalculos {
     getPOC(): IPOC;
     setPOC(poc: IPOC): void;
-    actualizar(dt: number, ySueloMundo: number): void;
-    colocarEnSuelo(): void;
-    sujetar(): void;
-    soltar(): void;
-    pausar(): void;
-    reanudar(): void;
-    esEnSuelo(): boolean;
-    esSujeto(): boolean;
-    esCayendo(): boolean;
-    esPausado(): boolean;
-    esDetenido(): boolean;
+    getEstadoBola(): IEstadoBola;
     getXMundo(): number;
     getYMundo(): number;
+    setPosicion(x: number, y: number): void;
     getRadio(): number;
+    setRadioVisual(radio: number): void;
+    resetearFisica(): void;
+    actualizar(dt: number, ySueloMundo: number): void;
+}
+
+/**
+ * Contrato para la sincronización de la bola con la garra mecánica (DIP).
+ */
+export interface ISincronizadorGarra {
     sincronizarConGarra(
+        calculos: ICalculos,
         xSujecionPantalla: number,
         ySujecionPantalla: number,
         camaraY: number,
         ySueloMundo: number,
         escala: number
     ): void;
+}
+
+/**
+ * Contrato para el dibujador de la bola POC que cae (DIP).
+ */
+export interface IDibujarPOC {
+    dibujar(ctx: CanvasRenderingContext2D, calculos: ICalculos, camaraY?: number): void;
 }
 
 export interface IControlador {

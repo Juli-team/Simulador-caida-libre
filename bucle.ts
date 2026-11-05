@@ -1,10 +1,14 @@
-import { IPantalla } from './interfaces';
+import { IPantalla, ISincronizadorGarra, IDibujarPOC } from './interfaces';
 import { Mapa } from './mapa';
 import { Garra } from './garra';
 import { ControlesNavegacion } from './controlesNavegacion';
 import { Calculos } from './calculos';
 import { POC } from './poc';
 import { HUD } from './hud';
+import { SincronizadorGarra } from './sincronizadorGarra';
+import { DibujarPOC } from './dibujarPOC';
+import { DeltaTiempo } from './deltaTiempo';
+import { DibujarMapa } from './dibujarMapa';
 
 export class Bucle {
     private pantalla: IPantalla;
@@ -12,23 +16,34 @@ export class Bucle {
     private garra: Garra;
     private controles: ControlesNavegacion;
     private hud: HUD;
+    private sincronizadorGarra: ISincronizadorGarra;
+    private dibujadorPOC: IDibujarPOC;
+    private deltaTiempo: DeltaTiempo;
+    private dibujadorMapa: DibujarMapa;
 
     private calculos: Calculos | null = null;
     private ejecutando: boolean = false;
-    private ultimoTimestamp: number = 0;
 
     constructor(
         pantalla: IPantalla,
         mapa: Mapa,
         garra: Garra,
         controles: ControlesNavegacion,
-        hud: HUD
+        hud: HUD,
+        sincronizadorGarra: ISincronizadorGarra = new SincronizadorGarra(),
+        dibujadorPOC: IDibujarPOC = new DibujarPOC(),
+        deltaTiempo: DeltaTiempo = new DeltaTiempo(),
+        dibujadorMapa: DibujarMapa = new DibujarMapa()
     ) {
         this.pantalla = pantalla;
         this.mapa = mapa;
         this.garra = garra;
         this.controles = controles;
         this.hud = hud;
+        this.sincronizadorGarra = sincronizadorGarra;
+        this.dibujadorPOC = dibujadorPOC;
+        this.deltaTiempo = deltaTiempo;
+        this.dibujadorMapa = dibujadorMapa;
     }
 
     public setCalculos(calculos: Calculos | null): void {
@@ -56,7 +71,7 @@ export class Bucle {
     public iniciar(): void {
         if (this.ejecutando) return;
         this.ejecutando = true;
-        this.ultimoTimestamp = performance.now();
+        this.deltaTiempo.iniciar(performance.now());
         requestAnimationFrame(this.iterar);
     }
 
@@ -67,9 +82,8 @@ export class Bucle {
     private iterar = (timestamp: number): void => {
         if (!this.ejecutando) return;
 
-        // Cálculo de delta time seguro en segundos
-        const dt = Math.min((timestamp - this.ultimoTimestamp) / 1000, 0.1);
-        this.ultimoTimestamp = timestamp;
+        // Cálculo de delta time seguro en segundos delegado a la clase DeltaTiempo
+        const dt = this.deltaTiempo.calcular(timestamp);
 
         const ctx = this.pantalla.getContext();
         const anchoPantalla = this.pantalla.getAncho();
@@ -94,17 +108,19 @@ export class Bucle {
 
         // 4. Gestionar cinemática y cámara según estado del objeto en Calculos
         if (this.calculos) {
-            if (this.calculos.esSujeto()) {
+            const estado = this.calculos.getEstadoBola();
+            if (estado.esSujeto()) {
                 this.controles.setBloqueado(false);
                 const posSujecion = this.garra.getPosicionSujecion();
-                this.calculos.sincronizarConGarra(
+                this.sincronizadorGarra.sincronizarConGarra(
+                    this.calculos,
                     posSujecion.x,
                     posSujecion.y,
                     this.mapa.getCamaraY(),
                     sueloY,
                     this.garra.getEscala()
                 );
-            } else if (this.calculos.esCayendo()) {
+            } else if (estado.esCayendo()) {
                 // Al caer la pelota, la garra queda fija en el mundo y no sigue la caída
                 if (!this.garra.isPosicionFijada()) {
                     this.garra.fijarPosicionMundo();
@@ -118,7 +134,7 @@ export class Bucle {
                 if (targetCamaraY > this.mapa.getCamaraY()) {
                     this.mapa.setCamaraY(targetCamaraY);
                 }
-            } else if (this.calculos.esDetenido() || this.calculos.esEnSuelo()) {
+            } else if (estado.esDetenido() || estado.esEnSuelo()) {
                 this.controles.setBloqueado(false);
             }
         } else {
@@ -132,15 +148,15 @@ export class Bucle {
         this.pantalla.limpiar();
 
         // 7. Dibujar en capas ordenadas:
-        // Capa A: Mapa de fondo con degradado y cotas de altura
-        this.mapa.dibujar(ctx);
+        // Capa A: Mapa de fondo con degradado y cotas de altura (delegado a DibujarMapa)
+        this.dibujadorMapa.dibujar(ctx, this.mapa);
 
         // Capa B: Garra y Bola sujeta / cayendo
-        if (this.calculos && this.calculos.esSujeto()) {
+        if (this.calculos && this.calculos.getEstadoBola().esSujeto()) {
             // Dibujar estructura y cabezal de la garra
             this.garra.dibujarSoporteYCabezal(ctx);
             // Dibujar esfera
-            this.calculos.dibujar(ctx, this.mapa.getCamaraY());
+            this.dibujadorPOC.dibujar(ctx, this.calculos, this.mapa.getCamaraY());
             // Dibujar pinzas por delante de la esfera (efecto de sujeción real)
             this.garra.dibujarDedosPinzas(ctx);
         } else {
@@ -148,7 +164,7 @@ export class Bucle {
             this.garra.dibujar(ctx);
             // Esfera cayendo o detenida en el suelo
             if (this.calculos) {
-                this.calculos.dibujar(ctx, this.mapa.getCamaraY());
+                this.dibujadorPOC.dibujar(ctx, this.calculos, this.mapa.getCamaraY());
             }
         }
 

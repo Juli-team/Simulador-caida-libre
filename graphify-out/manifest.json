@@ -1,0 +1,213 @@
+{
+  ".gemini/settings.json": {
+    "mtime": 1793358781.9791374,
+    "seen": 1793359219.4669917,
+    "ast_hash": "63c9faf51c878fdc44f48a8c5266d113",
+    "semantic_hash": "63c9faf51c878fdc44f48a8c5266d113",
+    "ast_empty": true
+  },
+  "bucle.ts": {
+    "mtime": 1793620176.911993,
+    "seen": 1793620330.090552,
+    "ast_hash": "e80a837f09eba007efdec6a366090620",
+    "semantic_hash": ""
+  },
+  "calculos.ts": {
+    "mtime": 1793366643.336739,
+    "seen": 1793620330.0905545,
+    "ast_hash": "a48e74221c220bae4a6b4dff0a970df3",
+    "semantic_hash": ""
+  },
+  "constantes.ts": {
+    "mtime": 1793014153.150349,
+    "seen": 1793359219.4670997,
+    "ast_hash": "76ad6c200d878834c06a28c3d5541323",
+    "semantic_hash": "76ad6c200d878834c06a28c3d5541323"
+  },
+  "controladorSimulacion.ts": {
+    "mtime": 1793620254.202219,
+    "seen": 1793620330.0905597,
+    "ast_hash": "04ba9a6089729eefe72252e8767feaca",
+    "semantic_hash": ""
+  },
+  "controlesNavegacion.ts": {
+    "mtime": 1792759049.0122528,
+    "seen": 1793359219.4671786,
+    "ast_hash": "0ed634988342dab33bb02d8a6a6ea0bb",
+    "semantic_hash": "0ed634988342dab33bb02d8a6a6ea0bb"
+  },
+  "dibujarPOC.ts": {
+    "mtime": 1793367162.1178982,
+    "seen": 1793620330.0905771,
+    "ast_hash": "e0c2816a8597400f3ad5dd5df5a684bc",
+    "semantic_hash": ""
+  },
+  "estadoBola.ts": {
+    "mtime": 1793620201.087689,
+    "seen": 1793620330.0905795,
+    "ast_hash": "be5e7816162a1cac6ff959d2bfc59907",
+    "semantic_hash": ""
+  },
+  "formulas.ts": {
+    "mtime": 1792755557.6628666,
+    "seen": 1793359219.4672937,
+    "ast_hash": "4c5f61176ccf1982b80b1bdd6571f183",
+    "semantic_hash": "4c5f61176ccf1982b80b1bdd6571f183"
+  },
+  "garra.ts": {
+    "mtime": 1793620155.0573642,
+    "seen": 1793620330.0905838,
+    "ast_hash": "f67577d8e040e930a05975736cb51a59",
+    "semantic_hash": ""
+  },
+  "hud.ts": {
+    "mtime": 1793360923.0947537,
+    "seen": 1793360947.084908,
+    "ast_hash": "ee3ce726e223ea955906baca45459265",
+    "semantic_hash": ""
+  },
+  "interfaces.ts": {
+    "mtime": 1793367164.701693,
+    "seen": 1793620330.0905879,
+    "ast_hash": "9c4e33d01dfda59db8409c1037ae726f",
+    "semantic_hash": ""
+  },
+  "main.ts": {
+    "mtime": 1793361219.5898175,
+    "seen": 1793361354.8326678,
+    "ast_hash": "a0656416891c905a23672a019ac514e7",
+    "semantic_hash": ""
+  },
+  "mapa.ts": {
+    "mtime": 1793620014.7233331,
+    "seen": 1793620330.0905921,
+    "ast_hash": "1d1a0ccf233e9eb8fc511bb0a62ac4d8",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1791198874.0797255,
+    "seen": 1793359219.467534,
+    "ast_hash": "f2f7d6a68c32380eaa6b93a954139b57",
+    "semantic_hash": "f2f7d6a68c32380eaa6b93a954139b57"
+  },
+  "pantalla.ts": {
+    "mtime": 1791198874.079842,
+    "seen": 1793359219.467572,
+    "ast_hash": "5a1206aa8f43dbc74019ded11ba03ef1",
+    "semantic_hash": "5a1206aa8f43dbc74019ded11ba03ef1"
+  },
+  "poc.ts": {
+    "mtime": 1793014153.1515708,
+    "seen": 1793359219.4676096,
+    "ast_hash": "8f9e954c38ef235eee5ef3cedb5f5810",
+    "semantic_hash": "8f9e954c38ef235eee5ef3cedb5f5810"
+  },
+  "sincronizadorGarra.ts": {
+    "mtime": 1793360841.9396915,
+    "seen": 1793360947.0849264,
+    "ast_hash": "86c19f90cdb734b337b98e14c2b98ac0",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1793620262.712464,
+    "seen": 1793620330.0906026,
+    "ast_hash": "eda920737ef91ac59caadf6836a2bcfc",
+    "semantic_hash": ""
+  },
+  "GEMINI.md": {
+    "mtime": 1793358781.978887,
+    "seen": 1793359219.4677215,
+    "ast_hash": "67d88e9d0760c3ba54c75dfd9551c1c5",
+    "semantic_hash": "67d88e9d0760c3ba54c75dfd9551c1c5"
+  },
+  "README.md": {
+    "mtime": 1793014221.718426,
+    "seen": 1793359219.467759,
+    "ast_hash": "d3c52e034e24d0faea594739a197eb0e",
+    "semantic_hash": "d3c52e034e24d0faea594739a197eb0e"
+  },
+  "docs/EVALUACION.md": {
+    "mtime": 1793014221.718994,
+    "seen": 1793359219.4677958,
+    "ast_hash": "f3ddd41cf24a0f27b752fd0e2f66e5a9",
+    "semantic_hash": "f3ddd41cf24a0f27b752fd0e2f66e5a9"
+  },
+  "index.html": {
+    "mtime": 1791198874.0790582,
+    "seen": 1793359219.4678397,
+    "ast_hash": "08fc2b751eca9cb4b0de84b1f8a61045",
+    "semantic_hash": "08fc2b751eca9cb4b0de84b1f8a61045"
+  },
+  "Garra/baseSuelo.ts": {
+    "mtime": 1793620044.869198,
+    "seen": 1793620330.0905335,
+    "ast_hash": "e25a9121b1c2b71131dd514dbcbef164",
+    "semantic_hash": ""
+  },
+  "Garra/brazoHorizontal.ts": {
+    "mtime": 1793620051.587391,
+    "seen": 1793620330.090537,
+    "ast_hash": "a2cb3a5010ac898ad96e64d37d3a9ee1",
+    "semantic_hash": ""
+  },
+  "Garra/cabezal.ts": {
+    "mtime": 1793620067.780856,
+    "seen": 1793620330.0905397,
+    "ast_hash": "f131078c5666874b9a7a97675e37dc51",
+    "semantic_hash": ""
+  },
+  "Garra/conector.ts": {
+    "mtime": 1793620060.7776546,
+    "seen": 1793620330.0905418,
+    "ast_hash": "e0da57bb1a6e6bbe1c8d9613c87970b7",
+    "semantic_hash": ""
+  },
+  "Garra/dibujarGarra.ts": {
+    "mtime": 1793620123.4574554,
+    "seen": 1793620330.090544,
+    "ast_hash": "a7953c459c536fa2dcab9a1b1dfa27af",
+    "semantic_hash": ""
+  },
+  "Garra/garra.ts": {
+    "mtime": 1793620148.4351737,
+    "seen": 1793620330.0905457,
+    "ast_hash": "d8fa0aca2d5acb7a9eeafa6e2ebe5ea7",
+    "semantic_hash": ""
+  },
+  "Garra/pieza1.ts": {
+    "mtime": 1793620025.0876305,
+    "seen": 1793620330.0905476,
+    "ast_hash": "5ac0ba11429e16d40c77598809fe1c8e",
+    "semantic_hash": ""
+  },
+  "Garra/pinzas.ts": {
+    "mtime": 1793620079.6571968,
+    "seen": 1793620330.0905495,
+    "ast_hash": "0774b7cbea3947050c5879f554223630",
+    "semantic_hash": ""
+  },
+  "deltaTiempo.ts": {
+    "mtime": 1793619989.004596,
+    "seen": 1793620330.0905645,
+    "ast_hash": "c870ec3f991ffb2ba2e0d02addcd55cb",
+    "semantic_hash": ""
+  },
+  "dibujarMapa.ts": {
+    "mtime": 1793620006.6511018,
+    "seen": 1793620330.0905752,
+    "ast_hash": "bf905ed968a0ef3161f96c336022f2a6",
+    "semantic_hash": ""
+  },
+  "clases_y_funciones.txt": {
+    "mtime": 1793361982.9873579,
+    "seen": 1793620330.0906088,
+    "ast_hash": "1789776425e68f41592447b5af1cb7db",
+    "semantic_hash": ""
+  },
+  "package-lock.json": {
+    "mtime": 1791198874.079617,
+    "seen": 1793359631.0065513,
+    "ast_hash": "72093a740c7163a7b1e1e22d78e25e54",
+    "semantic_hash": ""
+  }
+}
