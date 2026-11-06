@@ -21,7 +21,7 @@ export class Mapa implements IDibujable, INavegable {
         this.altoVisible = altoVisible;
         this.altoTotal = altoTotal;
         this.dibujadorMapa = dibujadorMapa;
-        // Iniciar en la base para ver la base y la garra al inicio
+        // Iniciar en la base del mapa
         this.camaraY = this.getMaxCamaraY();
     }
 

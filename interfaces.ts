@@ -17,11 +17,9 @@ export interface INavegable {
 }
 
 /**
- * Abstracción de control de la garra (DIP).
- * Permite que los controles de navegación muevan la garra con el mouse
- * sin depender de su implementación concreta.
+ * Abstracción del punto de sujeción controlado por el mouse (DIP).
  */
-export interface IControlGarra {
+export interface IControlSujecion {
     seguirMouse(x: number, y: number): void;
 }
 
@@ -136,10 +134,10 @@ export interface ICalculos {
 }
 
 /**
- * Contrato para la sincronización de la bola con la garra mecánica (DIP).
+ * Contrato para la sincronización del POC con el punto de sujeción (DIP).
  */
-export interface ISincronizadorGarra {
-    sincronizarConGarra(
+export interface ISincronizadorPOC {
+    sincronizar(
         calculos: ICalculos,
         xSujecionPantalla: number,
         ySujecionPantalla: number,

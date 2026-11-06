@@ -1,5 +1,5 @@
 import { IControlador, IPantalla, IFormulas } from './interfaces';
-import { Garra } from './garra';
+import { PuntoSujecion } from './puntoSujecion';
 import { Mapa } from './mapa';
 import { Bucle } from './bucle';
 import { EstadoBola } from './estadoBola';
@@ -9,13 +9,13 @@ import { EstadoBola } from './estadoBola';
  * Responsabilidad única (SRP): Gestionar los eventos de entrada del usuario
  * (click y teclado) y coordinar el ciclo de juego:
  *   1. Click inicial: la bola aparece reposando en el suelo, en el centro del mapa.
- *   2. Acercar la garra (mouse / W-S) hasta la bola.
- *   3. Click a corta distancia: la garra sujeta la bola.
+ *   2. Click sobre el POC: lo sujeta al punto de seguimiento del mouse.
+ *   3. Al mover el mouse, el POC sigue la posición de agarre.
  *   4. [ESPACIO]: suelta la bola en caída libre aerodinámica.
  * Cumple con DIP al implementar la abstracción IControlador.
  */
 export class ControladorSimulacion implements IControlador {
-    private garra: Garra;
+    private puntoSujecion: PuntoSujecion;
     private mapa: Mapa;
     private bucle: Bucle;
     private formulas: IFormulas;
@@ -24,20 +24,20 @@ export class ControladorSimulacion implements IControlador {
 
     constructor(
         pantalla: IPantalla,
-        garra: Garra,
+        puntoSujecion: PuntoSujecion,
         mapa: Mapa,
         bucle: Bucle,
         formulas: IFormulas,
         estadoBola?: EstadoBola
     ) {
-        this.garra = garra;
+        this.puntoSujecion = puntoSujecion;
         this.mapa = mapa;
         this.bucle = bucle;
         this.formulas = formulas;
         this.canvas = pantalla.getCanvas();
         this.estadoBola = estadoBola ?? new EstadoBola(
             'sujeto',
-            garra,
+            puntoSujecion,
             mapa,
             formulas,
             this.canvas,
@@ -67,20 +67,26 @@ export class ControladorSimulacion implements IControlador {
         };
     }
 
-    private manejarClick = (): void => {
+    private manejarClick = (e: MouseEvent): void => {
         const bola = this.bucle.getCalculos();
 
-        // Sin bola (o tras el impacto): crear una nueva reposando en el suelo
         if (bola === null || bola.getEstadoBola().esDetenido()) {
             if (bola !== null) {
                 this.bucle.setCalculos(null);
             }
-            this.estadoBola.crearBolaEnSuelo(this.garra, this.mapa, this.formulas, this.canvas, this.bucle);
+            this.estadoBola.crearBolaEnSuelo(
+                this.puntoSujecion,
+                this.mapa,
+                this.formulas,
+                this.canvas,
+                this.bucle
+            );
             return;
         }
 
-        // Solo se puede agarrar una bola que está en el suelo y a corta distancia
-        if (bola.getEstadoBola().esEnSuelo() && this.estadoBola.cercaDeBola(bola, this.garra, this.mapa)) {
+        const { x, y } = this.obtenerCoordenadas(e);
+        if (bola.getEstadoBola().esEnSuelo() && this.estadoBola.puntoSobreBola(bola, x, y, this.mapa)) {
+            this.puntoSujecion.seguirMouse(x, y);
             bola.getEstadoBola().sujetar();
         }
     };
@@ -91,11 +97,11 @@ export class ControladorSimulacion implements IControlador {
 
         let pointer = false;
         if (bola === null || bola.getEstadoBola().esDetenido()) {
-            pointer = true; // El click colocará una nueva bola
+            pointer = true;
         } else if (bola.getEstadoBola().esEnSuelo()) {
-            pointer = this.estadoBola.cercaDeBola(bola, this.garra, this.mapa) || this.garra.contienePunto(x, y);
+            pointer = this.estadoBola.puntoSobreBola(bola, x, y, this.mapa);
         } else if (bola.getEstadoBola().esSujeto()) {
-            pointer = this.garra.contienePunto(x, y);
+            pointer = true;
         }
 
         this.canvas.style.cursor = pointer ? 'pointer' : 'default';
@@ -109,8 +115,7 @@ export class ControladorSimulacion implements IControlador {
             if (!bola) return;
             const estado = bola.getEstadoBola();
             if (estado.esSujeto()) {
-                // La garra fija su cota en el mundo y la bola inicia caída libre
-                this.garra.fijarPosicionMundo();
+                this.puntoSujecion.fijarPosicionMundo();
                 estado.soltar();
             } else if (estado.esCayendo()) {
                 estado.pausar();
@@ -119,7 +124,6 @@ export class ControladorSimulacion implements IControlador {
             }
         } else if (e.key === 'r' || e.key === 'R') {
             e.preventDefault();
-            // Reiniciar simulación: vaciar la garra y restaurar cámara
             this.bucle.setCalculos(null);
         }
     };

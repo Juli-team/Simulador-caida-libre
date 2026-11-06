@@ -35,11 +35,10 @@ export class HUD implements IDibujable {
         const poc = calculos.getPOC();
         const estado = calculos.getEstadoBola();
 
-        // En reposo (sujeto a la garra o en suelo), el tiempo y velocidad inician en cero
+        // En reposo (sujeto al mouse o en suelo), el tiempo y velocidad inician en cero
         if (estado.esSujeto() || estado.esEnSuelo()) {
             this.tiempoMostrado = 0;
             this.velocidadMostrada = 0;
-            this.alturaMostrada = 0;
             this.acumuladorTiempo = 0;
             return;
         }
@@ -84,14 +83,9 @@ export class HUD implements IDibujable {
 
         // Encabezado
         ctx.font = 'bold 16px monospace';
-        ctx.fillText('--- SIMULADOR CAÍDA LIBRE ---', xTexto, y);
+        ctx.fillText('SIMULADOR DE CAIDA LIBRE', xTexto, y);
         y += interlineado;
 
-        ctx.font = '12px monospace';
-        ctx.fillStyle = '#94a3b8';
-        ctx.fillText(`Escala: 1 m = ${PIXELES_POR_METRO} px`, xTexto, y);
-        y += interlineado + 2;
-        ctx.fillStyle = '#FFFFFF';
 
         if (!calculos) {
             ctx.font = '14px monospace';
@@ -101,49 +95,31 @@ export class HUD implements IDibujable {
             ctx.fillText('Haz click para colocar la bola en el suelo', xTexto, y);
             y += interlineado + 6;
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText('Mouse: mover garra   |   W/S: subir/bajar base', xTexto, y);
+            ctx.fillText('Click en la bola para agarrarla  |  W/S: subir/bajar', xTexto, y);
             ctx.restore();
             return;
         }
 
-        // Estado del objeto
-        const estado = calculos.getEstadoBola();
-        let textoEstado = '';
-        if (estado.esEnSuelo()) {
-            textoEstado = 'En el suelo (acerca la garra)';
-        } else if (estado.esSujeto()) {
-            textoEstado = 'Sujeto en la garra (Listo)';
-        } else if (estado.esCayendo()) {
-            textoEstado = 'Cayendo...';
-        } else if (estado.esPausado()) {
-            textoEstado = 'PAUSADO';
-        } else if (estado.esDetenido()) {
-            textoEstado = 'IMPACTO EN EL SUELO';
-        }
-
-        ctx.font = '14px monospace';
-        ctx.fillText(`Estado: ${textoEstado}`, xTexto, y);
-        y += interlineado + 4;
 
         // Solo se muestra en pantalla la velocidad y el tiempo
         ctx.font = 'bold 16px monospace';
-        ctx.fillStyle = '#38bdf8';
+        ctx.fillStyle = '#fdfdfd';
         ctx.fillText(`Tiempo: ${this.tiempoMostrado.toFixed(2)} s`, xTexto, y);
         y += interlineado;
 
         ctx.fillText(`Velocidad: ${this.velocidadMostrada.toFixed(2)} m/s`, xTexto, y);
         y += interlineado;
 
-        ctx.fillStyle = '#4ade80';
+        ctx.fillStyle = '#fdfdfd';
         ctx.fillText(`Altura: ${this.alturaMostrada.toFixed(2)} m`, xTexto, y);
         y += interlineado + 8;
 
         // Guía de controles
         ctx.fillStyle = '#f8fafc';
         ctx.font = 'italic 12px monospace';
-        ctx.fillText('[MOUSE]: Mover garra', xTexto, y);
+        ctx.fillText('[MOUSE]: Mover bola sujeta', xTexto, y);
         y += 18;
-        ctx.fillText('[W]/[S]: Subir/Bajar base', xTexto, y);
+        ctx.fillText('[W]/[S]: Subir/Bajar cámara', xTexto, y);
         y += 18;
         ctx.fillText('[ESPACIO]: Soltar / Pausar', xTexto, y);
         y += 18;
