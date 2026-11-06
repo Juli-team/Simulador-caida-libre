@@ -1,212 +1,398 @@
 {
   ".gemini/settings.json": {
-    "mtime": 1793358781.9791374,
-    "seen": 1793359219.4669917,
+    "mtime": 1793917495.3413234,
+    "seen": 1793929818.7593746,
     "ast_hash": "63c9faf51c878fdc44f48a8c5266d113",
     "semantic_hash": "63c9faf51c878fdc44f48a8c5266d113",
     "ast_empty": true
   },
   "bucle.ts": {
-    "mtime": 1793620176.911993,
-    "seen": 1793620330.090552,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7594006,
     "ast_hash": "e80a837f09eba007efdec6a366090620",
     "semantic_hash": ""
   },
   "calculos.ts": {
-    "mtime": 1793366643.336739,
-    "seen": 1793620330.0905545,
+    "mtime": 1793917495.3433232,
+    "seen": 1793929818.7594023,
     "ast_hash": "a48e74221c220bae4a6b4dff0a970df3",
     "semantic_hash": ""
   },
   "constantes.ts": {
-    "mtime": 1793014153.150349,
-    "seen": 1793359219.4670997,
+    "mtime": 1793917495.3433232,
+    "seen": 1793929818.7594042,
     "ast_hash": "76ad6c200d878834c06a28c3d5541323",
     "semantic_hash": "76ad6c200d878834c06a28c3d5541323"
   },
   "controladorSimulacion.ts": {
-    "mtime": 1793620254.202219,
-    "seen": 1793620330.0905597,
+    "mtime": 1793917495.3433232,
+    "seen": 1793929818.759406,
     "ast_hash": "04ba9a6089729eefe72252e8767feaca",
     "semantic_hash": ""
   },
   "controlesNavegacion.ts": {
-    "mtime": 1792759049.0122528,
-    "seen": 1793359219.4671786,
+    "mtime": 1793917495.3433232,
+    "seen": 1793929818.7594078,
     "ast_hash": "0ed634988342dab33bb02d8a6a6ea0bb",
     "semantic_hash": "0ed634988342dab33bb02d8a6a6ea0bb"
   },
   "dibujarPOC.ts": {
-    "mtime": 1793367162.1178982,
-    "seen": 1793620330.0905771,
+    "mtime": 1793917495.3443234,
+    "seen": 1793929818.7594132,
     "ast_hash": "e0c2816a8597400f3ad5dd5df5a684bc",
     "semantic_hash": ""
   },
   "estadoBola.ts": {
-    "mtime": 1793620201.087689,
-    "seen": 1793620330.0905795,
+    "mtime": 1793917495.3443234,
+    "seen": 1793929818.7594151,
     "ast_hash": "be5e7816162a1cac6ff959d2bfc59907",
     "semantic_hash": ""
   },
   "formulas.ts": {
-    "mtime": 1792755557.6628666,
-    "seen": 1793359219.4672937,
+    "mtime": 1793917495.3443234,
+    "seen": 1793929818.7594166,
     "ast_hash": "4c5f61176ccf1982b80b1bdd6571f183",
     "semantic_hash": "4c5f61176ccf1982b80b1bdd6571f183"
   },
   "garra.ts": {
-    "mtime": 1793620155.0573642,
-    "seen": 1793620330.0905838,
+    "mtime": 1793917495.3443234,
+    "seen": 1793929818.7594182,
     "ast_hash": "f67577d8e040e930a05975736cb51a59",
     "semantic_hash": ""
   },
   "hud.ts": {
-    "mtime": 1793360923.0947537,
-    "seen": 1793360947.084908,
+    "mtime": 1793917495.3533235,
+    "seen": 1793929818.75942,
     "ast_hash": "ee3ce726e223ea955906baca45459265",
     "semantic_hash": ""
   },
   "interfaces.ts": {
-    "mtime": 1793367164.701693,
-    "seen": 1793620330.0905879,
+    "mtime": 1793917495.3543234,
+    "seen": 1793929818.7594216,
     "ast_hash": "9c4e33d01dfda59db8409c1037ae726f",
     "semantic_hash": ""
   },
   "main.ts": {
-    "mtime": 1793361219.5898175,
-    "seen": 1793361354.8326678,
+    "mtime": 1793917495.3543234,
+    "seen": 1793929818.7594233,
     "ast_hash": "a0656416891c905a23672a019ac514e7",
     "semantic_hash": ""
   },
   "mapa.ts": {
-    "mtime": 1793620014.7233331,
-    "seen": 1793620330.0905921,
+    "mtime": 1793917495.3543234,
+    "seen": 1793929818.7594247,
     "ast_hash": "1d1a0ccf233e9eb8fc511bb0a62ac4d8",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1791198874.0797255,
-    "seen": 1793359219.467534,
+    "mtime": 1793917495.3553233,
+    "seen": 1793929818.7594264,
     "ast_hash": "f2f7d6a68c32380eaa6b93a954139b57",
     "semantic_hash": "f2f7d6a68c32380eaa6b93a954139b57"
   },
   "pantalla.ts": {
-    "mtime": 1791198874.079842,
-    "seen": 1793359219.467572,
+    "mtime": 1793917495.3563232,
+    "seen": 1793929818.7594283,
     "ast_hash": "5a1206aa8f43dbc74019ded11ba03ef1",
     "semantic_hash": "5a1206aa8f43dbc74019ded11ba03ef1"
   },
   "poc.ts": {
-    "mtime": 1793014153.1515708,
-    "seen": 1793359219.4676096,
+    "mtime": 1793917495.3563232,
+    "seen": 1793929818.75943,
     "ast_hash": "8f9e954c38ef235eee5ef3cedb5f5810",
     "semantic_hash": "8f9e954c38ef235eee5ef3cedb5f5810"
   },
   "sincronizadorGarra.ts": {
-    "mtime": 1793360841.9396915,
-    "seen": 1793360947.0849264,
+    "mtime": 1793917495.3563232,
+    "seen": 1793929818.7594318,
     "ast_hash": "86c19f90cdb734b337b98e14c2b98ac0",
     "semantic_hash": ""
   },
   "tsconfig.json": {
-    "mtime": 1793620262.712464,
-    "seen": 1793620330.0906026,
+    "mtime": 1793917495.3563232,
+    "seen": 1793929818.7594335,
     "ast_hash": "eda920737ef91ac59caadf6836a2bcfc",
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1793358781.978887,
-    "seen": 1793359219.4677215,
+    "mtime": 1793917495.3413234,
+    "seen": 1793929818.7594352,
     "ast_hash": "67d88e9d0760c3ba54c75dfd9551c1c5",
     "semantic_hash": "67d88e9d0760c3ba54c75dfd9551c1c5"
   },
   "README.md": {
-    "mtime": 1793014221.718426,
-    "seen": 1793359219.467759,
-    "ast_hash": "d3c52e034e24d0faea594739a197eb0e",
-    "semantic_hash": "d3c52e034e24d0faea594739a197eb0e"
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7594368,
+    "ast_hash": "6ca668a347c8b7b876f7cfd8ff68e2b5",
+    "semantic_hash": ""
   },
   "docs/EVALUACION.md": {
-    "mtime": 1793014221.718994,
-    "seen": 1793359219.4677958,
-    "ast_hash": "f3ddd41cf24a0f27b752fd0e2f66e5a9",
-    "semantic_hash": "f3ddd41cf24a0f27b752fd0e2f66e5a9"
+    "mtime": 1793917495.3443234,
+    "seen": 1793929818.7594402,
+    "ast_hash": "b3151f31037138cdbcfecfde92e6a0e6",
+    "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1791198874.0790582,
-    "seen": 1793359219.4678397,
+    "mtime": 1793917495.3543234,
+    "seen": 1793929818.7594416,
     "ast_hash": "08fc2b751eca9cb4b0de84b1f8a61045",
     "semantic_hash": "08fc2b751eca9cb4b0de84b1f8a61045"
   },
   "Garra/baseSuelo.ts": {
-    "mtime": 1793620044.869198,
-    "seen": 1793620330.0905335,
+    "mtime": 1793917495.3413234,
+    "seen": 1793929818.7593818,
     "ast_hash": "e25a9121b1c2b71131dd514dbcbef164",
     "semantic_hash": ""
   },
   "Garra/brazoHorizontal.ts": {
-    "mtime": 1793620051.587391,
-    "seen": 1793620330.090537,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7593856,
     "ast_hash": "a2cb3a5010ac898ad96e64d37d3a9ee1",
     "semantic_hash": ""
   },
   "Garra/cabezal.ts": {
-    "mtime": 1793620067.780856,
-    "seen": 1793620330.0905397,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7593882,
     "ast_hash": "f131078c5666874b9a7a97675e37dc51",
     "semantic_hash": ""
   },
   "Garra/conector.ts": {
-    "mtime": 1793620060.7776546,
-    "seen": 1793620330.0905418,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7593904,
     "ast_hash": "e0da57bb1a6e6bbe1c8d9613c87970b7",
     "semantic_hash": ""
   },
   "Garra/dibujarGarra.ts": {
-    "mtime": 1793620123.4574554,
-    "seen": 1793620330.090544,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7593932,
     "ast_hash": "a7953c459c536fa2dcab9a1b1dfa27af",
     "semantic_hash": ""
   },
   "Garra/garra.ts": {
-    "mtime": 1793620148.4351737,
-    "seen": 1793620330.0905457,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7593951,
     "ast_hash": "d8fa0aca2d5acb7a9eeafa6e2ebe5ea7",
     "semantic_hash": ""
   },
   "Garra/pieza1.ts": {
-    "mtime": 1793620025.0876305,
-    "seen": 1793620330.0905476,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7593968,
     "ast_hash": "5ac0ba11429e16d40c77598809fe1c8e",
     "semantic_hash": ""
   },
   "Garra/pinzas.ts": {
-    "mtime": 1793620079.6571968,
-    "seen": 1793620330.0905495,
+    "mtime": 1793917495.34263,
+    "seen": 1793929818.7593987,
     "ast_hash": "0774b7cbea3947050c5879f554223630",
     "semantic_hash": ""
   },
   "deltaTiempo.ts": {
-    "mtime": 1793619989.004596,
-    "seen": 1793620330.0905645,
+    "mtime": 1793917495.3433232,
+    "seen": 1793929818.7594097,
     "ast_hash": "c870ec3f991ffb2ba2e0d02addcd55cb",
     "semantic_hash": ""
   },
   "dibujarMapa.ts": {
-    "mtime": 1793620006.6511018,
-    "seen": 1793620330.0905752,
-    "ast_hash": "bf905ed968a0ef3161f96c336022f2a6",
+    "mtime": 1793931395.0438364,
+    "seen": 1793931417.9204597,
+    "ast_hash": "3bae9ec941749b76c6ef8ae7fa54c7fd",
     "semantic_hash": ""
   },
   "clases_y_funciones.txt": {
-    "mtime": 1793361982.9873579,
-    "seen": 1793620330.0906088,
+    "mtime": 1793917495.3433232,
+    "seen": 1793929818.7594383,
     "ast_hash": "1789776425e68f41592447b5af1cb7db",
     "semantic_hash": ""
   },
+  "imagenes del cielo/cielo 26.jpg": {
+    "mtime": 1793927053.4433372,
+    "seen": 1793929818.7594438,
+    "ast_hash": "441c8d11936ead9d94c8968ee345be1b",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo1.jpg": {
+    "mtime": 1793930528.477585,
+    "seen": 1793931417.9205012,
+    "ast_hash": "04b70f0087d121da705269df71deabbb",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo10.jpg": {
+    "mtime": 1793923661.9400268,
+    "seen": 1793929818.7594473,
+    "ast_hash": "caa32f9478c08ce5305a7b26f18ff97b",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo11.jpg": {
+    "mtime": 1793923699.9979563,
+    "seen": 1793929818.759449,
+    "ast_hash": "78dbb32e2018ffb2cb2c68ef3ffe0715",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo12.jpg": {
+    "mtime": 1793923786.103797,
+    "seen": 1793929818.7594507,
+    "ast_hash": "4ef8fc1abe47535a9b2ece1f4fa04838",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo13.jpg": {
+    "mtime": 1793923837.391702,
+    "seen": 1793929818.759452,
+    "ast_hash": "3bc6c880ca85277cc063e5d5c26fc61e",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo14.jpg": {
+    "mtime": 1793923870.7376404,
+    "seen": 1793929818.7594538,
+    "ast_hash": "6e86a3eab495e80dc6f2ba4d58744b7b",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo15.jpg": {
+    "mtime": 1793923879.8116236,
+    "seen": 1793929818.7594552,
+    "ast_hash": "6e86a3eab495e80dc6f2ba4d58744b7b",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo16.jpg": {
+    "mtime": 1793923890.3216043,
+    "seen": 1793929818.7594564,
+    "ast_hash": "6e86a3eab495e80dc6f2ba4d58744b7b",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo17.jpg": {
+    "mtime": 1793923910.3425672,
+    "seen": 1793929818.7594597,
+    "ast_hash": "6e86a3eab495e80dc6f2ba4d58744b7b",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo18.jpg": {
+    "mtime": 1793924220.3379946,
+    "seen": 1793929818.7594614,
+    "ast_hash": "7280c38dbdd21c3ab7994c61b91b37b6",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo19.jpg": {
+    "mtime": 1793924320.5828094,
+    "seen": 1793929818.7594626,
+    "ast_hash": "8ff5aa40c50eb7d69bff37544dafdcf9",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo2.jpg": {
+    "mtime": 1793922429.4813466,
+    "seen": 1793929818.7594643,
+    "ast_hash": "ca09fb4bb579654cb57d3aab4a876184",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo20.jpg": {
+    "mtime": 1793924373.6517115,
+    "seen": 1793929818.7594657,
+    "ast_hash": "670cf1414bb58b58c9d01dd7d88dede6",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo21.jpg": {
+    "mtime": 1793924403.4716566,
+    "seen": 1793929818.7594676,
+    "ast_hash": "e2213540c30b56a3896b3e5c6c902696",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo22.jpg": {
+    "mtime": 1793924486.5005033,
+    "seen": 1793929818.7594688,
+    "ast_hash": "bc309b722acb1494a339369a3aa1f429",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo23.jpg": {
+    "mtime": 1793924591.7273092,
+    "seen": 1793929818.7594702,
+    "ast_hash": "456022f37f796b6b52f0f88a42acb31d",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo24.jpg": {
+    "mtime": 1793924682.1531425,
+    "seen": 1793929818.759472,
+    "ast_hash": "911f3e25a48856bc79efaa66fbc696ce",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo25.jpg": {
+    "mtime": 1793926917.0375648,
+    "seen": 1793929818.7594733,
+    "ast_hash": "bbf03bc2365f18d7e657df9e3519c652",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo26.jpg": {
+    "mtime": 1793927154.6281674,
+    "seen": 1793929818.759475,
+    "ast_hash": "319565ee34288e175a0722f9fe981a71",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo27.jpg": {
+    "mtime": 1793927453.7536614,
+    "seen": 1793929818.7594764,
+    "ast_hash": "849f204c615cbc1145eebb2a7c3fdbc9",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo28.jpg": {
+    "mtime": 1793927572.9464586,
+    "seen": 1793929818.759478,
+    "ast_hash": "b30e1b319a2f1068aa70f70d34f5bd75",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo29.jpg": {
+    "mtime": 1793927748.1029274,
+    "seen": 1793929818.7594795,
+    "ast_hash": "9105ca6eff44c01759e293f4c86ad32d",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo3.jpg": {
+    "mtime": 1793922574.9310653,
+    "seen": 1793929818.7594812,
+    "ast_hash": "91f4c57a873bf4197361aafbb68b17f3",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo30.jpg": {
+    "mtime": 1793927987.67517,
+    "seen": 1793929818.7594826,
+    "ast_hash": "2360e21644217b212f27038c6dabf37b",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo4.jpg": {
+    "mtime": 1793922704.1308184,
+    "seen": 1793929818.759484,
+    "ast_hash": "6c6abd9715dc46a81e13990a01efde65",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo5.jpg": {
+    "mtime": 1793923373.0085628,
+    "seen": 1793929818.7594857,
+    "ast_hash": "c79d46c77dcdf43c5fa392de4d7fe735",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo6.jpg": {
+    "mtime": 1793923473.0973768,
+    "seen": 1793929818.759487,
+    "ast_hash": "a94d96fc0aef5f01c229a26e3ace13ec",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo7.jpg": {
+    "mtime": 1793923503.228321,
+    "seen": 1793929818.7594886,
+    "ast_hash": "b3a85109fa3410d120c633919e50009e",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo8.jpg": {
+    "mtime": 1793923543.1572468,
+    "seen": 1793929818.7594898,
+    "ast_hash": "fb3d1097c97fe7a8f95ae2f20bfd46dd",
+    "semantic_hash": ""
+  },
+  "imagenes del cielo/cielo9.jpg": {
+    "mtime": 1793923600.4251406,
+    "seen": 1793929818.7594914,
+    "ast_hash": "afcd9d780c01d3c72fc9ea6bfe6edd4d",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
-    "mtime": 1791198874.079617,
-    "seen": 1793359631.0065513,
+    "mtime": 1793917495.3553233,
+    "seen": 1793929818.759493,
     "ast_hash": "72093a740c7163a7b1e1e22d78e25e54",
     "semantic_hash": ""
   }

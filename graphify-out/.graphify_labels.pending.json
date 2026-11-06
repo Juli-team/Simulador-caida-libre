@@ -3,16 +3,15 @@
   "1": "IPOC",
   "2": "EstadoBola",
   "3": "POC",
-  "4": ".iterar",
-  "5": "Garra/garra.ts",
-  "6": "ICalculos",
+  "4": "Mapa",
+  "5": "Garra",
+  "6": "Pantalla",
   "7": "Garra",
   "8": "ControlesNavegacion",
   "9": "Pinzas",
   "10": "compilerOptions",
   "11": "package.json",
-  "12": "Pantalla",
+  "12": "IEstadoBola",
   "13": "Formulas",
-  "14": "Graphify Instructions",
-  "15": "BaseSuelo"
+  "14": "Graphify Instructions"
 }

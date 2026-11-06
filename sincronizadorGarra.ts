@@ -18,7 +18,7 @@ export class SincronizadorGarra implements ISincronizadorGarra {
     ): void {
         if (!calculos.getEstadoBola().esSujeto()) return;
 
-        const radioVisual = Math.max(16, Math.round(32 * escala));
+        const radioVisual = Math.max(16, Math.round(26 * escala));
         const radioFisicoMetros = radioVisual / PIXELES_POR_METRO;
         const xMundo = xSujecionPantalla;
         const yMundo = camaraY + ySujecionPantalla;
