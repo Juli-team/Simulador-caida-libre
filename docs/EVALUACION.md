@@ -236,11 +236,11 @@ xychart-beta
 <!-- actividad-clases:inicio -->
 ## Actividad en días de clase
 
-> Período **2026-08-14 → 2026-10-29** · **17 clases** (lunes, viernes) · calendario oficial de la materia.
+> Período evaluado **2026-08-14 → 2026-11-07** · **20 clases** (lunes, viernes) · días de clase del calendario, extendidos hasta la fecha de corte.
 >
 > `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**. El cuadro principal usa sólo las fechas de clase del calendario oficial.
 >
-> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-06** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
+> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-07** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
 >
 > Se recorre `git log --all` sobre un mirror (todas las ramas y `refs/pull/*`), con deduplicación por commit. Fecha = fecha de autor en UTC-3. Los commits locales no pusheados no se ven. Si el trabajo fue en pareja y el commit es de otra persona, figura a nombre del autor del commit; para reflejarlo, usar `Co-authored-by` o una nota manual.
 >
@@ -248,7 +248,7 @@ xychart-beta
 
 ### Julián San Martín
 
-**9/17 clases con actividad** · 9 commits · 7 merges
+**11/20 clases con actividad** · 12 commits · 8 merges
 
 | Fecha | Marca | Repositorios | Commits / merges |
 |---|:--:|---|--:|
@@ -269,18 +269,19 @@ xychart-beta
 | 2026-10-19 | No | sin actividad | 0 / 0 |
 | 2026-10-23 | **Sí** | Simulador-caida-libre | 1 / 1 |
 | 2026-10-26 | No | sin actividad | 0 / 0 |
+| 2026-10-30 | No | sin actividad | 0 / 0 |
+| 2026-11-02 | **Sí** | Simulador-caida-libre | 1 / 0 |
+| 2026-11-06 | **Sí** | Simulador-caida-libre | 2 / 1 |
 
 #### Aportes fuera del calendario de clases — Julián San Martín
 
-**Julián San Martín — 5 fechas fuera del calendario** · 4 commits · 3 merges
+**Julián San Martín — 3 fechas fuera del calendario** · 1 commit · 2 merges
 
 | Alumno | Fecha | Repositorios | Commits / merges |
 |---|---|---|---|
 | Julián San Martín (`julianosm1123`) | 2026-08-25 | Simulador-caida-libre | 1 / 0 |
-| Julián San Martín (`julianosm1123`) | 2026-11-02 | Simulador-caida-libre | 1 / 0 |
 | Julián San Martín (`julianosm1123`) | 2026-11-03 | Simulador-caida-libre | 0 / 1 |
 | Julián San Martín (`julianosm1123`) | 2026-11-04 | Simulador-caida-libre | 0 / 1 |
-| Julián San Martín (`julianosm1123`) | 2026-11-06 | Simulador-caida-libre | 2 / 1 |
 
 <!-- actividad-clases:fin -->
 
