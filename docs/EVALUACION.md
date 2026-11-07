@@ -270,17 +270,17 @@ xychart-beta
 | 2026-10-23 | **Sí** | Simulador-caida-libre | 1 / 1 |
 | 2026-10-26 | No | sin actividad | 0 / 0 |
 
-#### Aportes fuera del calendario de clases
+#### Aportes fuera del calendario de clases — Julián San Martín
 
-**5 fechas fuera del calendario** · 4 commits · 3 merges
+**Julián San Martín — 5 fechas fuera del calendario** · 4 commits · 3 merges
 
-| Fecha | Repositorios | Commits / merges |
-|---|---|--:|
-| 2026-08-25 | Simulador-caida-libre | 1 / 0 |
-| 2026-11-02 | Simulador-caida-libre | 1 / 0 |
-| 2026-11-03 | Simulador-caida-libre | 0 / 1 |
-| 2026-11-04 | Simulador-caida-libre | 0 / 1 |
-| 2026-11-06 | Simulador-caida-libre | 2 / 1 |
+| Alumno | Fecha | Repositorios | Commits / merges |
+|---|---|---|---|
+| Julián San Martín (`julianosm1123`) | 2026-08-25 | Simulador-caida-libre | 1 / 0 |
+| Julián San Martín (`julianosm1123`) | 2026-11-02 | Simulador-caida-libre | 1 / 0 |
+| Julián San Martín (`julianosm1123`) | 2026-11-03 | Simulador-caida-libre | 0 / 1 |
+| Julián San Martín (`julianosm1123`) | 2026-11-04 | Simulador-caida-libre | 0 / 1 |
+| Julián San Martín (`julianosm1123`) | 2026-11-06 | Simulador-caida-libre | 2 / 1 |
 
 <!-- actividad-clases:fin -->
 
