@@ -1,12 +1,11 @@
 import { Mapa } from './mapa';
-import { PIXELES_POR_METRO } from './constantes';
 
 /**
  * Mapeo de rutas de imágenes resueltas para Vite / navegador.
  * Las imágenes van desde cielo1.jpg (base/suelo) hasta cielo30.jpg (cúspide/espacio).
  */
 const URLS_IMAGENES: string[] = Array.from({ length: 30 }, (_, i) => {
-    return new URL(`./imagenes del cielo/cielo${i + 1}.jpg`, import.meta.url).href;
+    return new URL(`./imagenes del cielo/cielo${i + 1}.webp`, import.meta.url).href;
 });
 
 /**
@@ -25,7 +24,7 @@ const URLS_IMAGENES: string[] = Array.from({ length: 30 }, (_, i) => {
 export class DibujarMapa {
     public static readonly ALTO_IMAGEN: number = 10000;
     public static readonly TOTAL_IMAGENES: number = 30;
-    public static readonly DISTANCIA_PRECARGA: number = 3000;
+    public static readonly DISTANCIA_PRECARGA: number = 500;
 
     private readonly cacheImagenes: Map<number, HTMLImageElement> = new Map();
     private readonly imagenesCargando: Set<number> = new Set();
@@ -116,8 +115,6 @@ export class DibujarMapa {
         // Liberar de la memoria RAM/VRAM las imágenes que quedaron atrás
         this.liberarImagenesFueraDeRango(indicesRequeridos);
 
-        // Dibujar marcas de referencia métricas sobre el fondo
-        this.dibujarLineasReferencia(ctx, mapa);
     }
 
     /**
@@ -134,37 +131,6 @@ export class DibujarMapa {
         }
     }
 
-    private dibujarLineasReferencia(ctx: CanvasRenderingContext2D, mapa: Mapa): void {
-        const ancho = mapa.getAncho();
-        const altoVisible = mapa.getAltoVisible();
-        const camaraY = mapa.getCamaraY();
-        const altoTotal = mapa.getAltoTotal();
-
-        const escala = Math.min(ancho / 1024, altoVisible / 768);
-        ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-        ctx.lineWidth = Math.max(1, Math.round(1 * escala));
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-        ctx.font = `${Math.max(10, Math.round(12 * escala))}px monospace`;
-
-        // Paso métrico: marcas cada 2 metros
-        const pasoMetros = 2;
-        const paso = Math.max(50, pasoMetros * PIXELES_POR_METRO);
-        for (let yMundo = 0; yMundo <= altoTotal; yMundo += paso) {
-            const yPantalla = yMundo - camaraY;
-            if (yPantalla >= -20 && yPantalla <= altoVisible + 20) {
-                ctx.beginPath();
-                ctx.moveTo(20 * escala, yPantalla);
-                ctx.lineTo(ancho - 20 * escala, yPantalla);
-                ctx.stroke();
-
-                // Altura medida desde el suelo
-                const alturaDesdeBasePx = altoTotal - yMundo;
-                const alturaMetros = alturaDesdeBasePx / PIXELES_POR_METRO;
-                const textoMetros = alturaMetros % 1 === 0 ? `${alturaMetros}` : alturaMetros.toFixed(1);
-                ctx.fillText(`${textoMetros} m (${alturaDesdeBasePx} px)`, 30 * escala, yPantalla - 6 * escala);
-            }
-        }
-        ctx.restore();
-    }
+    
+    
 }

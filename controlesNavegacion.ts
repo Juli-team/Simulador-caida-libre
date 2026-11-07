@@ -1,29 +1,26 @@
-import { IActualizable, INavegable, IControlGarra, IPantalla } from './interfaces';
+import { IActualizable, INavegable, IControlSujecion, IPantalla } from './interfaces';
 
 /**
  * Clase ControlesNavegacion
  * Responsabilidad única (SRP): Traducir la intención de navegación del usuario:
- *  - Teclas W/S: extienden/contraen la base desplazando la cámara por el mapa,
- *    de modo que la grúa puede elevarse más allá del alto de la pantalla.
- *  - Mouse: mueve la garra (X horizontal y estirado de la pieza negra en Y).
- * Reemplaza a los antiguos botones en pantalla.
- * Cumple con DIP al depender de las abstracciones INavegable e IControlGarra.
+ *  - Teclas W/S: desplazan la cámara por el mapa.
+ *  - Mouse: mueve el punto de sujeción (el POC lo sigue si está sujeto).
+ * Cumple con DIP al depender de las abstracciones INavegable e IControlSujecion.
  */
 export class ControlesNavegacion implements IActualizable {
     private navegable: INavegable;
-    private garra: IControlGarra;
+    private puntoSujecion: IControlSujecion;
     private canvas: HTMLCanvasElement;
 
     private teclaArriba: boolean = false;
     private teclaAbajo: boolean = false;
     private bloqueado: boolean = false;
 
-    // Velocidad (en píxeles por frame) del desplazamiento vertical de la cámara
-    private readonly velocidadTeclado: number = 140;
+    private readonly velocidadTeclado: number = 80;
 
-    constructor(pantalla: IPantalla, navegable: INavegable, garra: IControlGarra) {
+    constructor(pantalla: IPantalla, navegable: INavegable, puntoSujecion: IControlSujecion) {
         this.navegable = navegable;
-        this.garra = garra;
+        this.puntoSujecion = puntoSujecion;
         this.canvas = pantalla.getCanvas();
         this.configurarEventos();
     }
@@ -44,7 +41,7 @@ export class ControlesNavegacion implements IActualizable {
         this.canvas.addEventListener('mousemove', (e: MouseEvent) => {
             if (this.bloqueado) return;
             const { x, y } = this.obtenerCoordenadas(e);
-            this.garra.seguirMouse(x, y);
+            this.puntoSujecion.seguirMouse(x, y);
         });
 
         window.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -64,7 +61,6 @@ export class ControlesNavegacion implements IActualizable {
             }
         });
 
-        // Evita que una tecla quede "pegada" si la ventana pierde el foco
         window.addEventListener('blur', () => {
             this.teclaArriba = false;
             this.teclaAbajo = false;
