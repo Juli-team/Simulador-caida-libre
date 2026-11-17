@@ -3,13 +3,13 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación II (RepoSense + análisis de calidad POO/SOLID). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-11-16.
+> Generado: 2026-11-17.
 
 ## 1. Veredicto
 
 | Aspecto | Resultado |
 |---|---|
-| Índice de calidad POO/SOLID | **64/100** |
+| Índice de calidad POO/SOLID | **65/100** |
 | Código (LOC) | 1,536 |
 | Archivos de código | 18 |
 | Clases (bien usadas) | 28 (8 OK) |
@@ -46,7 +46,7 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 | Duplicación lógica | ≤ 5% | 1.6% | sí |
 | Funciones fuera de clases | ≤ 1 | 0 | sí |
 | Señales POO/SOLID críticas | ninguna | Baja cohesión (LCOM), Acoplamiento alto (CBO), Interfaz con demasiados métodos (ISP) | no |
-| Índice de calidad POO/SOLID | ≥ 60 | 64/100 | sí |
+| Índice de calidad POO/SOLID | ≥ 60 | 65/100 | sí |
 
 ### Cómo se calcula el %POO (y por qué no sube solo)
 
@@ -72,7 +72,6 @@ Reúne lo que el análisis marcó y lo que todavía falta para cada semáforo. C
 |---|---|---|---|
 | Señales POO/SOLID críticas | Baja cohesión (LCOM), Interfaz con demasiados métodos (ISP) | Aprobar: ninguna<br>Destacar: ninguna | `bucle.ts`, `interfaces.ts`, `poc.ts` |
 | Métodos/funciones largos o con muchos parámetros | **6** método(s)/función(es) largos o con muchos parámetros | Sin señales | `bucle.ts`, `calculos.ts`, `dibujarMapa.ts`, `dibujarPOC.ts`, `hud.ts` |
-| Dependencia de concretos y falta de abstracciones (DIP) | **1** dependencia(s) de concretos sin abstracciones | Sin señales | `bucle.ts` |
 
 ## 4. Aspectos evaluados
 
@@ -82,7 +81,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Un resumen numérico (0-100) que combina la riqueza de clases bien usadas con la penalización por señales POO/SOLID y duplicación, y luego aplica topes duros.
 - **Por qué importa:** Ordena y prioriza la revisión: un índice bajo indica varias señales que conviene mirar juntas.
-- **Tu resultado:** índice **64/100**
+- **Tu resultado:** índice **65/100**
 
 ### 2. Duplicación lógica (DRY) (duplicacion) — sin señales
 
@@ -173,44 +172,50 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Suele indicar que la jerarquía no representa bien el problema y rompe la sustitución entre clases.
 - **Tu resultado:** **0** override(s) vacío(s) o 'no implementado'
 
-### 14. Dependencia de concretos y falta de abstracciones (DIP) (dip) — con señales
-
-- **Qué mide:** Instanciación directa de clases **propias** concretas y ausencia de interfaces o clases abstractas pese al acoplamiento. No cuentan los structs ni los nodos/tipos del motor.
-- **Por qué importa:** Depender de implementaciones concretas dificulta cambiar o probar una parte sin arrastrar las demás.
-- **Tu resultado:** **1** dependencia(s) de concretos sin abstracciones
-- **Para investigar la causa:**
-    - ¿La clase crea por dentro a sus colaboradores en vez de recibirlos?
-    - ¿Hay puntos de variación que convendría expresar como abstracción?
-    - ¿Cómo se probaría esa clase cambiando una implementación?
-
-### 15. Clase sin métodos (solo datos) (data) — sin señales
+### 14. Clase sin métodos (solo datos) (data) — sin señales
 
 - **Qué mide:** Clases que solo acumulan campos y no tienen comportamiento.
 - **Por qué importa:** Separar datos de comportamiento reparte por el proyecto la lógica que debería estar cerca de esos datos.
 - **Tu resultado:** **0** clase(s) sin métodos (solo datos)
 
-### 16. Campos públicos (encapsulación) (encapsulacion) — sin señales
+### 15. Campos mutables públicos (encapsulación) (encapsulacion) — sin señales
 
-- **Qué mide:** Clases que exponen campos sin control de acceso.
+- **Qué mide:** Clases que exponen estado **modificable** desde afuera. No cuentan constantes (`static final`, `const`), campos `final`/`readonly`, propiedades `val` de Kotlin ni propiedades con `private set`.
 - **Por qué importa:** Expone el estado interno y hace que cualquier cambio dependa de quién lo modifica desde afuera.
-- **Tu resultado:** **0** clase(s) con campos públicos
+- **Tu resultado:** **0** clase(s) con campos mutables públicos
 
-### 17. Clase solo con métodos estáticos (utilitaria) (static) — sin señales
+### 16. Clase solo con métodos estáticos (utilitaria) (static) — sin señales
 
 - **Qué mide:** Clases donde todos los métodos son estáticos.
 - **Por qué importa:** Es comportamiento procedural disfrazado de clase: no se instancia ni participa del modelo de objetos.
 - **Tu resultado:** **0** clase(s) solo con métodos estáticos
 
+### Desglose de la columna S (SRP)
+
+> La columna **S** no es un puntaje: cuenta **señales** de SRP. Aquí suma **1** entrada(s) sobre **1** clase(s) distinta(s).
+
+| Señal | Entradas | Regla (perfil exigente) |
+|---|---:|---|
+| Cohesión baja | 1 | < 50 % de los pares de métodos comparten algún campo (con ≥ 4 métodos con lógica y ≥ 3 campos). |
+
+**Clases con baja cohesión (1)**
+
+- `POC`: cohesión baja (13% de pares comparten campos)
+
+> Los **6** hallazgo(s) de métodos largos o con muchos parámetros se listan en «Métodos/funciones largos o con muchos parámetros» y **no suman** a la columna S.
+
+> El análisis no excluye tests: una clase de test que supere los umbrales también suma.
+
 ## 5. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (18 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (19 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice POO/SOLID a lo largo de los commits"
-    x-axis ["2f72e2f", "99e6f74", "7c1f350", "ce20fdf", "c5762b9", "81176c6", "900e448", "8d91a3b", "b867655", "8f4d7cc", "831f5d9", "770637a", "d9ad568", "e9a7db0", "541b153", "ef167f9", "16ec315", "f376107"]
+    x-axis ["2f72e2f", "99e6f74", "7c1f350", "ce20fdf", "c5762b9", "81176c6", "900e448", "8d91a3b", "b867655", "8f4d7cc", "831f5d9", "770637a", "d9ad568", "e9a7db0", "541b153", "ef167f9", "16ec315", "f376107", "04c8ab0"]
     y-axis "Índice" 0 --> 100
-    line [0, 0, 65, 62, 70, 56, 52, 54, 52, 68, 67, 67, 67, 67, 67, 64, 64, 64]
+    line [0, 0, 65, 62, 70, 56, 52, 54, 52, 68, 67, 67, 67, 67, 67, 65, 65, 65, 65]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -230,64 +235,10 @@ xychart-beta
 | 13 | 2026-11-07 | `d9ad568` | dqmdz-etec | 2,418 | 67 | 99% | 2.8% | 0 |
 | 14 | 2026-11-07 | `e9a7db0` | dqmdz-etec | 2,418 | 67 | 99% | 2.8% | 0 |
 | 15 | 2026-11-07 | `541b153` | dqmdz-etec | 2,418 | 67 | 99% | 2.8% | 0 |
-| 16 | 2026-11-07 | `ef167f9` | Julián San Martín | 1,536 | 64 | 98% | 1.6% | 0 |
-| 17 | 2026-11-13 | `16ec315` | dqmdz-etec | 1,536 | 64 | 98% | 1.6% | 0 |
-| 18 | 2026-11-14 | `f376107` | dqmdz-etec | 1,536 | 64 | 98% | 1.6% | 0 |
-
-<!-- actividad-clases:inicio -->
-## Actividad en días de clase
-
-> Período evaluado **2026-08-14 → 2026-11-16** · **22 clases** (lunes, viernes) · días de clase del calendario, extendidos hasta la fecha de corte.
->
-> `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**. El cuadro principal usa sólo las fechas de clase del calendario oficial.
->
-> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-16** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
->
-> Se recorre `git log --all` sobre un mirror (todas las ramas y `refs/pull/*`), con deduplicación por commit. Fecha = fecha de autor en UTC-3. Los commits locales no pusheados no se ven. Si el trabajo fue en pareja y el commit es de otra persona, figura a nombre del autor del commit; para reflejarlo, usar `Co-authored-by` o una nota manual.
->
-> Sección informativa: no modifica el semáforo de aprobación.
-
-### Julián San Martín
-
-**11/22 clases con actividad** · 12 commits · 8 merges
-
-| Fecha | Marca | Repositorios | Commits / merges |
-|---|:--:|---|--:|
-| 2026-08-14 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-08-21 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-08-24 | No | sin actividad | 0 / 0 |
-| 2026-08-28 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-08-31 | No | sin actividad | 0 / 0 |
-| 2026-09-04 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-09-07 | No | sin actividad | 0 / 0 |
-| 2026-09-14 | No | sin actividad | 0 / 0 |
-| 2026-09-25 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-09-28 | No | sin actividad | 0 / 0 |
-| 2026-10-02 | **Sí** | Simulador-caida-libre | 1 / 2 |
-| 2026-10-05 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-09 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-16 | No | sin actividad | 0 / 0 |
-| 2026-10-19 | No | sin actividad | 0 / 0 |
-| 2026-10-23 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-26 | No | sin actividad | 0 / 0 |
-| 2026-10-30 | No | sin actividad | 0 / 0 |
-| 2026-11-02 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-11-06 | **Sí** | Simulador-caida-libre | 2 / 1 |
-| 2026-11-13 | No | sin actividad | 0 / 0 |
-| 2026-11-16 | No | sin actividad | 0 / 0 |
-
-#### Aportes fuera del calendario de clases — Julián San Martín
-
-**Julián San Martín — 4 fechas fuera del calendario** · 1 commit · 3 merges
-
-| Alumno | Fecha | Repositorios | Commits / merges |
-|---|---|---|---|
-| Julián San Martín (`julianosm1123`) | 2026-08-25 | Simulador-caida-libre | 1 / 0 |
-| Julián San Martín (`julianosm1123`) | 2026-11-03 | Simulador-caida-libre | 0 / 1 |
-| Julián San Martín (`julianosm1123`) | 2026-11-04 | Simulador-caida-libre | 0 / 1 |
-| Julián San Martín (`julianosm1123`) | 2026-11-07 | Simulador-caida-libre | 0 / 1 |
-
-<!-- actividad-clases:fin -->
+| 16 | 2026-11-07 | `ef167f9` | Julián San Martín | 1,536 | 65 | 98% | 1.6% | 0 |
+| 17 | 2026-11-13 | `16ec315` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
+| 18 | 2026-11-14 | `f376107` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
+| 19 | 2026-11-16 | `04c8ab0` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
 
 ---
 _Informe generado por la cátedra. Los criterios y umbrales de medición corresponden al perfil `exigente` de `calidad.py`; el semáforo de aprobación, a `CRITERIOS-CALIDAD.md` (ver `README.md`). Ante dudas, revisá el archivo señalado._
