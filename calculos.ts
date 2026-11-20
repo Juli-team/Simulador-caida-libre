@@ -9,7 +9,6 @@ export class Calculos implements ICalculos {
     private estadoBola: IEstadoBola;
 
     // Propiedades visuales y espaciales en coordenadas del canvas (píxeles)
-    private radioVisual: number = 24;
     private xMundo: number = 0;
     private yMundo: number = 0;
 
@@ -25,18 +24,15 @@ export class Calculos implements ICalculos {
         this.formulas = formulas;
         this.xMundo = xMundo;
         this.yMundo = yMundo;
-        this.radioVisual = Math.max(16, Math.round(32 * escala));
         this.estadoBola = new EstadoBola('sujeto');
 
-        const radioFisicoMetros = this.radioVisual / PIXELES_POR_METRO;
         if (poc) {
             this.poc = poc;
-            this.poc.setRadio(radioFisicoMetros);
             if (h0 > 0 && this.poc.getAltura() === 0) {
                 this.poc.setAltura(h0);
             }
         } else {
-            this.poc = new POC(h0, 0, radioFisicoMetros);
+            this.poc = new POC(h0, 0, Math.round(64 * escala));
         }
     }
 
@@ -53,11 +49,11 @@ export class Calculos implements ICalculos {
     }
 
     public getRadio(): number {
-        return this.radioVisual;
+        return this.poc.getRadio();
     }
 
     public setRadioVisual(radio: number): void {
-        this.radioVisual = radio;
+        this.poc.setRadio(radio);
     }
 
     public getXMundo(): number {
@@ -91,7 +87,8 @@ export class Calculos implements ICalculos {
     public actualizar(dt: number, ySueloMundo: number): void {
         if (!this.estadoBola.esCayendo()) return;
 
-        const yDetencion = ySueloMundo - this.radioVisual;
+        const radio = this.poc.getRadio();
+        const yDetencion = ySueloMundo - radio;
 
         // 1. Altura actual (y) respecto al suelo en metros
         const distanciaAlSueloPx = Math.max(0, yDetencion - this.yMundo);
@@ -99,7 +96,8 @@ export class Calculos implements ICalculos {
         this.poc.setAltura(altura);
 
         // 2. Cálculos físicos directamente con los valores
-        const area = this.formulas.calcularArea(this.poc.getRadio());
+        const radioMetros = radio / PIXELES_POR_METRO;
+        const area = this.formulas.calcularArea(radioMetros);
         const densidadAire = this.formulas.calcularDensidadAire(altura);
         const fuerzaArrastre = this.formulas.calcularFuerzaArrastre(
             densidadAire,

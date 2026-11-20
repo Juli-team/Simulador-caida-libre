@@ -19,7 +19,7 @@ export class POC implements IPOC {
     private velocidadInicial: number = 0;
     private tiempoCaida: number = 0;
     private masa: number = 10;
-    private radio: number = 0.32;
+    private radio: number = 64;
     private coeficienteArrastre: number = 0.47;
     private velocidad: number = 0;
     private aceleracion: number = 0;
@@ -29,9 +29,9 @@ export class POC implements IPOC {
     constructor(
         altura: number = 0,
         velocidadInicial: number = 0,
-        radio: number = 0.32,
-        masa: number = this.masa,
-        coeficienteArrastre: number = this.coeficienteArrastre
+        radio: number = 64,
+        masa: number = 10,
+        coeficienteArrastre: number = 0.47
     ) {
         this.altura = Math.max(0, altura);
         this.velocidadInicial = velocidadInicial;

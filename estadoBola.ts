@@ -1,5 +1,4 @@
 import { EstadoPOC, IEstadoBola, IFormulas } from './interfaces';
-import { PIXELES_POR_METRO } from './constantes';
 import { POC } from './poc';
 import { Calculos } from './calculos';
 import { PuntoSujecion } from './puntoSujecion';
@@ -82,17 +81,16 @@ export class EstadoBola implements IEstadoBola {
         if (!p || !m || !f || !c) return null;
 
         const escala = p.getEscala();
-        const radioPx = Math.max(16, Math.round(32 * escala));
-        const radioMetros = radioPx / PIXELES_POR_METRO;
+        const radio = Math.round(64 * escala);
         const sueloY = m.getAltoTotal() - p.getAltoBase();
 
-        const poc = new POC(0, 0, radioMetros);
+        const poc = new POC(0, 0, radio);
 
         const nuevaBola = new Calculos(
             f,
             poc,
             c.width / 2,
-            sueloY - radioPx,
+            sueloY - radio,
             0,
             escala
         );

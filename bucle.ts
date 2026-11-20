@@ -9,6 +9,7 @@ import { SincronizadorPOC } from './sincronizadorPOC';
 import { DibujarPOC } from './dibujarPOC';
 import { DeltaTiempo } from './deltaTiempo';
 import { DibujarMapa } from './dibujarMapa';
+import { Mano } from './mano';
 
 export class Bucle {
     private pantalla: IPantalla;
@@ -20,6 +21,7 @@ export class Bucle {
     private dibujadorPOC: IDibujarPOC;
     private deltaTiempo: DeltaTiempo;
     private dibujadorMapa: DibujarMapa;
+    private mano: Mano;
 
     private calculos: Calculos | null = null;
     private ejecutando: boolean = false;
@@ -33,7 +35,8 @@ export class Bucle {
         sincronizadorPOC: ISincronizadorPOC = new SincronizadorPOC(),
         dibujadorPOC: IDibujarPOC = new DibujarPOC(),
         deltaTiempo: DeltaTiempo = new DeltaTiempo(),
-        dibujadorMapa: DibujarMapa = new DibujarMapa()
+        dibujadorMapa: DibujarMapa = new DibujarMapa(),
+        mano: Mano = new Mano()
     ) {
         this.pantalla = pantalla;
         this.mapa = mapa;
@@ -44,6 +47,7 @@ export class Bucle {
         this.dibujadorPOC = dibujadorPOC;
         this.deltaTiempo = deltaTiempo;
         this.dibujadorMapa = dibujadorMapa;
+        this.mano = mano;
     }
 
     public setCalculos(calculos: Calculos | null): void {
@@ -131,6 +135,7 @@ export class Bucle {
         }
 
         this.hud.actualizar(dt, this.calculos);
+        this.mano.actualizar(dt, this.calculos, this.puntoSujecion, this.mapa.getCamaraY(), altoPantalla);
         this.pantalla.limpiar();
         this.dibujadorMapa.dibujar(ctx, this.mapa);
 
@@ -138,6 +143,7 @@ export class Bucle {
             this.dibujadorPOC.dibujar(ctx, this.calculos, this.mapa.getCamaraY());
         }
 
+        this.mano.dibujar(ctx, this.calculos);
         this.hud.dibujar(ctx, anchoPantalla, this.calculos);
 
         requestAnimationFrame(this.iterar);

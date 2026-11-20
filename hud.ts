@@ -1,5 +1,4 @@
 import { IDibujable, ICalculos } from './interfaces';
-import { PIXELES_POR_METRO } from './constantes';
 
 /**
  * Clase HUD
