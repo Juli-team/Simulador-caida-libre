@@ -16,20 +16,19 @@ export class SincronizadorPOC implements ISincronizadorPOC {
     ): void {
         if (!calculos.getEstadoBola().esSujeto()) return;
 
-        const radioVisual = Math.max(16, Math.round(26 * escala));
-        const radioFisicoMetros = radioVisual / PIXELES_POR_METRO;
+        const radio = Math.round(64 * escala);
         const xMundo = xSujecionPantalla;
         const yMundo = camaraY + ySujecionPantalla;
 
-        calculos.setRadioVisual(radioVisual);
+        calculos.setRadioVisual(radio);
         calculos.setPosicion(xMundo, yMundo);
 
-        const yDetencion = ySueloMundo - radioVisual;
+        const yDetencion = ySueloMundo - radio;
         const distanciaPx = Math.max(0, yDetencion - yMundo);
         const alturaMetros = distanciaPx / PIXELES_POR_METRO;
 
         const poc = calculos.getPOC();
-        poc.setRadio(radioFisicoMetros);
+        poc.setRadio(radio);
         poc.setAltura(alturaMetros);
         poc.setVelocidad(0);
         poc.setTiempoCaida(0);
