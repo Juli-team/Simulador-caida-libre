@@ -3,7 +3,7 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación II (RepoSense + análisis de calidad POO/SOLID). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-11-17.
+> Generado: 2026-11-20.
 
 ## 1. Veredicto
 
@@ -190,6 +190,29 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Es comportamiento procedural disfrazado de clase: no se instancia ni participa del modelo de objetos.
 - **Tu resultado:** **0** clase(s) solo con métodos estáticos
 
+### Archivos donde se originan las señales
+
+> Se listan **16** hallazgo(s) localizados en **8** archivo(s). La columna `Línea` es la línea del archivo donde el análisis detectó la señal; `—` indica una señal de nivel repositorio (sin archivo propio).
+
+| Aspecto | Archivo | Línea | Hallazgo |
+|---|---|---:|---|
+| Duplicación lógica (DRY) | — | — | duplicación lógica: 1.6% · boilerplate: 0.0% |
+| Duplicación lógica (DRY) | `controladorSimulacion.ts` | 58 | bloque de 8 líneas repetido 2 veces en controladorSimulacion.ts:58, controlesNavegacion.ts:68 |
+| Duplicación lógica (DRY) | `controladorSimulacion.ts` | 60 | bloque de 8 líneas repetido 2 veces en controladorSimulacion.ts:60, controlesNavegacion.ts:70 |
+| Duplicación lógica (DRY) | `controladorSimulacion.ts` | 61 | bloque de 8 líneas repetido 2 veces en controladorSimulacion.ts:61, controlesNavegacion.ts:71 |
+| Baja cohesión (LCOM) | `poc.ts` | 17 | clase 'POC' con baja cohesión (13%) |
+| Métodos/funciones largos o con muchos parámetros | `bucle.ts` | 80 | método 'Bucle.iterar' de 53 líneas |
+| Métodos/funciones largos o con muchos parámetros | `calculos.ts` | 91 | método 'Calculos.actualizar' de 43 líneas |
+| Métodos/funciones largos o con muchos parámetros | `dibujarMapa.ts` | 66 | método 'DibujarMapa.dibujar' de 43 líneas |
+| Métodos/funciones largos o con muchos parámetros | `dibujarPOC.ts` | 11 | método 'DibujarPOC.dibujar' de 31 líneas |
+| Métodos/funciones largos o con muchos parámetros | `hud.ts` | 27 | método 'HUD.actualizar' de 34 líneas |
+| Métodos/funciones largos o con muchos parámetros | `hud.ts` | 66 | método 'HUD.dibujar' de 52 líneas |
+| Acoplamiento alto (CBO) | `bucle.ts` | 13 | clase 'Bucle' muy acoplada (CBO=11) |
+| Interfaz con demasiados métodos (ISP) | `interfaces.ts` | 9 | interfaz 'INavegable' con 7 métodos |
+| Interfaz con demasiados métodos (ISP) | `interfaces.ts` | 40 | interfaz 'IEstadoBola' con 15 métodos |
+| Interfaz con demasiados métodos (ISP) | `interfaces.ts` | 62 | interfaz 'IPOC' con 28 métodos |
+| Interfaz con demasiados métodos (ISP) | `interfaces.ts` | 123 | interfaz 'ICalculos' con 10 métodos |
+
 ### Desglose de la columna S (SRP)
 
 > La columna **S** no es un puntaje: cuenta **señales** de SRP. Aquí suma **1** entrada(s) sobre **1** clase(s) distinta(s).
@@ -208,14 +231,14 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 ## 5. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (19 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (20 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice POO/SOLID a lo largo de los commits"
-    x-axis ["2f72e2f", "99e6f74", "7c1f350", "ce20fdf", "c5762b9", "81176c6", "900e448", "8d91a3b", "b867655", "8f4d7cc", "831f5d9", "770637a", "d9ad568", "e9a7db0", "541b153", "ef167f9", "16ec315", "f376107", "04c8ab0"]
+    x-axis ["2f72e2f", "99e6f74", "7c1f350", "ce20fdf", "c5762b9", "81176c6", "900e448", "8d91a3b", "b867655", "8f4d7cc", "831f5d9", "770637a", "d9ad568", "e9a7db0", "541b153", "ef167f9", "16ec315", "f376107", "04c8ab0", "fe38bee"]
     y-axis "Índice" 0 --> 100
-    line [0, 0, 65, 62, 70, 56, 52, 54, 52, 68, 67, 67, 67, 67, 67, 65, 65, 65, 65]
+    line [0, 0, 65, 62, 70, 56, 52, 54, 52, 68, 67, 67, 67, 67, 67, 65, 65, 65, 65, 65]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -239,61 +262,7 @@ xychart-beta
 | 17 | 2026-11-13 | `16ec315` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
 | 18 | 2026-11-14 | `f376107` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
 | 19 | 2026-11-16 | `04c8ab0` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
-
-<!-- actividad-clases:inicio -->
-## Actividad en días de clase
-
-> Período evaluado **2026-08-14 → 2026-11-17** · **22 clases** (lunes, viernes) · días de clase del calendario, extendidos hasta la fecha de corte.
->
-> `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**. El cuadro principal usa sólo las fechas de clase del calendario oficial.
->
-> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-17** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
->
-> Se recorre `git log --all` sobre un mirror (todas las ramas y `refs/pull/*`), con deduplicación por commit. Fecha = fecha de autor en UTC-3. Los commits locales no pusheados no se ven. Si el trabajo fue en pareja y el commit es de otra persona, figura a nombre del autor del commit; para reflejarlo, usar `Co-authored-by` o una nota manual.
->
-> Sección informativa: no modifica el semáforo de aprobación.
-
-### Julián San Martín
-
-**11/22 clases con actividad** · 12 commits · 8 merges
-
-| Fecha | Marca | Repositorios | Commits / merges |
-|---|:--:|---|--:|
-| 2026-08-14 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-08-21 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-08-24 | No | sin actividad | 0 / 0 |
-| 2026-08-28 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-08-31 | No | sin actividad | 0 / 0 |
-| 2026-09-04 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-09-07 | No | sin actividad | 0 / 0 |
-| 2026-09-14 | No | sin actividad | 0 / 0 |
-| 2026-09-25 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-09-28 | No | sin actividad | 0 / 0 |
-| 2026-10-02 | **Sí** | Simulador-caida-libre | 1 / 2 |
-| 2026-10-05 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-09 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-16 | No | sin actividad | 0 / 0 |
-| 2026-10-19 | No | sin actividad | 0 / 0 |
-| 2026-10-23 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-26 | No | sin actividad | 0 / 0 |
-| 2026-10-30 | No | sin actividad | 0 / 0 |
-| 2026-11-02 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-11-06 | **Sí** | Simulador-caida-libre | 2 / 1 |
-| 2026-11-13 | No | sin actividad | 0 / 0 |
-| 2026-11-16 | No | sin actividad | 0 / 0 |
-
-#### Aportes fuera del calendario de clases — Julián San Martín
-
-**Julián San Martín — 4 fechas fuera del calendario** · 1 commit · 3 merges
-
-| Alumno | Fecha | Repositorios | Commits / merges |
-|---|---|---|---|
-| Julián San Martín (`julianosm1123`) | 2026-08-25 | Simulador-caida-libre | 1 / 0 |
-| Julián San Martín (`julianosm1123`) | 2026-11-03 | Simulador-caida-libre | 0 / 1 |
-| Julián San Martín (`julianosm1123`) | 2026-11-04 | Simulador-caida-libre | 0 / 1 |
-| Julián San Martín (`julianosm1123`) | 2026-11-07 | Simulador-caida-libre | 0 / 1 |
-
-<!-- actividad-clases:fin -->
+| 20 | 2026-11-17 | `fe38bee` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
 
 ---
 _Informe generado por la cátedra. Los criterios y umbrales de medición corresponden al perfil `exigente` de `calidad.py`; el semáforo de aprobación, a `CRITERIOS-CALIDAD.md` (ver `README.md`). Ante dudas, revisá el archivo señalado._
