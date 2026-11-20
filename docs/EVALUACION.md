@@ -9,13 +9,13 @@
 
 | Aspecto | Resultado |
 |---|---|
-| Índice de calidad POO/SOLID | **65/100** |
-| Código (LOC) | 1,536 |
-| Archivos de código | 18 |
-| Clases (bien usadas) | 28 (8 OK) |
-| Código dentro de clases (%POO) | 98% |
+| Índice de calidad POO/SOLID | **67/100** |
+| Código (LOC) | 1,664 |
+| Archivos de código | 19 |
+| Clases (bien usadas) | 29 (9 OK) |
+| Código dentro de clases (%POO) | 99% |
 | Funciones fuera de clases | 0 |
-| Duplicación lógica | 1.6% |
+| Duplicación lógica | 1.5% |
 | Señales S/O/L/I/D | 1/0/0/4/1 |
 
 > Este informe **describe** lo que el análisis midió con los criterios ya establecidos de la materia. No es una nota.
@@ -33,20 +33,20 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 
 | Criterio | Requisito | Tu resultado | Cumple |
 |---|---|---|---|
-| Código dentro de clases (%POO) | ≥ 85% | 98% | sí |
-| Duplicación lógica | ≤ 10% | 1.6% | sí |
+| Código dentro de clases (%POO) | ≥ 85% | 99% | sí |
+| Duplicación lógica | ≤ 10% | 1.5% | sí |
 | Funciones fuera de clases | ≤ 1 | 0 | sí |
-| Señales POO/SOLID críticas | ninguna | Baja cohesión (LCOM), Interfaz con demasiados métodos (ISP) | no |
+| Señales POO/SOLID críticas | ninguna | Baja cohesión (LCOM), Acoplamiento alto (CBO), Interfaz con demasiados métodos (ISP) | no |
 
 **Criterios para destacar**
 
 | Criterio | Requisito | Tu resultado | Cumple |
 |---|---|---|---|
-| Código dentro de clases (%POO) | ≥ 95% | 98% | sí |
-| Duplicación lógica | ≤ 5% | 1.6% | sí |
+| Código dentro de clases (%POO) | ≥ 95% | 99% | sí |
+| Duplicación lógica | ≤ 5% | 1.5% | sí |
 | Funciones fuera de clases | ≤ 1 | 0 | sí |
 | Señales POO/SOLID críticas | ninguna | Baja cohesión (LCOM), Acoplamiento alto (CBO), Interfaz con demasiados métodos (ISP) | no |
-| Índice de calidad POO/SOLID | ≥ 60 | 65/100 | sí |
+| Índice de calidad POO/SOLID | ≥ 60 | 67/100 | sí |
 
 ### Cómo se calcula el %POO (y por qué no sube solo)
 
@@ -60,7 +60,7 @@ Sube cuando el código que hoy está **fuera** de clases pasa a ser método de u
 
 | Autor | Commits | Código (LOC) | Tests (LOC) | Docs (LOC) | Días activos | % del código |
 |---|---:|---:|---:|---:|---:|---:|
-| Julián San Martín | 12 | 1,830 | 0 | 443 | 14 | 100% |
+| Julián San Martín | 13 | 1,984 | 0 | 443 | 15 | 100% |
 
 > _El LOC de autoría lo calcula RepoSense sobre el historial y puede diferir del LOC de código del análisis de calidad (que mira solo el estado de `main`)._
 
@@ -70,8 +70,8 @@ Reúne lo que el análisis marcó y lo que todavía falta para cada semáforo. C
 
 | Falla | Tu resultado | Requisito | Archivos |
 |---|---|---|---|
-| Señales POO/SOLID críticas | Baja cohesión (LCOM), Interfaz con demasiados métodos (ISP) | Aprobar: ninguna<br>Destacar: ninguna | `bucle.ts`, `interfaces.ts`, `poc.ts` |
-| Métodos/funciones largos o con muchos parámetros | **6** método(s)/función(es) largos o con muchos parámetros | Sin señales | `bucle.ts`, `calculos.ts`, `dibujarMapa.ts`, `dibujarPOC.ts`, `hud.ts` |
+| Señales POO/SOLID críticas | Baja cohesión (LCOM), Acoplamiento alto (CBO), Interfaz con demasiados métodos (ISP) | Aprobar: ninguna<br>Destacar: ninguna | `bucle.ts`, `interfaces.ts`, `poc.ts` |
+| Métodos/funciones largos o con muchos parámetros | **6** método(s)/función(es) largos o con muchos parámetros | Sin señales | `bucle.ts`, `calculos.ts`, `dibujarMapa.ts`, `hud.ts`, `mano.ts` |
 
 ## 4. Aspectos evaluados
 
@@ -81,19 +81,19 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Un resumen numérico (0-100) que combina la riqueza de clases bien usadas con la penalización por señales POO/SOLID y duplicación, y luego aplica topes duros.
 - **Por qué importa:** Ordena y prioriza la revisión: un índice bajo indica varias señales que conviene mirar juntas.
-- **Tu resultado:** índice **65/100**
+- **Tu resultado:** índice **67/100**
 
 ### 2. Duplicación lógica (DRY) (duplicacion) — sin señales
 
 - **Qué mide:** Porcentaje de bloques de LÓGICA repetidos. Quedan fuera imports/includes, anotaciones, declaraciones de campos y comentarios/Javadoc/docstrings: esos bloques son boilerplate, no lógica.
 - **Por qué importa:** Cada copia de lógica se mantiene por separado: un arreglo hay que repetirlo y los defectos se multiplican.
-- **Tu resultado:** **1.6%** de duplicación lógica
+- **Tu resultado:** **1.5%** de duplicación lógica
 
 ### 3. Adopción de POO (% de código en clases) (poo) — sin señales
 
 - **Qué mide:** Proporción de las **líneas de lógica** que viven dentro de una clase. Quedan fuera `package`/`import`/`using`/anotaciones y comentarios/Javadoc/docstrings: no son código que pueda estar dentro de una clase y, si contaran, el porcentaje quedaría topado por el boilerplate de cada archivo.
 - **Por qué importa:** El diseño orientado a objetos es el eje de la materia: el comportamiento debería vivir como método de una clase.
-- **Tu resultado:** **98.5%** del código dentro de clases
+- **Tu resultado:** **98.6%** del código dentro de clases
 - **Cómo leerlo:** Es una **proporción**, no un acumulado: agregar código dentro de una clase no la sube por sí solo (numerador y denominador crecen juntos). Sube cuando el código que está **fuera** de clases (funciones sueltas, `main`, constantes de módulo, scripts) pasa a ser método de una clase o deja de existir. La medición se hace sobre `main`: el trabajo que todavía vive en otra rama no se refleja hasta que se integra.
 
 ### 4. Funciones fuera de clases (sueltas) — sin señales
@@ -196,18 +196,18 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 | Aspecto | Archivo | Línea | Hallazgo |
 |---|---|---:|---|
-| Duplicación lógica (DRY) | — | — | duplicación lógica: 1.6% · boilerplate: 0.0% |
+| Duplicación lógica (DRY) | — | — | duplicación lógica: 1.5% · boilerplate: 0.0% |
 | Duplicación lógica (DRY) | `controladorSimulacion.ts` | 58 | bloque de 8 líneas repetido 2 veces en controladorSimulacion.ts:58, controlesNavegacion.ts:68 |
 | Duplicación lógica (DRY) | `controladorSimulacion.ts` | 60 | bloque de 8 líneas repetido 2 veces en controladorSimulacion.ts:60, controlesNavegacion.ts:70 |
 | Duplicación lógica (DRY) | `controladorSimulacion.ts` | 61 | bloque de 8 líneas repetido 2 veces en controladorSimulacion.ts:61, controlesNavegacion.ts:71 |
 | Baja cohesión (LCOM) | `poc.ts` | 17 | clase 'POC' con baja cohesión (13%) |
-| Métodos/funciones largos o con muchos parámetros | `bucle.ts` | 80 | método 'Bucle.iterar' de 53 líneas |
-| Métodos/funciones largos o con muchos parámetros | `calculos.ts` | 91 | método 'Calculos.actualizar' de 43 líneas |
+| Métodos/funciones largos o con muchos parámetros | `bucle.ts` | 84 | método 'Bucle.iterar' de 55 líneas |
+| Métodos/funciones largos o con muchos parámetros | `calculos.ts` | 87 | método 'Calculos.actualizar' de 45 líneas |
 | Métodos/funciones largos o con muchos parámetros | `dibujarMapa.ts` | 66 | método 'DibujarMapa.dibujar' de 43 líneas |
-| Métodos/funciones largos o con muchos parámetros | `dibujarPOC.ts` | 11 | método 'DibujarPOC.dibujar' de 31 líneas |
-| Métodos/funciones largos o con muchos parámetros | `hud.ts` | 27 | método 'HUD.actualizar' de 34 líneas |
-| Métodos/funciones largos o con muchos parámetros | `hud.ts` | 66 | método 'HUD.dibujar' de 52 líneas |
-| Acoplamiento alto (CBO) | `bucle.ts` | 13 | clase 'Bucle' muy acoplada (CBO=11) |
+| Métodos/funciones largos o con muchos parámetros | `hud.ts` | 26 | método 'HUD.actualizar' de 34 líneas |
+| Métodos/funciones largos o con muchos parámetros | `hud.ts` | 65 | método 'HUD.dibujar' de 52 líneas |
+| Métodos/funciones largos o con muchos parámetros | `mano.ts` | 96 | método 'Mano.dibujar' de 48 líneas |
+| Acoplamiento alto (CBO) | `bucle.ts` | 14 | clase 'Bucle' muy acoplada (CBO=12) |
 | Interfaz con demasiados métodos (ISP) | `interfaces.ts` | 9 | interfaz 'INavegable' con 7 métodos |
 | Interfaz con demasiados métodos (ISP) | `interfaces.ts` | 40 | interfaz 'IEstadoBola' con 15 métodos |
 | Interfaz con demasiados métodos (ISP) | `interfaces.ts` | 62 | interfaz 'IPOC' con 28 métodos |
@@ -231,14 +231,14 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 ## 5. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (20 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (22 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice POO/SOLID a lo largo de los commits"
-    x-axis ["2f72e2f", "99e6f74", "7c1f350", "ce20fdf", "c5762b9", "81176c6", "900e448", "8d91a3b", "b867655", "8f4d7cc", "831f5d9", "770637a", "d9ad568", "e9a7db0", "541b153", "ef167f9", "16ec315", "f376107", "04c8ab0", "fe38bee"]
+    x-axis ["2f72e2f", "99e6f74", "7c1f350", "ce20fdf", "c5762b9", "81176c6", "900e448", "8d91a3b", "b867655", "8f4d7cc", "831f5d9", "770637a", "d9ad568", "e9a7db0", "541b153", "ef167f9", "16ec315", "f376107", "04c8ab0", "fe38bee", "a01d8f5", "6b70557"]
     y-axis "Índice" 0 --> 100
-    line [0, 0, 65, 62, 70, 56, 52, 54, 52, 68, 67, 67, 67, 67, 67, 65, 65, 65, 65, 65]
+    line [0, 0, 65, 62, 70, 56, 52, 54, 52, 68, 67, 67, 67, 67, 67, 65, 65, 65, 65, 65, 65, 67]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -263,62 +263,8 @@ xychart-beta
 | 18 | 2026-11-14 | `f376107` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
 | 19 | 2026-11-16 | `04c8ab0` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
 | 20 | 2026-11-17 | `fe38bee` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
-
-<!-- actividad-clases:inicio -->
-## Actividad en días de clase
-
-> Período evaluado **2026-08-14 → 2026-11-20** · **23 clases** (lunes, viernes) · días de clase del calendario, extendidos hasta la fecha de corte.
->
-> `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**. El cuadro principal usa sólo las fechas de clase del calendario oficial.
->
-> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-20** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
->
-> Se recorre `git log --all` sobre un mirror (todas las ramas y `refs/pull/*`), con deduplicación por commit. Fecha = fecha de autor en UTC-3. Los commits locales no pusheados no se ven. Si el trabajo fue en pareja y el commit es de otra persona, figura a nombre del autor del commit; para reflejarlo, usar `Co-authored-by` o una nota manual.
->
-> Sección informativa: no modifica el semáforo de aprobación.
-
-### Julián San Martín
-
-**11/23 clases con actividad** · 12 commits · 8 merges
-
-| Fecha | Marca | Repositorios | Commits / merges |
-|---|:--:|---|--:|
-| 2026-08-14 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-08-21 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-08-24 | No | sin actividad | 0 / 0 |
-| 2026-08-28 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-08-31 | No | sin actividad | 0 / 0 |
-| 2026-09-04 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-09-07 | No | sin actividad | 0 / 0 |
-| 2026-09-14 | No | sin actividad | 0 / 0 |
-| 2026-09-25 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-09-28 | No | sin actividad | 0 / 0 |
-| 2026-10-02 | **Sí** | Simulador-caida-libre | 1 / 2 |
-| 2026-10-05 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-09 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-16 | No | sin actividad | 0 / 0 |
-| 2026-10-19 | No | sin actividad | 0 / 0 |
-| 2026-10-23 | **Sí** | Simulador-caida-libre | 1 / 1 |
-| 2026-10-26 | No | sin actividad | 0 / 0 |
-| 2026-10-30 | No | sin actividad | 0 / 0 |
-| 2026-11-02 | **Sí** | Simulador-caida-libre | 1 / 0 |
-| 2026-11-06 | **Sí** | Simulador-caida-libre | 2 / 1 |
-| 2026-11-13 | No | sin actividad | 0 / 0 |
-| 2026-11-16 | No | sin actividad | 0 / 0 |
-| 2026-11-20 | No | sin actividad | 0 / 0 |
-
-#### Aportes fuera del calendario de clases — Julián San Martín
-
-**Julián San Martín — 4 fechas fuera del calendario** · 1 commit · 3 merges
-
-| Alumno | Fecha | Repositorios | Commits / merges |
-|---|---|---|---|
-| Julián San Martín (`julianosm1123`) | 2026-08-25 | Simulador-caida-libre | 1 / 0 |
-| Julián San Martín (`julianosm1123`) | 2026-11-03 | Simulador-caida-libre | 0 / 1 |
-| Julián San Martín (`julianosm1123`) | 2026-11-04 | Simulador-caida-libre | 0 / 1 |
-| Julián San Martín (`julianosm1123`) | 2026-11-07 | Simulador-caida-libre | 0 / 1 |
-
-<!-- actividad-clases:fin -->
+| 21 | 2026-11-20 | `a01d8f5` | dqmdz-etec | 1,536 | 65 | 98% | 1.6% | 0 |
+| 22 | 2026-11-20 | `6b70557` | dqmdz-etec | 1,664 | 67 | 99% | 1.5% | 0 |
 
 ---
 _Informe generado por la cátedra. Los criterios y umbrales de medición corresponden al perfil `exigente` de `calidad.py`; el semáforo de aprobación, a `CRITERIOS-CALIDAD.md` (ver `README.md`). Ante dudas, revisá el archivo señalado._
