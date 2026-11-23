@@ -35,7 +35,7 @@ export class POC implements IPOC {
     ) {
         this.altura = Math.max(0, altura);
         this.velocidadInicial = velocidadInicial;
-        this.radio = Math.max(0.001, radio);
+        this.radio = Math.max(0.001, Math.min(100, radio));
         this.masa = Math.max(0.001, masa);
         this.coeficienteArrastre = Math.max(0, coeficienteArrastre);
         this.velocidad = velocidadInicial;
@@ -82,7 +82,7 @@ export class POC implements IPOC {
     }
 
     public setRadio(r: number): void {
-        this.radio = Math.max(0.001, r);
+        this.radio = Math.max(0.001, Math.min(100, r));
     }
 
     public getCoeficienteArrastre(): number {

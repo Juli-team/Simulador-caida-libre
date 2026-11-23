@@ -1,18 +1,18 @@
 {
   "0": "bucle.ts",
   "1": "IPOC",
-  "2": "EstadoBola",
+  "2": "IMenu",
   "3": "POC",
   "4": "Mapa",
   "5": "ICalculos",
-  "6": "Pantalla",
+  "6": "Menu",
   "7": "EstadoBola",
-  "8": ".iterar",
-  "9": "DeltaTiempo",
+  "8": "Bucle",
+  "9": "Pantalla",
   "10": "compilerOptions",
   "11": "package.json",
   "12": "IEstadoBola",
   "13": "Formulas",
   "14": "Graphify Instructions",
-  "15": "ControlesNavegacion"
+  "15": "IDibujarMenu"
 }

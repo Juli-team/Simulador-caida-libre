@@ -24,7 +24,7 @@ const URLS_IMAGENES: string[] = Array.from({ length: 30 }, (_, i) => {
 export class DibujarMapa {
     public static readonly ALTO_IMAGEN: number = 10000;
     public static readonly TOTAL_IMAGENES: number = 30;
-    public static readonly DISTANCIA_PRECARGA: number = 500;
+    public static readonly DISTANCIA_PRECARGA: number = 3000;
 
     private readonly cacheImagenes: Map<number, HTMLImageElement> = new Map();
     private readonly imagenesCargando: Set<number> = new Set();
@@ -115,6 +115,8 @@ export class DibujarMapa {
         // Liberar de la memoria RAM/VRAM las imágenes que quedaron atrás
         this.liberarImagenesFueraDeRango(indicesRequeridos);
 
+        // Dibujar marcas de referencia métricas sobre el fondo
+
     }
 
     /**
@@ -131,6 +133,5 @@ export class DibujarMapa {
         }
     }
 
-    
-    
+   
 }

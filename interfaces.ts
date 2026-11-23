@@ -152,6 +152,36 @@ export interface ISincronizadorPOC {
  */
 export interface IDibujarPOC {
     dibujar(ctx: CanvasRenderingContext2D, calculos: ICalculos, camaraY?: number): void;
+    cambiarImagen(rutaOIndice: string | number): void;
+    getIndiceImagen(): number;
+}
+
+export interface IValoresConfiguracion {
+    alturaInicial: number;
+    masa: number;
+    radio: number;
+    coeficienteArrastre: number;
+    gravedad: number;
+    cuerpoCeleste: string;
+    imagenSeleccionada: number;
+}
+
+export interface IMenu {
+    abrir(): void;
+    cerrar(): void;
+    alternar(): void;
+    estaAbierto(): boolean;
+    getValores(): IValoresConfiguracion;
+    setValores(valores: Partial<IValoresConfiguracion>): void;
+    actualizarAlturaInicial(altura: number): void;
+    aplicarCambios(valores: IValoresConfiguracion): void;
+}
+
+export interface IDibujarMenu {
+    dibujar(ctx: CanvasRenderingContext2D, anchoPantalla: number, altoPantalla: number, menu: IMenu): void;
+    estaSobreBotonConfig(x: number, y: number, anchoPantalla: number, altoPantalla: number): boolean;
+    estaSobrePanel(x: number, y: number, anchoPantalla: number, altoPantalla: number): boolean;
+    tieneInputActivo(): boolean;
 }
 
 export interface IControlador {

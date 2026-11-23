@@ -1,20 +1,51 @@
 import { ICalculos, IDibujarPOC } from './interfaces';
 
 /**
+ * URLs de las imágenes disponibles para el POC (bola1.webp a bola4.webp).
+ */
+export const URLS_BOLAS: string[] = [
+    new URL('./bola1.webp', import.meta.url).href,
+    new URL('./bola2.webp', import.meta.url).href,
+    new URL('./bola3.webp', import.meta.url).href,
+    new URL('./bola4.webp', import.meta.url).href,
+];
+
+/**
  * Clase DibujarPOC
  * Responsabilidad única (SRP):
- * Renderizar la bola física (POC) en el canvas utilizando la imagen bola1.webp.
+ * Renderizar la bola física (POC) en el canvas utilizando la imagen bola seleccionada.
  */
 export class DibujarPOC implements IDibujarPOC {
-    private imagen: HTMLImageElement;
-    private imagenCargada: boolean = false;
+    private imagenes: HTMLImageElement[] = [];
+    private imagenesCargadas: boolean[] = [false, false, false, false];
+    private indiceImagenActual: number = 1;
 
-    constructor(rutaImagen: string = new URL('./bola1.webp', import.meta.url).href) {
-        this.imagen = new Image();
-        this.imagen.src = rutaImagen;
-        this.imagen.onload = () => {
-            this.imagenCargada = true;
-        };
+    constructor(rutaOIndice: string | number = 1) {
+        URLS_BOLAS.forEach((url, i) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => {
+                this.imagenesCargadas[i] = true;
+            };
+            this.imagenes.push(img);
+        });
+        this.cambiarImagen(rutaOIndice);
+    }
+
+    public cambiarImagen(rutaOIndice: string | number): void {
+        if (typeof rutaOIndice === 'number') {
+            const idx = Math.max(1, Math.min(4, Math.round(rutaOIndice)));
+            this.indiceImagenActual = idx;
+        } else {
+            const indexEncontrado = URLS_BOLAS.indexOf(rutaOIndice);
+            if (indexEncontrado !== -1) {
+                this.indiceImagenActual = indexEncontrado + 1;
+            }
+        }
+    }
+
+    public getIndiceImagen(): number {
+        return this.indiceImagenActual;
     }
 
     public dibujar(ctx: CanvasRenderingContext2D, calculos: ICalculos, camaraY: number = 0): void {
@@ -22,10 +53,12 @@ export class DibujarPOC implements IDibujarPOC {
         const y = calculos.getYMundo() - camaraY;
         const r = calculos.getRadio();
         const diametro = r * 2;
+        const idx = this.indiceImagenActual - 1;
+        const img = this.imagenes[idx];
 
-        if (this.imagenCargada) {
+        if (img && (img.complete || this.imagenesCargadas[idx]) && img.naturalWidth > 0) {
             ctx.drawImage(
-                this.imagen,
+                img,
                 x - r,
                 y - r,
                 diametro,
@@ -42,4 +75,7 @@ export class DibujarPOC implements IDibujarPOC {
         }
     }
 }
+
+export { DibujarPOC as dibujarpoc };
+
 
