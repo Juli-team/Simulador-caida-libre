@@ -1,4 +1,4 @@
-import { IControlador, IPantalla, IFormulas } from './interfaces';
+import { IControlador, IPantalla, IFormulas, IMenu, IDibujarMenu } from './interfaces';
 import { PuntoSujecion } from './puntoSujecion';
 import { Mapa } from './mapa';
 import { Bucle } from './bucle';
@@ -21,6 +21,8 @@ export class ControladorSimulacion implements IControlador {
     private formulas: IFormulas;
     private canvas: HTMLCanvasElement;
     private estadoBola: EstadoBola;
+    private menu?: IMenu;
+    private dibujadorMenu?: IDibujarMenu;
 
     constructor(
         pantalla: IPantalla,
@@ -28,13 +30,17 @@ export class ControladorSimulacion implements IControlador {
         mapa: Mapa,
         bucle: Bucle,
         formulas: IFormulas,
-        estadoBola?: EstadoBola
+        estadoBola?: EstadoBola,
+        menu?: IMenu,
+        dibujadorMenu?: IDibujarMenu
     ) {
         this.puntoSujecion = puntoSujecion;
         this.mapa = mapa;
         this.bucle = bucle;
         this.formulas = formulas;
         this.canvas = pantalla.getCanvas();
+        this.menu = menu;
+        this.dibujadorMenu = dibujadorMenu;
         this.estadoBola = estadoBola ?? new EstadoBola(
             'sujeto',
             puntoSujecion,
@@ -43,6 +49,11 @@ export class ControladorSimulacion implements IControlador {
             this.canvas,
             bucle
         );
+    }
+
+    public setMenu(menu: IMenu, dibujadorMenu: IDibujarMenu): void {
+        this.menu = menu;
+        this.dibujadorMenu = dibujadorMenu;
     }
 
     public iniciar(): void {
@@ -68,6 +79,21 @@ export class ControladorSimulacion implements IControlador {
     }
 
     private manejarClick = (e: MouseEvent): void => {
+        // Si la pestaña emergente de impacto está activa, ignoramos clics sobre la simulación
+        if (this.bucle.getImpacto().estaActivo()) {
+            return;
+        }
+
+        const { x, y } = this.obtenerCoordenadas(e);
+
+        // Si el clic es sobre la rueda de configuración o dentro del menú abierto, no interferir
+        if (this.dibujadorMenu?.estaSobreBotonConfig(x, y, this.canvas.width, this.canvas.height)) {
+            return;
+        }
+        if (this.menu?.estaAbierto() && this.dibujadorMenu?.estaSobrePanel(x, y, this.canvas.width, this.canvas.height)) {
+            return;
+        }
+
         const bola = this.bucle.getCalculos();
 
         if (bola === null || bola.getEstadoBola().esDetenido()) {
@@ -84,7 +110,6 @@ export class ControladorSimulacion implements IControlador {
             return;
         }
 
-        const { x, y } = this.obtenerCoordenadas(e);
         if (bola.getEstadoBola().esEnSuelo() && this.estadoBola.puntoSobreBola(bola, x, y, this.mapa)) {
             this.puntoSujecion.seguirMouse(x, y);
             bola.getEstadoBola().sujetar();
@@ -92,7 +117,23 @@ export class ControladorSimulacion implements IControlador {
     };
 
     private manejarMouseMove = (e: MouseEvent): void => {
+        if (this.bucle.getImpacto().estaActivo()) {
+            this.canvas.style.cursor = 'default';
+            return;
+        }
+
         const { x, y } = this.obtenerCoordenadas(e);
+
+        if (this.dibujadorMenu?.estaSobreBotonConfig(x, y, this.canvas.width, this.canvas.height)) {
+            this.canvas.style.cursor = 'pointer';
+            return;
+        }
+
+        if (this.menu?.estaAbierto() && this.dibujadorMenu?.estaSobrePanel(x, y, this.canvas.width, this.canvas.height)) {
+            this.canvas.style.cursor = 'default';
+            return;
+        }
+
         const bola = this.bucle.getCalculos();
 
         let pointer = false;
@@ -108,10 +149,21 @@ export class ControladorSimulacion implements IControlador {
     };
 
     private manejarKeyDown = (e: KeyboardEvent): void => {
+        if (this.menu?.estaAbierto() && this.dibujadorMenu?.tieneInputActivo()) {
+            return;
+        }
+
         const bola = this.bucle.getCalculos();
 
         if (e.code === 'Space') {
             e.preventDefault();
+
+            // Si la ventana de impacto está abierta, espacio la cierra y volvemos a la simulación
+            if (this.bucle.getImpacto().estaActivo()) {
+                this.bucle.getImpacto().desactivar();
+                return;
+            }
+
             if (!bola) return;
             const estado = bola.getEstadoBola();
             if (estado.esSujeto()) {

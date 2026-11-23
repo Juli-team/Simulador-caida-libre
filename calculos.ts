@@ -1,5 +1,5 @@
 import { ICalculos, IPOC, IFormulas, IEstadoBola } from './interfaces';
-import { PIXELES_POR_METRO } from './constantes';
+import { PIXELES_POR_METRO, Constantes } from './constantes';
 import { POC } from './poc';
 import { EstadoBola } from './estadoBola';
 
@@ -107,7 +107,8 @@ export class Calculos implements ICalculos {
         );
         const aceleracionNeta = this.formulas.calcularAceleracionNeta(
             fuerzaArrastre,
-            this.poc.getMasa()
+            this.poc.getMasa(),
+            Constantes.getGravedad()
         );
         const velocidad = this.formulas.calcularVelocidad(
             this.poc.getVelocidad(),
@@ -132,6 +133,7 @@ export class Calculos implements ICalculos {
             this.poc.setAltura(0);
             this.poc.setAceleracion(0);
             this.poc.setFuerzaArrastre(0);
+            // Conservamos la velocidad alcanzada en this.poc (la velocidad previa al choque)
             this.estadoBola.detener();
         }
     }

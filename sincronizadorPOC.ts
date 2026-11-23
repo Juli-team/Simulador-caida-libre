@@ -12,15 +12,14 @@ export class SincronizadorPOC implements ISincronizadorPOC {
         ySujecionPantalla: number,
         camaraY: number,
         ySueloMundo: number,
-        escala: number
+        _escala: number
     ): void {
         if (!calculos.getEstadoBola().esSujeto()) return;
 
-        const radio = Math.round(64 * escala);
+        const radio = calculos.getRadio();
         const xMundo = xSujecionPantalla;
         const yMundo = camaraY + ySujecionPantalla;
 
-        calculos.setRadioVisual(radio);
         calculos.setPosicion(xMundo, yMundo);
 
         const yDetencion = ySueloMundo - radio;
@@ -28,7 +27,6 @@ export class SincronizadorPOC implements ISincronizadorPOC {
         const alturaMetros = distanciaPx / PIXELES_POR_METRO;
 
         const poc = calculos.getPOC();
-        poc.setRadio(radio);
         poc.setAltura(alturaMetros);
         poc.setVelocidad(0);
         poc.setTiempoCaida(0);

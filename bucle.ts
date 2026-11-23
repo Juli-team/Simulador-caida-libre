@@ -1,4 +1,4 @@
-import { IPantalla, ISincronizadorPOC, IDibujarPOC } from './interfaces';
+import { IPantalla, ISincronizadorPOC, IDibujarPOC, IMenu, IDibujarMenu } from './interfaces';
 import { Mapa } from './mapa';
 import { PuntoSujecion } from './puntoSujecion';
 import { ControlesNavegacion } from './controlesNavegacion';
@@ -10,6 +10,7 @@ import { DibujarPOC } from './dibujarPOC';
 import { DeltaTiempo } from './deltaTiempo';
 import { DibujarMapa } from './dibujarMapa';
 import { Mano } from './mano';
+import { Impacto } from './impacto';
 
 export class Bucle {
     private pantalla: IPantalla;
@@ -22,6 +23,10 @@ export class Bucle {
     private deltaTiempo: DeltaTiempo;
     private dibujadorMapa: DibujarMapa;
     private mano: Mano;
+    private menu?: IMenu;
+    private dibujadorMenu?: IDibujarMenu;
+    private impacto: Impacto;
+    private yaDisparoImpacto: boolean = false;
 
     private calculos: Calculos | null = null;
     private ejecutando: boolean = false;
@@ -36,7 +41,10 @@ export class Bucle {
         dibujadorPOC: IDibujarPOC = new DibujarPOC(),
         deltaTiempo: DeltaTiempo = new DeltaTiempo(),
         dibujadorMapa: DibujarMapa = new DibujarMapa(),
-        mano: Mano = new Mano()
+        mano: Mano = new Mano(),
+        menu?: IMenu,
+        dibujadorMenu?: IDibujarMenu,
+        impacto: Impacto = new Impacto()
     ) {
         this.pantalla = pantalla;
         this.mapa = mapa;
@@ -48,13 +56,31 @@ export class Bucle {
         this.deltaTiempo = deltaTiempo;
         this.dibujadorMapa = dibujadorMapa;
         this.mano = mano;
+        this.menu = menu;
+        this.dibujadorMenu = dibujadorMenu;
+        this.impacto = impacto;
+    }
+
+    public getImpacto(): Impacto {
+        return this.impacto;
+    }
+
+    public setMenu(menu: IMenu, dibujadorMenu: IDibujarMenu): void {
+        this.menu = menu;
+        this.dibujadorMenu = dibujadorMenu;
+    }
+
+    public getDibujadorPOC(): IDibujarPOC {
+        return this.dibujadorPOC;
     }
 
     public setCalculos(calculos: Calculos | null): void {
         this.calculos = calculos;
+        this.yaDisparoImpacto = false;
         if (calculos === null) {
             this.puntoSujecion.reiniciar();
             this.mapa.setCamaraY(this.mapa.getMaxCamaraY());
+            this.impacto.desactivar();
         }
     }
 
@@ -145,6 +171,29 @@ export class Bucle {
 
         this.mano.dibujar(ctx, this.calculos);
         this.hud.dibujar(ctx, anchoPantalla, this.calculos);
+
+        if (this.dibujadorMenu && this.menu) {
+            this.dibujadorMenu.dibujar(ctx, anchoPantalla, altoPantalla, this.menu);
+        }
+
+        // Si la bola impactó contra el suelo, activamos el popup fotográfico de Impacto
+        if (this.calculos) {
+            const estado = this.calculos.getEstadoBola();
+            if (estado.esDetenido()) {
+                if (!this.yaDisparoImpacto) {
+                    this.yaDisparoImpacto = true;
+                    // Captura optimizada en memoria del canvas renderizado en este instante
+                    this.impacto.activar(this.pantalla.getCanvas(), this.calculos.getPOC());
+                }
+            } else {
+                this.yaDisparoImpacto = false;
+            }
+        }
+
+        // Renderizar la ventana emergente de impacto encima de todo
+        if (this.impacto.estaActivo()) {
+            this.impacto.dibujar(ctx, anchoPantalla, altoPantalla);
+        }
 
         requestAnimationFrame(this.iterar);
     };

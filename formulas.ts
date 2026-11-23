@@ -1,5 +1,5 @@
 import { IFormulas } from './interfaces';
-import { GRAVEDAD_DEFECTO, DENSIDAD_AIRE_NIVEL_MAR, ESCALA_ALTURA_ATMOSFERICA } from './constantes';
+import { Constantes, DENSIDAD_AIRE_NIVEL_MAR, ESCALA_ALTURA_ATMOSFERICA } from './constantes';
 
 export type { IFormulas };
 
@@ -58,7 +58,7 @@ export class Formulas implements IFormulas {
     public calcularAceleracionNeta(
         fuerzaArrastre: number,
         masa: number,
-        gravedad: number = GRAVEDAD_DEFECTO
+        gravedad: number = Constantes.getGravedad()
     ): number {
         if (masa <= 0) return gravedad;
         return gravedad - (fuerzaArrastre / masa);
@@ -85,7 +85,7 @@ export class Formulas implements IFormulas {
      * @param h0 Altura inicial en metros
      * @param gravedad Gravedad en m/s²
      */
-    public calcularTiempo(h0: number, gravedad: number = GRAVEDAD_DEFECTO): number {
+    public calcularTiempo(h0: number, gravedad: number = Constantes.getGravedad()): number {
         const mitadG = 0.5 * gravedad;
         if (mitadG <= 0 || h0 <= 0) {
             return 0;

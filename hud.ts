@@ -1,4 +1,5 @@
 import { IDibujable, ICalculos } from './interfaces';
+import { Constantes } from './constantes';
 
 /**
  * Clase HUD
@@ -81,13 +82,12 @@ export class HUD implements IDibujable {
         let y = inicioY;
 
         // Encabezado
-        ctx.font = 'bold 16px monospace';
+        ctx.font = '22px "Internet Friends", monospace';
         ctx.fillText('SIMULADOR DE CAIDA LIBRE', xTexto, y);
-        y += interlineado;
-
+        y += interlineado + 4;
 
         if (!calculos) {
-            ctx.font = '14px monospace';
+            ctx.font = '18px "Internet Friends", monospace';
             ctx.fillText('Estado: Esperando objeto', xTexto, y);
             y += interlineado;
             ctx.fillStyle = '#cbd5e1';
@@ -99,9 +99,8 @@ export class HUD implements IDibujable {
             return;
         }
 
-
         // Solo se muestra en pantalla la velocidad y el tiempo
-        ctx.font = 'bold 16px monospace';
+        ctx.font = '20px "Internet Friends", monospace';
         ctx.fillStyle = '#fdfdfd';
         ctx.fillText(`Tiempo: ${this.tiempoMostrado.toFixed(2)} s`, xTexto, y);
         y += interlineado;
@@ -111,17 +110,21 @@ export class HUD implements IDibujable {
 
         ctx.fillStyle = '#fdfdfd';
         ctx.fillText(`Altura: ${this.alturaMostrada.toFixed(2)} m`, xTexto, y);
+        y += interlineado;
+
+        ctx.fillStyle = '#00ff6a';
+        ctx.fillText(`Gravedad: ${Constantes.getGravedad()} m/s²`, xTexto, y);
         y += interlineado + 8;
 
         // Guía de controles
         ctx.fillStyle = '#f8fafc';
-        ctx.font = 'italic 12px monospace';
+        ctx.font = '16px "Internet Friends", monospace';
         ctx.fillText('[MOUSE]: Mover bola sujeta', xTexto, y);
-        y += 18;
+        y += 20;
         ctx.fillText('[W]/[S]: Subir/Bajar cámara', xTexto, y);
-        y += 18;
+        y += 20;
         ctx.fillText('[ESPACIO]: Soltar / Pausar', xTexto, y);
-        y += 18;
+        y += 20;
         ctx.fillText('[R]: Reiniciar simulación', xTexto, y);
 
         ctx.restore();
