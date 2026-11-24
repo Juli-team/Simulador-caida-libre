@@ -1,6 +1,6 @@
 import { EstadoPOC, IEstadoBola, IFormulas } from './interfaces';
-import { POC } from './poc';
-import { Calculos } from './calculos';
+import { POC } from '../física/poc';
+import { Calculos } from '../física/calculos';
 import { PuntoSujecion } from './puntoSujecion';
 import { Mapa } from './mapa';
 import { Bucle } from './bucle';

@@ -7,9 +7,9 @@
     "ast_empty": true
   },
   "bucle.ts": {
-    "mtime": 1795444078.0542917,
-    "seen": 1795444147.7936,
-    "ast_hash": "7773275030a46d08346b8ee109f5a0b9",
+    "mtime": 1795483120.0962827,
+    "seen": 1795483176.0861099,
+    "ast_hash": "bc89825d1e9fa41ef31984e8c11e4a70",
     "semantic_hash": ""
   },
   "calculos.ts": {
@@ -19,9 +19,9 @@
     "semantic_hash": ""
   },
   "constantes.ts": {
-    "mtime": 1795297445.6757894,
-    "seen": 1795444147.7936187,
-    "ast_hash": "670855e9db79fae3b07c0c1a216946af",
+    "mtime": 1795483448.8648176,
+    "seen": 1795483792.498861,
+    "ast_hash": "61cbb825eab92fe6e2035a3d245bf21d",
     "semantic_hash": ""
   },
   "controladorSimulacion.ts": {
@@ -37,9 +37,9 @@
     "semantic_hash": ""
   },
   "dibujarPOC.ts": {
-    "mtime": 1795296092.5198598,
-    "seen": 1795296304.449371,
-    "ast_hash": "519c30dfb9e3d43321352083343f6932",
+    "mtime": 1795483698.0971644,
+    "seen": 1795483792.4988756,
+    "ast_hash": "61a32c2753d1a022882f0eedf833acbe",
     "semantic_hash": ""
   },
   "estadoBola.ts": {
@@ -55,9 +55,9 @@
     "semantic_hash": ""
   },
   "hud.ts": {
-    "mtime": 1795296264.4722714,
-    "seen": 1795296304.4493809,
-    "ast_hash": "483e05e1c44d60a01de61d8cc523bf3b",
+    "mtime": 1795444774.1282866,
+    "seen": 1795483176.086199,
+    "ast_hash": "4e084e4e336bd63d87d816c1471bb320",
     "semantic_hash": ""
   },
   "interfaces.ts": {
@@ -73,9 +73,9 @@
     "semantic_hash": ""
   },
   "mapa.ts": {
-    "mtime": 1795292853.9074132,
-    "seen": 1795295610.2786367,
-    "ast_hash": "5c8c55fd047f51b179d5277923c7d350",
+    "mtime": 1795483110.066263,
+    "seen": 1795483176.0862198,
+    "ast_hash": "1e9c383fe64714767775e2aedcf733f9",
     "semantic_hash": ""
   },
   "package.json": {
@@ -133,9 +133,9 @@
     "semantic_hash": ""
   },
   "dibujarMapa.ts": {
-    "mtime": 1795296079.730868,
-    "seen": 1795296304.4493642,
-    "ast_hash": "55c3619caf2298dc8912fd109500ae74",
+    "mtime": 1795483155.5179973,
+    "seen": 1795483176.0861428,
+    "ast_hash": "37f008d182ce1741748667483b993164",
     "semantic_hash": ""
   },
   "clases_y_funciones.txt": {
@@ -361,21 +361,15 @@
     "semantic_hash": ""
   },
   "dibujarMenu.ts": {
-    "mtime": 1795298290.4381723,
-    "seen": 1795444147.7936518,
-    "ast_hash": "194934f1b8ecbeee7290127cf65368f0",
+    "mtime": 1795483727.6821783,
+    "seen": 1795483792.4988737,
+    "ast_hash": "50bf221ec1bd01a84064aada1ed64d51",
     "semantic_hash": ""
   },
   "menu.ts": {
-    "mtime": 1795296111.799854,
-    "seen": 1795296304.4493968,
-    "ast_hash": "876a887e27b333815843eb8e11320e0a",
-    "semantic_hash": ""
-  },
-  "bola2.webp": {
-    "mtime": 1795294324.6585662,
-    "seen": 1795295610.278662,
-    "ast_hash": "ebcb7affd03812549c4712d0c7769a8b",
+    "mtime": 1795483126.7392986,
+    "seen": 1795483176.0862231,
+    "ast_hash": "9936678b93d4cc70ab4bd605214a5916",
     "semantic_hash": ""
   },
   "bola3.webp": {

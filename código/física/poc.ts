@@ -1,4 +1,4 @@
-import { IPOC, IResultadoCalculo } from './interfaces';
+import { IPOC, IResultadoCalculo } from '../simulación/interfaces';
 
 
 /**

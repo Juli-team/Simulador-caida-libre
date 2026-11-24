@@ -1,4 +1,4 @@
-import { IFormulas } from './interfaces';
+import { IFormulas } from '../simulación/interfaces';
 import { Constantes, DENSIDAD_AIRE_NIVEL_MAR, ESCALA_ALTURA_ATMOSFERICA } from './constantes';
 
 export type { IFormulas };

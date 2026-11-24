@@ -1,7 +1,7 @@
 import { IMenu, IValoresConfiguracion, IPantalla, IFormulas, IDibujarPOC } from './interfaces';
-import { Constantes, PIXELES_POR_METRO, GRAVEDAD_DEFECTO } from './constantes';
-import { POC } from './poc';
-import { Calculos } from './calculos';
+import { Constantes, PIXELES_POR_METRO, GRAVEDAD_DEFECTO } from '../física/constantes';
+import { POC } from '../física/poc';
+import { Calculos } from '../física/calculos';
 import { Mapa } from './mapa';
 import { PuntoSujecion } from './puntoSujecion';
 import { Bucle } from './bucle';
@@ -112,6 +112,7 @@ export class Menu implements IMenu {
             Math.min(this.mapa.getMaxCamaraY(), yObjetivo - this.mapa.getAltoVisible() / 2)
         );
         this.mapa.setCamaraY(targetCamaraY);
+        this.mapa.precargarCercaDe(targetCamaraY);
     }
 
     public getLimiteAlturaMapa(): number {

@@ -6,7 +6,7 @@
 /**
  * Escala del simulador: cantidad de píxeles en pantalla que representan 1 metro en el mundo físico.
  */
-export const PIXELES_POR_METRO: number = 500;
+export const PIXELES_POR_METRO: number = 250;
 
 /**
  * Aceleración de la gravedad estándar en la superficie terrestre (m/s²).

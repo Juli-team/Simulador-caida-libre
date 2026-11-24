@@ -1,13 +1,12 @@
 import { ICalculos, IDibujarPOC } from './interfaces';
 
 /**
- * URLs de las imágenes disponibles para el POC (bola1.webp a bola4.webp).
+ * URLs de las imágenes disponibles para el POC (bola1.webp, bola3.webp, bola4.webp).
  */
 export const URLS_BOLAS: string[] = [
-    new URL('./bola1.webp', import.meta.url).href,
-    new URL('./bola2.webp', import.meta.url).href,
-    new URL('./bola3.webp', import.meta.url).href,
-    new URL('./bola4.webp', import.meta.url).href,
+    new URL('../../assets/bola1.webp', import.meta.url).href,
+    new URL('../../assets/bola3.webp', import.meta.url).href,
+    new URL('../../assets/bola4.webp', import.meta.url).href,
 ];
 
 /**
@@ -17,10 +16,11 @@ export const URLS_BOLAS: string[] = [
  */
 export class DibujarPOC implements IDibujarPOC {
     private imagenes: HTMLImageElement[] = [];
-    private imagenesCargadas: boolean[] = [false, false, false, false];
+    private imagenesCargadas: boolean[] = [];
     private indiceImagenActual: number = 1;
 
     constructor(rutaOIndice: string | number = 1) {
+        this.imagenesCargadas = new Array(URLS_BOLAS.length).fill(false);
         URLS_BOLAS.forEach((url, i) => {
             const img = new Image();
             img.src = url;
@@ -34,7 +34,7 @@ export class DibujarPOC implements IDibujarPOC {
 
     public cambiarImagen(rutaOIndice: string | number): void {
         if (typeof rutaOIndice === 'number') {
-            const idx = Math.max(1, Math.min(4, Math.round(rutaOIndice)));
+            const idx = Math.max(1, Math.min(URLS_BOLAS.length, Math.round(rutaOIndice)));
             this.indiceImagenActual = idx;
         } else {
             const indexEncontrado = URLS_BOLAS.indexOf(rutaOIndice);

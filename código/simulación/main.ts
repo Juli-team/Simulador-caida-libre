@@ -2,7 +2,7 @@ import { Pantalla } from './pantalla';
 import { Mapa } from './mapa';
 import { PuntoSujecion } from './puntoSujecion';
 import { ControlesNavegacion } from './controlesNavegacion';
-import { Formulas } from './formulas';
+import { Formulas } from '../física/formulas';
 import { HUD } from './hud';
 import { Bucle } from './bucle';
 import { ControladorSimulacion } from './controladorSimulacion';

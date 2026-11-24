@@ -1,8 +1,8 @@
 import { IDibujarMenu, IMenu, IValoresConfiguracion } from './interfaces';
-import { Constantes, IOpcionGravedad } from './constantes';
+import { Constantes, IOpcionGravedad } from '../física/constantes';
 import { URLS_BOLAS } from './dibujarPOC';
 
-const URL_CONFIG: string = new URL('./config.webp', import.meta.url).href;
+const URL_CONFIG: string = new URL('../../assets/config.webp', import.meta.url).href;
 
 type TipoInput = 'altura' | 'masa' | 'radio' | 'coeficiente' | null;
 
@@ -26,9 +26,9 @@ export class DibujarMenu implements IDibujarMenu {
     private imgConfig: HTMLImageElement;
     private imgConfigCargada: boolean = false;
 
-    // Miniaturas de las bolas 1 a 4
+    // Miniaturas de las bolas disponibles
     private imagenesBolas: HTMLImageElement[] = [];
-    private imagenesBolasCargadas: boolean[] = [false, false, false, false];
+    private imagenesBolasCargadas: boolean[] = [];
 
     // Dimensiones y estado del botón de configuración
     private btnConfigX: number = 0;
@@ -86,7 +86,8 @@ export class DibujarMenu implements IDibujarMenu {
             this.imgConfigCargada = true;
         };
 
-        // Carga de miniaturas bola1 a bola4
+        // Carga de miniaturas de bolas disponibles
+        this.imagenesBolasCargadas = new Array(URLS_BOLAS.length).fill(false);
         URLS_BOLAS.forEach((url, i) => {
             const img = new Image();
             img.src = url;
@@ -466,10 +467,11 @@ export class DibujarMenu implements IDibujarMenu {
     private dibujarMiniaturasBolas(ctx: CanvasRenderingContext2D, centroX: number, startY: number): number {
         const tam = 50;
         const gap = 16;
-        const totalW = 4 * tam + 3 * gap;
+        const cantidadBolas = URLS_BOLAS.length;
+        const totalW = cantidadBolas * tam + (cantidadBolas - 1) * gap;
         const startX = centroX - totalW / 2;
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < cantidadBolas; i++) {
             const x = startX + i * (tam + gap);
             const y = startY;
             const indiceBola = i + 1;

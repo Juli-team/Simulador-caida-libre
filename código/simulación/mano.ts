@@ -1,6 +1,6 @@
 import { IDibujable } from './interfaces';
 import { PuntoSujecion } from './puntoSujecion';
-import { Calculos } from './calculos';
+import { Calculos } from '../física/calculos';
 
 /**
  * Clase Mano
@@ -35,7 +35,7 @@ export class Mano implements IDibujable {
     // Altura relativa fija de la mano respecto a la pantalla visible (eje Y bloqueado en pantalla)
     private readonly Y_PANTALLA_RELATIVO: number = 0.3;
 
-    constructor(rutaImagen: string = new URL('./mano.webp', import.meta.url).href) {
+    constructor(rutaImagen: string = new URL('../../assets/mano.webp', import.meta.url).href) {
         this.imagen = new Image();
         this.imagen.src = rutaImagen;
         this.imagen.onload = () => {
