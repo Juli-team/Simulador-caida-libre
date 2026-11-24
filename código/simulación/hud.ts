@@ -1,5 +1,5 @@
 import { IDibujable, ICalculos } from './interfaces';
-import { Constantes } from './constantes';
+import { Constantes } from '../física/constantes';
 
 /**
  * Clase HUD

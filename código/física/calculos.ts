@@ -1,7 +1,7 @@
-import { ICalculos, IPOC, IFormulas, IEstadoBola } from './interfaces';
+import { ICalculos, IPOC, IFormulas, IEstadoBola } from '../simulación/interfaces';
 import { PIXELES_POR_METRO, Constantes } from './constantes';
 import { POC } from './poc';
-import { EstadoBola } from './estadoBola';
+import { EstadoBola } from '../simulación/estadoBola';
 
 export class Calculos implements ICalculos {
     private formulas: IFormulas;

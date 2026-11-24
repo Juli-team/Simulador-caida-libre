@@ -9,7 +9,7 @@ export class Impacto {
 
     constructor() {
         // Cargar audio de flash de cámara
-        const audioUrl = new URL('./kauasilbershlachparodes-camera-flash-494027.mp3', import.meta.url).href;
+        const audioUrl = new URL('../../assets/kauasilbershlachparodes-camera-flash-494027.mp3', import.meta.url).href;
         this.audio = new Audio(audioUrl);
 
         // Crear canvas secundario en memoria para la captura optimizada del frame
@@ -21,7 +21,7 @@ export class Impacto {
     }
 
     private cargarFuente(): void {
-        const fontUrl = new URL('./Internet Friends.ttf', import.meta.url).href;
+        const fontUrl = new URL('../../assets/Internet Friends.ttf', import.meta.url).href;
         const fontFace = new FontFace('Internet Friends', `url(${fontUrl})`);
         fontFace.load().then((loadedFace) => {
             (document.fonts as any).add(loadedFace);

@@ -1,5 +1,5 @@
 import { ICalculos, ISincronizadorPOC } from './interfaces';
-import { PIXELES_POR_METRO } from './constantes';
+import { PIXELES_POR_METRO } from '../física/constantes';
 
 /**
  * Sincroniza la posición, radio y altura del POC con el punto de sujeción

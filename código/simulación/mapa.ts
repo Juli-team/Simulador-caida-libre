@@ -14,7 +14,7 @@ export class Mapa implements IDibujable, INavegable {
     constructor(
         ancho: number = 1024,
         altoVisible: number = 768,
-        altoTotal: number = 5000,
+        altoTotal: number = 300000,
         dibujadorMapa: DibujarMapa = new DibujarMapa()
     ) {
         this.ancho = ancho;
@@ -49,6 +49,14 @@ export class Mapa implements IDibujable, INavegable {
 
     public setCamaraY(y: number): void {
         this.camaraY = Math.max(0, Math.min(this.getMaxCamaraY(), y));
+    }
+
+    public precargarCercaDe(camaraY: number): void {
+        this.dibujadorMapa.precargarCercaDe(camaraY, this.altoTotal);
+    }
+
+    public getDibujadorMapa(): DibujarMapa {
+        return this.dibujadorMapa;
     }
 
     public getAltoTotal(): number {

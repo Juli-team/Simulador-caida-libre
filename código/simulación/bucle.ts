@@ -2,12 +2,12 @@ import { IPantalla, ISincronizadorPOC, IDibujarPOC, IMenu, IDibujarMenu } from '
 import { Mapa } from './mapa';
 import { PuntoSujecion } from './puntoSujecion';
 import { ControlesNavegacion } from './controlesNavegacion';
-import { Calculos } from './calculos';
-import { POC } from './poc';
+import { Calculos } from '../física/calculos';
+import { POC } from '../física/poc';
 import { HUD } from './hud';
 import { SincronizadorPOC } from './sincronizadorPOC';
 import { DibujarPOC } from './dibujarPOC';
-import { DeltaTiempo } from './deltaTiempo';
+import { DeltaTiempo } from '../física/deltaTiempo';
 import { DibujarMapa } from './dibujarMapa';
 import { Mano } from './mano';
 import { Impacto } from './impacto';
@@ -148,6 +148,8 @@ export class Bucle {
 
                 this.controles.setBloqueado(true);
                 this.calculos.actualizar(dt, sueloY);
+
+                this.dibujadorMapa.notificarCaidaLibre(this.mapa.getCamaraY(), this.mapa.getAltoTotal());
 
                 const targetCamaraY = this.calculos.getYMundo() - (altoPantalla * 0.45);
                 if (targetCamaraY > this.mapa.getCamaraY()) {
