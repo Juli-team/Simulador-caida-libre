@@ -56,29 +56,29 @@ export class DibujarMapa {
         img.decoding = 'async';
         img.src = URLS_IMAGENES[indice];
 
-        const procesarImagen = async () => {
-            try {
-                if ('decode' in img) {
-                    await img.decode();
-                }
-            } catch {
-                // Si la decodificación es interrumpida o falla, se continúa si la imagen está cargada
-            }
-
-            if (img.naturalWidth > 0) {
-                this.cacheImagenes.set(indice, img);
-            }
-            this.imagenesCargando.delete(indice);
-        };
-
         img.onload = () => {
-            void procesarImagen();
+            void this.procesarImagenCargada(indice, img);
         };
 
         img.onerror = () => {
             this.imagenesCargando.delete(indice);
             console.error(`Error al cargar la imagen de cielo índice ${indice + 1}`);
         };
+    }
+
+    private async procesarImagenCargada(indice: number, img: HTMLImageElement): Promise<void> {
+        try {
+            if ('decode' in img) {
+                await img.decode();
+            }
+        } catch {
+            // Si la decodificación es interrumpida o falla, se continúa si la imagen está cargada
+        }
+
+        if (img.naturalWidth > 0) {
+            this.cacheImagenes.set(indice, img);
+        }
+        this.imagenesCargando.delete(indice);
     }
 
     /**
@@ -113,66 +113,71 @@ export class DibujarMapa {
         const altoTotal = mapa.getAltoTotal();
         const ancho = mapa.getAncho();
         const altoVisible = mapa.getAltoVisible();
-
         const yTopVisible = camaraY;
         const yBottomVisible = camaraY + altoVisible;
 
         // Determinar velocidad y dirección vertical de la cámara
         const deltaY = this.ultimaCamaraY >= 0 ? camaraY - this.ultimaCamaraY : 0;
         this.ultimaCamaraY = camaraY;
-
-        // Calcular el rango de índices que intersectan la ventana visible
-        const indiceMinimo = Math.max(
-            0,
-            Math.floor((altoTotal - yBottomVisible) / DibujarMapa.ALTO_IMAGEN)
-        );
-        const indiceMaximo = Math.min(
-            DibujarMapa.TOTAL_IMAGENES - 1,
-            Math.floor((altoTotal - yTopVisible) / DibujarMapa.ALTO_IMAGEN)
-        );
-
-        // Conjunto de índices que deben permanecer protegidos en memoria este fotograma
+        const { minimo: indiceMinimo, maximo: indiceMaximo } =
+            this.calcularRangoVisible(altoTotal, yTopVisible, yBottomVisible);
         const indicesRequeridos = new Set<number>();
 
         // 1. Renderizar e indicar baldosas visibles con recorte fuente (source clipping)
         for (let i = indiceMinimo; i <= indiceMaximo; i++) {
             indicesRequeridos.add(i);
             this.cargarImagen(i);
-
-            const yFin = altoTotal - i * DibujarMapa.ALTO_IMAGEN;
-            const yInicio = yFin - DibujarMapa.ALTO_IMAGEN;
-
-            // Intersección exacta entre la baldosa y el viewport de la cámara
-            const yVisibleTop = Math.max(yInicio, yTopVisible);
-            const yVisibleBottom = Math.min(yFin, yBottomVisible);
-
-            if (yVisibleBottom > yVisibleTop) {
-                const altoDestino = yVisibleBottom - yVisibleTop;
-                const dy = yVisibleTop - yTopVisible;
-                const img = this.cacheImagenes.get(i);
-
-                if (img && img.complete && img.naturalWidth > 0) {
-                    const factorEscalaY = img.naturalHeight / DibujarMapa.ALTO_IMAGEN;
-                    const sy = (yVisibleTop - yInicio) * factorEscalaY;
-                    const sh = altoDestino * factorEscalaY;
-
-                    ctx.drawImage(
-                        img,
-                        0, sy, img.naturalWidth, sh,
-                        0, dy, ancho, altoDestino
-                    );
-                } else {
-                    // Respaldo de degradado atmosférico suave mientras finaliza la decodificación
-                    this.dibujarFondoRespaldo(ctx, yVisibleTop, dy, ancho, altoDestino, altoTotal);
-                }
-            }
+            this.dibujarBaldosa(ctx, i, yTopVisible, yBottomVisible, ancho, altoTotal);
         }
-
         // 2. Precarga predictiva según la dirección y velocidad del movimiento
         this.gestionarPrecargaPredictiva(indicesRequeridos, indiceMinimo, indiceMaximo, deltaY);
-
         // 3. Gestión de caché con desalojo amortiguado (evita thrashing continuo)
         this.gestionarCache(indicesRequeridos, (indiceMinimo + indiceMaximo) / 2);
+    }
+
+    private calcularRangoVisible(
+        altoTotal: number,
+        yTopVisible: number,
+        yBottomVisible: number
+    ): { minimo: number; maximo: number } {
+        return {
+            minimo: Math.max(
+                0,
+                Math.floor((altoTotal - yBottomVisible) / DibujarMapa.ALTO_IMAGEN)
+            ),
+            maximo: Math.min(
+                DibujarMapa.TOTAL_IMAGENES - 1,
+                Math.floor((altoTotal - yTopVisible) / DibujarMapa.ALTO_IMAGEN)
+            )
+        };
+    }
+
+    private dibujarBaldosa(
+        ctx: CanvasRenderingContext2D,
+        indice: number,
+        yTopVisible: number,
+        yBottomVisible: number,
+        ancho: number,
+        altoTotal: number
+    ): void {
+        const yFin = altoTotal - indice * DibujarMapa.ALTO_IMAGEN;
+        const yInicio = yFin - DibujarMapa.ALTO_IMAGEN;
+        const yVisibleTop = Math.max(yInicio, yTopVisible);
+        const yVisibleBottom = Math.min(yFin, yBottomVisible);
+        if (yVisibleBottom <= yVisibleTop) return;
+        const altoDestino = yVisibleBottom - yVisibleTop;
+        const dy = yVisibleTop - yTopVisible;
+        const img = this.cacheImagenes.get(indice);
+
+        if (img && img.complete && img.naturalWidth > 0) {
+            const factorEscalaY = img.naturalHeight / DibujarMapa.ALTO_IMAGEN;
+            const sy = (yVisibleTop - yInicio) * factorEscalaY;
+            const sh = altoDestino * factorEscalaY;
+            ctx.drawImage(img, 0, sy, img.naturalWidth, sh, 0, dy, ancho, altoDestino);
+        } else {
+            // Respaldo de degradado atmosférico suave mientras finaliza la decodificación
+            this.dibujarFondoRespaldo(ctx, yVisibleTop, dy, ancho, altoDestino, altoTotal);
+        }
     }
 
     /**

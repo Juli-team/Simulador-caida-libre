@@ -1,4 +1,10 @@
-import { IConfiguracionMenu, IValoresConfiguracion, IDibujarPOC } from './interfaces';
+import {
+    IConfiguracionMenu,
+    IConstantes,
+    IDibujarPOC,
+    IOpcionGravedad,
+    IValoresConfiguracion
+} from './interfaces';
 import { Constantes, GRAVEDAD_DEFECTO } from '../física/constantes';
 import { GestorBola } from './gestorBola';
 
@@ -11,6 +17,7 @@ import { GestorBola } from './gestorBola';
 export class ConfiguracionMenu implements IConfiguracionMenu {
     private dibujadorPOC: IDibujarPOC;
     private gestorBola: GestorBola;
+    private readonly constantes: IConstantes;
     private valores: IValoresConfiguracion = {
         alturaInicial: 0,
         masa: 10,
@@ -21,9 +28,14 @@ export class ConfiguracionMenu implements IConfiguracionMenu {
         imagenSeleccionada: 1
     };
 
-    constructor(dibujadorPOC: IDibujarPOC, gestorBola: GestorBola) {
+    constructor(
+        dibujadorPOC: IDibujarPOC,
+        gestorBola: GestorBola,
+        constantes: IConstantes = new Constantes()
+    ) {
         this.dibujadorPOC = dibujadorPOC;
         this.gestorBola = gestorBola;
+        this.constantes = constantes;
         this.sincronizarValoresIniciales();
     }
 
@@ -35,8 +47,12 @@ export class ConfiguracionMenu implements IConfiguracionMenu {
             this.valores.radio = Math.min(100, pocActual.getRadio());
             this.valores.coeficienteArrastre = pocActual.getCoeficienteArrastre();
         }
-        this.valores.gravedad = Constantes.getGravedad();
+        this.valores.gravedad = this.constantes.getGravedad();
         this.valores.imagenSeleccionada = this.dibujadorPOC.getIndiceImagen();
+    }
+
+    public getGravedadesDisponibles(): IOpcionGravedad[] {
+        return this.constantes.getGravedadesDisponibles();
     }
 
     public getValores(): IValoresConfiguracion {
@@ -65,7 +81,7 @@ export class ConfiguracionMenu implements IConfiguracionMenu {
         const cd = Math.max(0, nuevosValores.coeficienteArrastre);
         const alturaInicial = Math.max(0, nuevosValores.alturaInicial);
 
-        Constantes.setGravedad(nuevosValores.gravedad);
+        this.constantes.setGravedad(nuevosValores.gravedad);
         this.dibujadorPOC.cambiarImagen(nuevosValores.imagenSeleccionada);
         this.gestorBola.reiniciarConParametros(alturaInicial, masa, radio, cd);
     }

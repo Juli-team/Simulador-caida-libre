@@ -96,62 +96,56 @@ export class Mano implements IDibujable {
     public dibujar(ctx: CanvasRenderingContext2D, calculos: Calculos | null): void {
         if (!this.imagenCargada) return;
 
-        const esSujeto = calculos !== null && calculos.getEstadoBola().esSujeto();
-
-        // Determinar opacidad según si está sujeta o en los 5 segundos posteriores
-        let opacidad = 0;
-        if (esSujeto) {
-            opacidad = 1;
-        } else if (this.tiempoRestanteSoltado > 0) {
-            opacidad = this.tiempoRestanteSoltado / this.duracionDesvanecimiento;
-        }
-
+        const opacidad = this.calcularOpacidad(calculos);
         if (opacidad <= 0) return;
 
-        const escala = this.ultimaEscala;
-        const xSujecion = this.ultimoX;
-        const ySujecion = this.ultimoY;
-
-        // Escalar la mano manteniendo proporciones coherentes con la resolución de pantalla
-        const escalaVisual = escala * 0.75;
+        const escalaVisual = this.ultimaEscala * 0.75;
         const anchoDibujo = this.ANCHO_ORIGINAL * escalaVisual;
         const altoDibujo = this.ALTO_ORIGINAL * escalaVisual;
-
-        // Posicionar para que la punta de agarre coincida con (xSujecion, ySujecion)
         const xDedosDibujo = this.DEDOS_ORIGINAL_X * escalaVisual;
         const yDedosDibujo = this.DEDOS_ORIGINAL_Y * escalaVisual;
-
-        const posX = xSujecion - xDedosDibujo;
-        const posY = ySujecion - yDedosDibujo;
+        const posX = this.ultimoX - xDedosDibujo;
+        const posY = this.ultimoY - yDedosDibujo;
 
         ctx.save();
         ctx.globalAlpha = opacidad;
-
-        // Si la parte superior de la mano no llega al límite superior de la pantalla (y = 0),
-        // extendemos el brazo hacia arriba para que entre desde el borde visible de la pantalla.
-        if (posY > 0) {
-            // Recortar la parte superior de la manga/brazo y extenderla verticalmente hasta y = 0
-            const anchoMangaOriginal = 100;
-            const xMangaOriginal = 138;
-            const altoMangaOriginal = 20;
-
-            const anchoManga = anchoMangaOriginal * escalaVisual;
-            const xManga = posX + (xMangaOriginal * escalaVisual);
-
-            ctx.drawImage(
-                this.imagen,
-                xMangaOriginal, 0, anchoMangaOriginal, altoMangaOriginal,
-                xManga, 0, anchoManga, posY + 2
-            );
-        }
-
-        // Dibujar el cuerpo principal de la mano
+        this.dibujarExtensionBrazo(ctx, posX, posY, escalaVisual);
         ctx.drawImage(
             this.imagen,
             0, 0, this.ANCHO_ORIGINAL, this.ALTO_ORIGINAL,
             posX, posY, anchoDibujo, altoDibujo
         );
-
         ctx.restore();
+    }
+
+    private calcularOpacidad(calculos: Calculos | null): number {
+        const esSujeto = calculos !== null && calculos.getEstadoBola().esSujeto();
+        if (esSujeto) return 1;
+        if (this.tiempoRestanteSoltado > 0) {
+            return this.tiempoRestanteSoltado / this.duracionDesvanecimiento;
+        }
+        return 0;
+    }
+
+    private dibujarExtensionBrazo(
+        ctx: CanvasRenderingContext2D,
+        posX: number,
+        posY: number,
+        escalaVisual: number
+    ): void {
+        if (posY <= 0) return;
+
+        // Recortar la parte superior de la manga/brazo y extenderla verticalmente hasta y = 0
+        const anchoMangaOriginal = 100;
+        const xMangaOriginal = 138;
+        const altoMangaOriginal = 20;
+        const anchoManga = anchoMangaOriginal * escalaVisual;
+        const xManga = posX + (xMangaOriginal * escalaVisual);
+
+        ctx.drawImage(
+            this.imagen,
+            xMangaOriginal, 0, anchoMangaOriginal, altoMangaOriginal,
+            xManga, 0, anchoManga, posY + 2
+        );
     }
 }

@@ -3,6 +3,7 @@ import { Mapa } from './mapa';
 import { PuntoSujecion } from './puntoSujecion';
 import { ControlesNavegacion } from './controlesNavegacion';
 import { Formulas } from '../física/formulas';
+import { Constantes } from '../física/constantes';
 import { HUD } from './hud';
 import { Bucle } from './bucle';
 import { ControladorSimulacion } from './controladorSimulacion';
@@ -16,15 +17,16 @@ const pantalla = new Pantalla('app');
 const mapa = new Mapa(pantalla.getAncho(), pantalla.getAlto(), 300000);
 const puntoSujecion = new PuntoSujecion();
 const controles = new ControlesNavegacion(pantalla, mapa, puntoSujecion);
-const formulas = new Formulas();
-const hud = new HUD(formulas);
+const constantes = new Constantes();
+const formulas = new Formulas(constantes);
+const hud = new HUD(constantes);
 
 const bucle = new Bucle(pantalla, mapa, puntoSujecion, controles, hud);
 const gestorBola = new GestorBola(puntoSujecion, mapa, formulas, bucle);
 
 // 2. Creación del menú de configuraciones y su dibujador
 const menuInstancia = new menu();
-const configuracionMenu = new ConfiguracionMenu(bucle.getDibujadorPOC(), gestorBola);
+const configuracionMenu = new ConfiguracionMenu(bucle.getDibujadorPOC(), gestorBola, constantes);
 const dibujadorMenuInstancia = new dibujarmenu(configuracionMenu);
 
 // Inyección del menú en controles de navegación y ciclo de renderizado

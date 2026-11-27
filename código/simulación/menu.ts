@@ -7,6 +7,11 @@ import { IMenu } from './interfaces';
  */
 export class Menu implements IMenu {
     private abierto: boolean = false;
+    private readonly urlEnlace: string = 'https://github.com/Juli-team/Simulador-caida-libre?tab=readme-ov-file';
+
+    public getUrlEnlace(): string {
+        return this.urlEnlace;
+    }
 
     public abrir(): void {
         this.abierto = true;

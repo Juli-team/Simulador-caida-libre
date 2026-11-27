@@ -19,7 +19,7 @@ export class DibujarPOC implements IDibujarPOC {
     private imagenesCargadas: boolean[] = [];
     private indiceImagenActual: number = 1;
 
-    constructor(rutaOIndice: string | number = 1) {
+    constructor(indiceInicial: number = 1) {
         this.imagenesCargadas = new Array(URLS_BOLAS.length).fill(false);
         URLS_BOLAS.forEach((url, i) => {
             const img = new Image();
@@ -29,19 +29,11 @@ export class DibujarPOC implements IDibujarPOC {
             };
             this.imagenes.push(img);
         });
-        this.cambiarImagen(rutaOIndice);
+        this.cambiarImagen(indiceInicial);
     }
 
-    public cambiarImagen(rutaOIndice: string | number): void {
-        if (typeof rutaOIndice === 'number') {
-            const idx = Math.max(1, Math.min(URLS_BOLAS.length, Math.round(rutaOIndice)));
-            this.indiceImagenActual = idx;
-        } else {
-            const indexEncontrado = URLS_BOLAS.indexOf(rutaOIndice);
-            if (indexEncontrado !== -1) {
-                this.indiceImagenActual = indexEncontrado + 1;
-            }
-        }
+    public cambiarImagen(indice: number): void {
+        this.indiceImagenActual = Math.max(1, Math.min(URLS_BOLAS.length, Math.round(indice)));
     }
 
     public getIndiceImagen(): number {
