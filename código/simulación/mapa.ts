@@ -1,7 +1,7 @@
-import { IDibujable, INavegable } from './interfaces';
+import { IDibujable, INavegable, ICamaraMapa } from './interfaces';
 import { DibujarMapa } from './dibujarMapa';
 
-export class Mapa implements IDibujable, INavegable {
+export class Mapa implements IDibujable, INavegable, ICamaraMapa {
     private ancho: number = 1024;
     private readonly altoTotal: number = 300000;
     private altoVisible: number = 768;

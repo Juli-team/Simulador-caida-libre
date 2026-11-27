@@ -1,4 +1,4 @@
-import { ICalculos, ISincronizadorPOC } from './interfaces';
+import { ICalculosEspacial, ISincronizadorPOC } from './interfaces';
 import { PIXELES_POR_METRO } from '../física/constantes';
 
 /**
@@ -7,7 +7,7 @@ import { PIXELES_POR_METRO } from '../física/constantes';
  */
 export class SincronizadorPOC implements ISincronizadorPOC {
     public sincronizar(
-        calculos: ICalculos,
+        calculos: ICalculosEspacial,
         xSujecionPantalla: number,
         ySujecionPantalla: number,
         camaraY: number,

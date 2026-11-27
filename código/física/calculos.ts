@@ -1,12 +1,18 @@
-import { ICalculos, IPOC, IFormulas, IEstadoBola } from '../simulación/interfaces';
+import {
+    ICalculos,
+    ICuerpoEspacial,
+    IPOCFisico,
+    IFormulas,
+    IEstadoBolaCompleto
+} from '../simulación/interfaces';
 import { PIXELES_POR_METRO, Constantes } from './constantes';
 import { POC } from './poc';
 import { EstadoBola } from '../simulación/estadoBola';
 
-export class Calculos implements ICalculos {
+export class Calculos implements ICalculos, ICuerpoEspacial {
     private formulas: IFormulas;
-    private poc: IPOC;
-    private estadoBola: IEstadoBola;
+    private poc: IPOCFisico;
+    private estadoBola: IEstadoBolaCompleto;
 
     // Propiedades visuales y espaciales en coordenadas del canvas (píxeles)
     private xMundo: number = 0;
@@ -14,7 +20,7 @@ export class Calculos implements ICalculos {
 
     constructor(
         formulas: IFormulas,
-        poc?: IPOC,
+        poc?: IPOCFisico,
         xMundo: number = 0,
         yMundo: number = 0,
         h0: number = 0,
@@ -36,15 +42,15 @@ export class Calculos implements ICalculos {
         }
     }
 
-    public getPOC(): IPOC {
+    public getPOC(): IPOCFisico {
         return this.poc;
     }
 
-    public setPOC(poc: IPOC): void {
+    public setPOC(poc: IPOCFisico): void {
         this.poc = poc;
     }
 
-    public getEstadoBola(): IEstadoBola {
+    public getEstadoBola(): IEstadoBolaCompleto {
         return this.estadoBola;
     }
 
