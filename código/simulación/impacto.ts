@@ -64,78 +64,69 @@ export class Impacto {
      */
     public dibujar(ctx: CanvasRenderingContext2D, anchoPantalla: number, altoPantalla: number): void {
         if (!this.activo) return;
-
-        // 1. Pantalla en negro total
         ctx.save();
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, anchoPantalla, altoPantalla);
-
-        // 2. Dimensiones de la foto polaroid
-        // Un cuadrado blanco con una proporción agradable (más borde abajo)
         const anchoPolaroid = Math.min(anchoPantalla * 0.45, 420);
-        const margenLateral = anchoPolaroid * 0.07; // bordes más finos a los costados y arriba
+        const margenLateral = anchoPolaroid * 0.07;
         const margenSuperior = margenLateral;
-        const margenInferior = anchoPolaroid * 0.22; // borde más grueso abajo para el texto
-
+        const margenInferior = anchoPolaroid * 0.22;
         const anchoFoto = anchoPolaroid - (margenLateral * 2);
-        const altoFoto = anchoFoto; // Cuadrada para la imagen del objeto
+        const altoFoto = anchoFoto;
         const altoPolaroid = margenSuperior + altoFoto + margenInferior;
-
-        // Posición centrada
-        const cx = anchoPantalla / 2;
-        const cy = altoPantalla / 2;
-
-        ctx.translate(cx, cy);
-        // Leve inclinación hacia la derecha (aprox 4 a 5 grados)
-        const anguloInclinacion = (4.5 * Math.PI) / 180;
-        ctx.rotate(anguloInclinacion);
-
-        // Cuadrado blanco de la foto impresa (sin sombras)
+        ctx.translate(anchoPantalla / 2, altoPantalla / 2);
+        ctx.rotate((4.5 * Math.PI) / 180);
         const xPolaroid = -anchoPolaroid / 2;
         const yPolaroid = -altoPolaroid / 2;
-
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(xPolaroid, yPolaroid, anchoPolaroid, altoPolaroid);
-
-        // Dibujar en el centro del cuadro la captura de pantalla del último instante
         const xFoto = xPolaroid + margenLateral;
         const yFoto = yPolaroid + margenSuperior;
+        this.dibujarFotoPolaroid(ctx, xFoto, yFoto, anchoFoto);
+        this.dibujarEtiquetaVelocidad(ctx, anchoPolaroid, yFoto + altoFoto + margenInferior / 2);
+        ctx.restore();
+    }
 
-        if (this.canvasCaptura.width > 0 && this.canvasCaptura.height > 0) {
-            // Hacemos un clip para encajar bien la captura en el recuadro fotográfico
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(xFoto, yFoto, anchoFoto, altoFoto);
-            ctx.clip();
+    private dibujarFotoPolaroid(
+        ctx: CanvasRenderingContext2D,
+        xFoto: number,
+        yFoto: number,
+        ladoFoto: number
+    ): void {
+        if (this.canvasCaptura.width <= 0 || this.canvasCaptura.height <= 0) return;
 
-            // Escalamos proporcionalmente la captura para que cubra el recuadro (estilo "cover")
-            const escala = Math.max(anchoFoto / this.canvasCaptura.width, altoFoto / this.canvasCaptura.height);
-            const wDibujo = this.canvasCaptura.width * escala;
-            const hDibujo = this.canvasCaptura.height * escala;
-            const ox = xFoto + (anchoFoto - wDibujo) / 2;
-            const oy = yFoto + (altoFoto - hDibujo) / 2;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(xFoto, yFoto, ladoFoto, ladoFoto);
+        ctx.clip();
 
-            ctx.drawImage(this.canvasCaptura, ox, oy, wDibujo, hDibujo);
-            ctx.restore();
+        const escala = Math.max(
+            ladoFoto / this.canvasCaptura.width,
+            ladoFoto / this.canvasCaptura.height
+        );
+        const wDibujo = this.canvasCaptura.width * escala;
+        const hDibujo = this.canvasCaptura.height * escala;
+        const ox = xFoto + (ladoFoto - wDibujo) / 2;
+        const oy = yFoto + (ladoFoto - hDibujo) / 2;
+        ctx.drawImage(this.canvasCaptura, ox, oy, wDibujo, hDibujo);
+        ctx.restore();
 
-            // Fino contorno interior para delimitar la foto en el papel blanco
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(xFoto, yFoto, anchoFoto, altoFoto);
-        }
+        ctx.strokeStyle = '#e0e0e0';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(xFoto, yFoto, ladoFoto, ladoFoto);
+    }
 
-        // Escribir la velocidad final del objeto: vfinal=x m/s
+    private dibujarEtiquetaVelocidad(
+        ctx: CanvasRenderingContext2D,
+        anchoPolaroid: number,
+        yTexto: number
+    ): void {
         const textoVelocidad = `vfinal=${this.velocidadFinal.toFixed(2)} m/s`;
         const tamanoFuente = Math.max(16, Math.round(anchoPolaroid * 0.075));
         ctx.font = `${tamanoFuente}px 'Internet Friends', sans-serif`;
         ctx.fillStyle = '#111111';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-
-        // Un poquito más abajo del frame (en el espacio inferior más grueso)
-        const yTexto = yFoto + altoFoto + (margenInferior / 2);
         ctx.fillText(textoVelocidad, 0, yTexto);
-
-        ctx.restore();
     }
 }

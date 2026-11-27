@@ -5,7 +5,7 @@ import {
     IFormulas,
     IEstadoBolaCompleto
 } from '../simulación/interfaces';
-import { PIXELES_POR_METRO, Constantes } from './constantes';
+import { PIXELES_POR_METRO } from './constantes';
 import { POC } from './poc';
 import { EstadoBola } from '../simulación/estadoBola';
 
@@ -95,14 +95,17 @@ export class Calculos implements ICalculos, ICuerpoEspacial {
 
         const radio = this.poc.getRadio();
         const yDetencion = ySueloMundo - radio;
-
-        // 1. Altura actual (y) respecto al suelo en metros
         const distanciaAlSueloPx = Math.max(0, yDetencion - this.yMundo);
         const altura = distanciaAlSueloPx / PIXELES_POR_METRO;
         this.poc.setAltura(altura);
 
-        // 2. Cálculos físicos directamente con los valores
-        const radioMetros = radio / PIXELES_POR_METRO;
+        const velocidad = this.actualizarMagnitudesFisicas(altura, dt);
+        this.yMundo += velocidad * PIXELES_POR_METRO * dt;
+        this.resolverImpactoSuelo(yDetencion);
+    }
+
+    private actualizarMagnitudesFisicas(altura: number, dt: number): number {
+        const radioMetros = this.poc.getRadio() / PIXELES_POR_METRO;
         const area = this.formulas.calcularArea(radioMetros);
         const densidadAire = this.formulas.calcularDensidadAire(altura);
         const fuerzaArrastre = this.formulas.calcularFuerzaArrastre(
@@ -113,8 +116,7 @@ export class Calculos implements ICalculos, ICuerpoEspacial {
         );
         const aceleracionNeta = this.formulas.calcularAceleracionNeta(
             fuerzaArrastre,
-            this.poc.getMasa(),
-            Constantes.getGravedad()
+            this.poc.getMasa()
         );
         const velocidad = this.formulas.calcularVelocidad(
             this.poc.getVelocidad(),
@@ -123,24 +125,22 @@ export class Calculos implements ICalculos, ICuerpoEspacial {
         );
         const tiempo = this.poc.getTiempoCaida() + dt;
 
-        // 3. Guardar directamente los resultados en la clase POC
         this.poc.setDensidadAire(densidadAire);
         this.poc.setFuerzaArrastre(fuerzaArrastre);
         this.poc.setAceleracion(aceleracionNeta);
         this.poc.setVelocidad(velocidad);
         this.poc.setTiempoCaida(tiempo);
+        return velocidad;
+    }
 
-        // 4. Integrar desplazamiento en el mundo físico y visual
-        this.yMundo += velocidad * PIXELES_POR_METRO * dt;
+    private resolverImpactoSuelo(yDetencion: number): void {
+        if (this.yMundo < yDetencion) return;
 
-        // 5. Impacto en el suelo
-        if (this.yMundo >= yDetencion) {
-            this.yMundo = yDetencion;
-            this.poc.setAltura(0);
-            this.poc.setAceleracion(0);
-            this.poc.setFuerzaArrastre(0);
-            // Conservamos la velocidad alcanzada en this.poc (la velocidad previa al choque)
-            this.estadoBola.detener();
-        }
+        this.yMundo = yDetencion;
+        this.poc.setAltura(0);
+        this.poc.setAceleracion(0);
+        this.poc.setFuerzaArrastre(0);
+        // Conservamos la velocidad alcanzada en this.poc (la velocidad previa al choque)
+        this.estadoBola.detener();
     }
 }

@@ -3,6 +3,10 @@
  * Todas las constantes del simulador se definen una sola vez aquí (DRY / Single Source of Truth).
  */
 
+import type { IConstantes, IOpcionGravedad } from '../simulación/interfaces';
+
+export type { IOpcionGravedad } from '../simulación/interfaces';
+
 /**
  * Escala del simulador: cantidad de píxeles en pantalla que representan 1 metro en el mundo físico.
  */
@@ -23,17 +27,12 @@ export const DENSIDAD_AIRE_NIVEL_MAR: number = 1.225;
  */
 export const ESCALA_ALTURA_ATMOSFERICA: number = 8500;
 
-export interface IOpcionGravedad {
-    nombre: string;
-    valor: number;
-}
-
 /**
  * Clase Constantes
  * Gestiona y centraliza las constantes dinámicas y gravedades planetarias del simulador.
  */
-export class Constantes {
-    public static readonly GRAVEDADES: Record<string, number> = {
+export class Constantes implements IConstantes {
+    private readonly gravedades: Record<string, number> = {
         Tierra: 9.8,
         Luna: 1.62,
         Marte: 3.71,
@@ -42,25 +41,22 @@ export class Constantes {
         Sol: 274.0
     };
 
-    private static gravedadActual: number = GRAVEDAD_DEFECTO;
+    private gravedadActual: number;
 
-    public static getGravedad(): number {
-        return Constantes.gravedadActual;
+    constructor(gravedadInicial: number = GRAVEDAD_DEFECTO) {
+        this.gravedadActual = Math.max(0, gravedadInicial);
     }
 
-    public static setGravedad(g: number): void {
-        Constantes.gravedadActual = Math.max(0, g);
+    public getGravedad(): number {
+        return this.gravedadActual;
     }
 
-    public static getGravedadesDisponibles(): IOpcionGravedad[] {
-        return [
-            { nombre: 'Tierra', valor: 9.8 },
-            { nombre: 'Luna', valor: 1.62 },
-            { nombre: 'Marte', valor: 3.71 },
-            { nombre: 'Venus', valor: 8.87 },
-            { nombre: 'Jupiter', valor: 24.79 },
-            { nombre: 'Sol', valor: 274.0 }
-        ];
+    public setGravedad(g: number): void {
+        this.gravedadActual = Math.max(0, g);
+    }
+
+    public getGravedadesDisponibles(): IOpcionGravedad[] {
+        return Object.entries(this.gravedades).map(([nombre, valor]) => ({ nombre, valor }));
     }
 }
 

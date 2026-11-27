@@ -119,6 +119,20 @@ export interface ICondicionesInicialesPOC {
 
 export type IPOCFisico = IPOC & IPropiedadesCuerpo & IDinamicaAire;
 
+export interface IOpcionGravedad {
+    nombre: string;
+    valor: number;
+}
+
+/**
+ * Contrato de las constantes dinámicas del simulador (DIP).
+ */
+export interface IConstantes {
+    getGravedad(): number;
+    setGravedad(g: number): void;
+    getGravedadesDisponibles(): IOpcionGravedad[];
+}
+
 /**
  * Contrato de las fórmulas físicas del simulador (SRP / DIP).
  */
@@ -187,7 +201,7 @@ export interface ISincronizadorPOC {
  */
 export interface IDibujarPOC {
     dibujar(ctx: CanvasRenderingContext2D, calculos: ICuerpoEspacial, camaraY?: number): void;
-    cambiarImagen(rutaOIndice: string | number): void;
+    cambiarImagen(indice: number): void;
     getIndiceImagen(): number;
 }
 
@@ -209,6 +223,7 @@ export interface IMenu {
     cerrar(): void;
     alternar(): void;
     estaAbierto(): boolean;
+    getUrlEnlace(): string;
 }
 
 /**
@@ -220,6 +235,7 @@ export interface IConfiguracionMenu {
     actualizarAlturaInicial(altura: number): void;
     aplicarCambios(valores: IValoresConfiguracion): void;
     getLimiteAlturaMapa(): number;
+    getGravedadesDisponibles(): IOpcionGravedad[];
 }
 
 export interface IDibujarMenu {

@@ -1,4 +1,4 @@
-import { IFormulas } from '../simulación/interfaces';
+import { IConstantes, IFormulas } from '../simulación/interfaces';
 import { Constantes, DENSIDAD_AIRE_NIVEL_MAR, ESCALA_ALTURA_ATMOSFERICA } from './constantes';
 
 export type { IFormulas };
@@ -10,6 +10,12 @@ export type { IFormulas };
  * Es la fuente única de la verdad matemática del simulador.
  */
 export class Formulas implements IFormulas {
+    private readonly constantes: IConstantes;
+
+    constructor(constantes: IConstantes = new Constantes()) {
+        this.constantes = constantes;
+    }
+
     /**
      * Fórmula: A = π · r²
      * Área de la sección transversal del objeto.
@@ -58,7 +64,7 @@ export class Formulas implements IFormulas {
     public calcularAceleracionNeta(
         fuerzaArrastre: number,
         masa: number,
-        gravedad: number = Constantes.getGravedad()
+        gravedad: number = this.constantes.getGravedad()
     ): number {
         if (masa <= 0) return gravedad;
         return gravedad - (fuerzaArrastre / masa);
@@ -85,7 +91,7 @@ export class Formulas implements IFormulas {
      * @param h0 Altura inicial en metros
      * @param gravedad Gravedad en m/s²
      */
-    public calcularTiempo(h0: number, gravedad: number = Constantes.getGravedad()): number {
+    public calcularTiempo(h0: number, gravedad: number = this.constantes.getGravedad()): number {
         const mitadG = 0.5 * gravedad;
         if (mitadG <= 0 || h0 <= 0) {
             return 0;

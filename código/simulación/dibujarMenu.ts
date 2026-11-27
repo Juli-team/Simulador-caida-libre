@@ -1,5 +1,10 @@
-import { IDibujarMenu, IMenu, IConfiguracionMenu, IValoresConfiguracion } from './interfaces';
-import { Constantes, IOpcionGravedad } from '../física/constantes';
+import {
+    IDibujarMenu,
+    IMenu,
+    IConfiguracionMenu,
+    IOpcionGravedad,
+    IValoresConfiguracion
+} from './interfaces';
 import { URLS_BOLAS } from './dibujarPOC';
 
 type TipoInput = 'altura' | 'masa' | 'radio' | 'coeficiente' | null;
@@ -8,7 +13,12 @@ type Rect = { x: number; y: number; w: number; h: number };
 export class DibujarMenu implements IDibujarMenu {
     private configuracion: IConfiguracionMenu;
     private readonly naranja = '#f97316';
-    private layout = { btnTam: 72, rectCerrar: { x: 0, y: 0, w: 0, h: 0 }, rectAplicar: { x: 0, y: 0, w: 0, h: 0 } };
+    private layout = {
+        btnTam: 72,
+        rectCerrar: { x: 0, y: 0, w: 0, h: 0 },
+        rectAplicar: { x: 0, y: 0, w: 0, h: 0 },
+        rectEnlace: { x: 0, y: 0, w: 0, h: 0 }
+    };
     private formulario: { abiertoPrevio: boolean; inputActivo: TipoInput; buffers: Record<string, string>; valores: IValoresConfiguracion };
     private recursos = { imgConfig: new Image(), imgCargada: false, bolas: [] as HTMLImageElement[], bolasCargadas: new Array(URLS_BOLAS.length).fill(false) as boolean[] };
     private zonas = { inputs: new Map<TipoInput, Rect>(), gravedades: [] as Array<Rect & { opcion: IOpcionGravedad }>, miniaturas: [] as Array<Rect & { indice: number }> };
@@ -64,10 +74,10 @@ export class DibujarMenu implements IDibujarMenu {
             this.formulario.valores = { ...v };
             this.formulario.buffers = { altura: `${v.alturaInicial}`, masa: `${v.masa}`, radio: `${v.radio}`, coeficiente: `${v.coeficienteArrastre}` };
         }
-        this.dibujarPanelMenu(ctx, ancho, alto);
+        this.dibujarPanelMenu(ctx, ancho, alto, menu);
     }
 
-    private dibujarPanelMenu(ctx: CanvasRenderingContext2D, ancho: number, alto: number): void {
+    private dibujarPanelMenu(ctx: CanvasRenderingContext2D, ancho: number, alto: number, menu: IMenu): void {
         const w = Math.min(520, ancho - 30), h = Math.min(560, alto - 30);
         const px = Math.round((ancho - w) / 2), py = Math.round((alto - h) / 2), cx = px + w / 2;
         ctx.save();
@@ -83,7 +93,8 @@ export class DibujarMenu implements IDibujarMenu {
         this.zonas = { inputs: new Map(), gravedades: [], miniaturas: [] };
         let curY = this.dibujarCamposNumericos(ctx, cx, py + 62);
         curY = this.dibujarCasillasGravedad(ctx, cx, curY);
-        this.dibujarMiniaturasBolas(ctx, cx, curY + 12);
+        const bottomMiniaturas = this.dibujarMiniaturasBolas(ctx, cx, curY + 12);
+        this.dibujarEnlace(ctx, cx, bottomMiniaturas + 20, menu.getUrlEnlace());
 
         const btn = { x: cx - 130, y: py + h - 46, w: 260, h: 34 };
         this.layout.rectAplicar = btn;
@@ -121,7 +132,7 @@ export class DibujarMenu implements IDibujarMenu {
         ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = this.naranja; ctx.fillText('5. GRAVEDAD', cx, startY);
         const yBase = startY + 14, startX = cx - 217.5;
         let maxY = yBase;
-        Constantes.getGravedadesDisponibles().forEach((op, i) => {
+        this.configuracion.getGravedadesDisponibles().forEach((op, i) => {
             const x = startX + (i % 3) * 145, y = yBase + Math.floor(i / 3) * 24;
             maxY = Math.max(maxY, y + 24);
             const sel = Math.abs(this.formulario.valores.gravedad - op.valor) < 0.05 || this.formulario.valores.cuerpoCeleste === op.nombre;
@@ -137,7 +148,7 @@ export class DibujarMenu implements IDibujarMenu {
         return maxY;
     }
 
-    private dibujarMiniaturasBolas(ctx: CanvasRenderingContext2D, cx: number, startY: number): void {
+    private dibujarMiniaturasBolas(ctx: CanvasRenderingContext2D, cx: number, startY: number): number {
         ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = this.naranja; ctx.fillText('6. IMAGEN DE LA BOLA', cx, startY);
         const y = startY + 14, tam = 46, startX = cx - (URLS_BOLAS.length * tam + (URLS_BOLAS.length - 1) * 16) / 2;
         URLS_BOLAS.forEach((_, i) => {
@@ -149,6 +160,28 @@ export class DibujarMenu implements IDibujarMenu {
             else { ctx.font = '11px monospace'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Bola ${indice}`, x + 23, y + 23); }
             ctx.lineWidth = sel ? 3 : 1; ctx.strokeStyle = sel ? this.naranja : '#475569'; ctx.strokeRect(x, y, tam, tam);
         });
+        return y + tam;
+    }
+
+    private dibujarEnlace(
+        ctx: CanvasRenderingContext2D,
+        cx: number,
+        y: number,
+        url: string
+    ): void {
+        ctx.font = 'italic 12px sans-serif';
+        ctx.fillStyle = '#1d4ed8';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(url, cx, y);
+        const ancho = ctx.measureText(url).width;
+        ctx.beginPath();
+        ctx.moveTo(cx - ancho / 2, y + 8);
+        ctx.lineTo(cx + ancho / 2, y + 8);
+        ctx.strokeStyle = '#1d4ed8';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        this.layout.rectEnlace = { x: cx - ancho / 2 - 8, y: y - 8, w: ancho + 16, h: 20 };
     }
 
     public manejarClick(x: number, y: number, menu: IMenu): boolean {
@@ -157,6 +190,10 @@ export class DibujarMenu implements IDibujarMenu {
         if (this.puntoEnRect(x, y, this.layout.rectAplicar)) {
             this.confirmarValores(); this.configuracion.aplicarCambios(this.formulario.valores);
             menu.cerrar(); this.formulario.inputActivo = null; return true;
+        }
+        if (this.puntoEnRect(x, y, this.layout.rectEnlace)) {
+            window.open(menu.getUrlEnlace(), '_blank', 'noopener,noreferrer');
+            return true;
         }
         this.manejarClickContenido(x, y);
         return true;
