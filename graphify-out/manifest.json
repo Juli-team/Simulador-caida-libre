@@ -25,15 +25,15 @@
     "semantic_hash": "67d88e9d0760c3ba54c75dfd9551c1c5"
   },
   "README.md": {
-    "mtime": 1795292853.7518835,
-    "seen": 1795295610.2786527,
-    "ast_hash": "774b9598d1ccad2382ad16a106aa5a5d",
+    "mtime": 1795733657.4324198,
+    "seen": 1795734461.4952126,
+    "ast_hash": "ddc0737dfe5aee97bc12088e0adc21fc",
     "semantic_hash": ""
   },
   "docs/EVALUACION.md": {
-    "mtime": 1795292853.7541509,
-    "seen": 1795295610.278656,
-    "ast_hash": "2caf5e60773befcad9b5866a813a07fb",
+    "mtime": 1795733657.4339843,
+    "seen": 1795734461.495216,
+    "ast_hash": "31fee8b2ef2422baa73ac20bcc082f5c",
     "semantic_hash": ""
   },
   "index.html": {
@@ -49,9 +49,9 @@
     "semantic_hash": ""
   },
   "c\u00f3digo/f\u00edsica/calculos.ts": {
-    "mtime": 1795485772.4712713,
-    "seen": 1795485859.5987742,
-    "ast_hash": "ba61bf7b4d340b2d405f8936d9435a23",
+    "mtime": 1795736161.7695515,
+    "seen": 1795736253.677041,
+    "ast_hash": "dd400380369165810ec1ed36eb2aac1b",
     "semantic_hash": ""
   },
   "c\u00f3digo/f\u00edsica/constantes.ts": {
@@ -73,27 +73,27 @@
     "semantic_hash": ""
   },
   "c\u00f3digo/f\u00edsica/poc.ts": {
-    "mtime": 1795485772.5122714,
-    "seen": 1795485859.5987868,
-    "ast_hash": "c248f7001bedeb239b0ac56108d05e39",
+    "mtime": 1795736224.4162357,
+    "seen": 1795736253.6770544,
+    "ast_hash": "0df616dfc513e9140330f12fa902b4b8",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/bucle.ts": {
-    "mtime": 1795485807.451336,
-    "seen": 1795485859.598789,
-    "ast_hash": "d64ca1e53cd617adca216e32dfcea3b6",
+    "mtime": 1795736336.5396705,
+    "seen": 1795736351.4844546,
+    "ast_hash": "563d56e1c4a687821425874d08631de9",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/controladorSimulacion.ts": {
-    "mtime": 1795444097.1041958,
-    "seen": 1795485859.5987904,
-    "ast_hash": "92ab13daa6207a03ea3ba82fdb6dc915",
+    "mtime": 1795734428.5233002,
+    "seen": 1795734461.495172,
+    "ast_hash": "55201c6ab14bc27c241c123838e43681",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/controlesNavegacion.ts": {
-    "mtime": 1795295458.6772518,
-    "seen": 1795485859.598792,
-    "ast_hash": "1ad017dec9fd469bcbc299a561965c54",
+    "mtime": 1795736229.4602103,
+    "seen": 1795736253.677063,
+    "ast_hash": "b5c469c65e776a4200889e48383939f3",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/dibujarMapa.ts": {
@@ -103,21 +103,21 @@
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/dibujarMenu.ts": {
-    "mtime": 1795485807.542336,
-    "seen": 1795485859.5987961,
-    "ast_hash": "829fa233375405b9788837ff2be66f42",
+    "mtime": 1795736380.278535,
+    "seen": 1795736403.7330337,
+    "ast_hash": "15fa3f710ecd0b595159a03f73ab6b53",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/dibujarPOC.ts": {
-    "mtime": 1795485807.574336,
-    "seen": 1795485859.598798,
-    "ast_hash": "fee0bdfa39d025aa580fc32836f71425",
+    "mtime": 1795736165.5565324,
+    "seen": 1795736253.6770687,
+    "ast_hash": "91dd48ec4551a9600f37543babb3ee70",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/estadoBola.ts": {
-    "mtime": 1795485815.8963518,
-    "seen": 1795485859.5988,
-    "ast_hash": "c3bc96c2889a83d76dcac0455681f7eb",
+    "mtime": 1795736158.884566,
+    "seen": 1795736253.6770706,
+    "ast_hash": "5f74a22f3a693a6f1318dff0342bca82",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/hud.ts": {
@@ -133,15 +133,15 @@
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/interfaces.ts": {
-    "mtime": 1795296099.424856,
-    "seen": 1795485859.5988064,
-    "ast_hash": "a270d9a4497ebf159e39c08bed3241d6",
+    "mtime": 1795736156.482578,
+    "seen": 1795736253.6770785,
+    "ast_hash": "67e6675a3b6d130a5d1ccbc86c37523c",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/main.ts": {
-    "mtime": 1795485816.035352,
-    "seen": 1795485859.5988078,
-    "ast_hash": "65bfdea2f590665a9272c49d590311ff",
+    "mtime": 1795736232.5791945,
+    "seen": 1795736253.6770804,
+    "ast_hash": "c4dc091358ddfb60fd09ca9ec3bc705e",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/mano.ts": {
@@ -151,15 +151,15 @@
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/mapa.ts": {
-    "mtime": 1795483110.066263,
-    "seen": 1795485859.598811,
-    "ast_hash": "1e9c383fe64714767775e2aedcf733f9",
+    "mtime": 1795736157.8245714,
+    "seen": 1795736253.6770837,
+    "ast_hash": "14e5df69a034036cca46fa41055f7173",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/menu.ts": {
-    "mtime": 1795485825.8303704,
-    "seen": 1795485859.5988126,
-    "ast_hash": "c340ffd8e9645c38bcb01cc1a421a678",
+    "mtime": 1795736225.4952302,
+    "seen": 1795736253.6770854,
+    "ast_hash": "8b44c9268649bf2f996c5b38f36c781a",
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/pantalla.ts": {
@@ -175,21 +175,15 @@
     "semantic_hash": ""
   },
   "c\u00f3digo/simulaci\u00f3n/sincronizadorPOC.ts": {
-    "mtime": 1795485825.8633704,
-    "seen": 1795485859.5988176,
-    "ast_hash": "2398033ad11609b32dee2068bcef3e19",
+    "mtime": 1795736162.8195462,
+    "seen": 1795736253.6770911,
+    "ast_hash": "4986abb7d843c726e964e4d81d7e425b",
     "semantic_hash": ""
   },
   "assets/bola1.webp": {
     "mtime": 1795292853.752817,
     "seen": 1795485859.5988357,
     "ast_hash": "285549979b7cab1f8a1d056884c3eafe",
-    "semantic_hash": ""
-  },
-  "assets/bola2.webp": {
-    "mtime": 1795485704.862513,
-    "seen": 1795485859.5988371,
-    "ast_hash": "ebcb7affd03812549c4712d0c7769a8b",
     "semantic_hash": ""
   },
   "assets/bola3.webp": {
@@ -400,6 +394,18 @@
     "mtime": 1795441859.6714318,
     "seen": 1795485859.598897,
     "ast_hash": "5b156752065f887265f603b3a5d241cc",
+    "semantic_hash": ""
+  },
+  "c\u00f3digo/simulaci\u00f3n/gestorBola.ts": {
+    "mtime": 1795734425.3663163,
+    "seen": 1795734461.4951847,
+    "ast_hash": "110f98caa9088dc4366077f521d68188",
+    "semantic_hash": ""
+  },
+  "c\u00f3digo/simulaci\u00f3n/configuracionMenu.ts": {
+    "mtime": 1795736226.8272235,
+    "seen": 1795736253.6770585,
+    "ast_hash": "c946172b45d3bb999ed7eba1bd098b08",
     "semantic_hash": ""
   },
   "package-lock.json": {

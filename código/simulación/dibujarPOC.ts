@@ -1,4 +1,4 @@
-import { ICalculos, IDibujarPOC } from './interfaces';
+import { ICuerpoEspacial, IDibujarPOC } from './interfaces';
 
 /**
  * URLs de las imágenes disponibles para el POC (bola1.webp, bola3.webp, bola4.webp).
@@ -48,7 +48,7 @@ export class DibujarPOC implements IDibujarPOC {
         return this.indiceImagenActual;
     }
 
-    public dibujar(ctx: CanvasRenderingContext2D, calculos: ICalculos, camaraY: number = 0): void {
+    public dibujar(ctx: CanvasRenderingContext2D, calculos: ICuerpoEspacial, camaraY: number = 0): void {
         const x = calculos.getXMundo();
         const y = calculos.getYMundo() - camaraY;
         const r = calculos.getRadio();

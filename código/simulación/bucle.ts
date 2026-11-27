@@ -111,59 +111,81 @@ export class Bucle {
         if (!this.ejecutando) return;
 
         const dt = this.deltaTiempo.calcular(timestamp);
-
         const ctx = this.pantalla.getContext();
         const anchoPantalla = this.pantalla.getAncho();
         const altoPantalla = this.pantalla.getAlto();
 
+        this.actualizarSimulacion(dt, anchoPantalla, altoPantalla);
+        this.hud.actualizar(dt, this.calculos);
+        this.mano.actualizar(dt, this.calculos, this.puntoSujecion, this.mapa.getCamaraY(), altoPantalla);
+
+        this.renderizarEscena(ctx, anchoPantalla, altoPantalla);
+        this.actualizarImpacto();
+
+        if (this.impacto.estaActivo()) {
+            this.impacto.dibujar(ctx, anchoPantalla, altoPantalla);
+        }
+
+        requestAnimationFrame(this.iterar);
+    };
+
+    private actualizarSimulacion(dt: number, anchoPantalla: number, altoPantalla: number): void {
         this.mapa.sincronizarConPantalla(anchoPantalla, altoPantalla);
         this.controles.actualizar();
-
         this.puntoSujecion.sincronizarConMapa(
             this.mapa.getCamaraY(),
             anchoPantalla,
             altoPantalla,
             this.mapa.getAltoTotal()
         );
+        this.actualizarEstadoBola(dt, altoPantalla);
+    }
 
-        const sueloY = this.mapa.getAltoTotal() - this.puntoSujecion.getAltoBase();
-
-        if (this.calculos) {
-            const estado = this.calculos.getEstadoBola();
-            if (estado.esSujeto()) {
-                this.controles.setBloqueado(false);
-                const pos = this.puntoSujecion.getPosicionSujecion();
-                this.sincronizadorPOC.sincronizar(
-                    this.calculos,
-                    pos.x,
-                    pos.y,
-                    this.mapa.getCamaraY(),
-                    sueloY,
-                    this.puntoSujecion.getEscala()
-                );
-            } else if (estado.esCayendo()) {
-                if (!this.puntoSujecion.isPosicionFijada()) {
-                    this.puntoSujecion.fijarPosicionMundo();
-                }
-
-                this.controles.setBloqueado(true);
-                this.calculos.actualizar(dt, sueloY);
-
-                this.dibujadorMapa.notificarCaidaLibre(this.mapa.getCamaraY(), this.mapa.getAltoTotal());
-
-                const targetCamaraY = this.calculos.getYMundo() - (altoPantalla * 0.45);
-                if (targetCamaraY > this.mapa.getCamaraY()) {
-                    this.mapa.setCamaraY(targetCamaraY);
-                }
-            } else if (estado.esDetenido() || estado.esEnSuelo()) {
-                this.controles.setBloqueado(false);
-            }
-        } else {
+    private actualizarEstadoBola(dt: number, altoPantalla: number): void {
+        if (!this.calculos) {
             this.controles.setBloqueado(false);
+            return;
         }
 
-        this.hud.actualizar(dt, this.calculos);
-        this.mano.actualizar(dt, this.calculos, this.puntoSujecion, this.mapa.getCamaraY(), altoPantalla);
+        const estado = this.calculos.getEstadoBola();
+        const sueloY = this.mapa.getAltoTotal() - this.puntoSujecion.getAltoBase();
+
+        if (estado.esSujeto()) {
+            this.controles.setBloqueado(false);
+            const pos = this.puntoSujecion.getPosicionSujecion();
+            this.sincronizadorPOC.sincronizar(
+                this.calculos, pos.x, pos.y,
+                this.mapa.getCamaraY(), sueloY, this.puntoSujecion.getEscala()
+            );
+            return;
+        }
+
+        if (estado.esCayendo()) {
+            this.actualizarCaida(dt, sueloY, altoPantalla);
+            return;
+        }
+
+        if (estado.esDetenido() || estado.esEnSuelo()) {
+            this.controles.setBloqueado(false);
+        }
+    }
+
+    private actualizarCaida(dt: number, sueloY: number, altoPantalla: number): void {
+        if (!this.calculos) return;
+        if (!this.puntoSujecion.isPosicionFijada()) {
+            this.puntoSujecion.fijarPosicionMundo();
+        }
+        this.controles.setBloqueado(true);
+        this.calculos.actualizar(dt, sueloY);
+        this.dibujadorMapa.notificarCaidaLibre(this.mapa.getCamaraY(), this.mapa.getAltoTotal());
+
+        const targetCamaraY = this.calculos.getYMundo() - (altoPantalla * 0.45);
+        if (targetCamaraY > this.mapa.getCamaraY()) {
+            this.mapa.setCamaraY(targetCamaraY);
+        }
+    }
+
+    private renderizarEscena(ctx: CanvasRenderingContext2D, anchoPantalla: number, altoPantalla: number): void {
         this.pantalla.limpiar();
         this.dibujadorMapa.dibujar(ctx, this.mapa);
 
@@ -177,26 +199,17 @@ export class Bucle {
         if (this.dibujadorMenu && this.menu) {
             this.dibujadorMenu.dibujar(ctx, anchoPantalla, altoPantalla, this.menu);
         }
+    }
 
-        // Si la bola impactó contra el suelo, activamos el popup fotográfico de Impacto
-        if (this.calculos) {
-            const estado = this.calculos.getEstadoBola();
-            if (estado.esDetenido()) {
-                if (!this.yaDisparoImpacto) {
-                    this.yaDisparoImpacto = true;
-                    // Captura optimizada en memoria del canvas renderizado en este instante
-                    this.impacto.activar(this.pantalla.getCanvas(), this.calculos.getPOC());
-                }
-            } else {
-                this.yaDisparoImpacto = false;
-            }
+    private actualizarImpacto(): void {
+        if (!this.calculos || !this.calculos.getEstadoBola().esDetenido()) {
+            this.yaDisparoImpacto = false;
+            return;
         }
 
-        // Renderizar la ventana emergente de impacto encima de todo
-        if (this.impacto.estaActivo()) {
-            this.impacto.dibujar(ctx, anchoPantalla, altoPantalla);
+        if (!this.yaDisparoImpacto) {
+            this.yaDisparoImpacto = true;
+            this.impacto.activar(this.pantalla.getCanvas(), this.calculos.getPOC());
         }
-
-        requestAnimationFrame(this.iterar);
-    };
+    }
 }

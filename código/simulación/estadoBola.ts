@@ -1,4 +1,10 @@
-import { EstadoPOC, IEstadoBola, IFormulas } from './interfaces';
+import {
+    EstadoPOC,
+    IEstadoBola,
+    IConsultaEstadoBola,
+    IControlEstadoBola,
+    IFormulas
+} from './interfaces';
 import { POC } from '../física/poc';
 import { Calculos } from '../física/calculos';
 import { PuntoSujecion } from './puntoSujecion';
@@ -11,7 +17,7 @@ import { Bucle } from './bucle';
  * Controlar el ciclo de vida y estado de la bola en la simulación,
  * así como la creación física en suelo y la detección de click sobre el POC.
  */
-export class EstadoBola implements IEstadoBola {
+export class EstadoBola implements IEstadoBola, IConsultaEstadoBola, IControlEstadoBola {
     private estado: EstadoPOC;
     private puntoSujecion?: PuntoSujecion;
     private mapa?: Mapa;

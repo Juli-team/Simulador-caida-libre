@@ -1,54 +1,28 @@
-import { IControlador, IPantalla, IFormulas, IMenu, IDibujarMenu } from './interfaces';
-import { PuntoSujecion } from './puntoSujecion';
-import { Mapa } from './mapa';
+import { IControlador, IPantalla, IMenu, IDibujarMenu } from './interfaces';
 import { Bucle } from './bucle';
-import { EstadoBola } from './estadoBola';
+import { GestorBola } from './gestorBola';
 
 /**
  * Clase ControladorSimulacion
  * Responsabilidad única (SRP): Gestionar los eventos de entrada del usuario
- * (click y teclado) y coordinar el ciclo de juego:
- *   1. Click inicial: la bola aparece reposando en el suelo, en el centro del mapa.
- *   2. Click sobre el POC: lo sujeta al punto de seguimiento del mouse.
- *   3. Al mover el mouse, el POC sigue la posición de agarre.
- *   4. [ESPACIO]: suelta la bola en caída libre aerodinámica.
+ * (click y teclado) y coordinar las acciones sobre la simulación a través de Bucle y GestorBola.
  * Cumple con DIP al implementar la abstracción IControlador.
  */
 export class ControladorSimulacion implements IControlador {
-    private puntoSujecion: PuntoSujecion;
-    private mapa: Mapa;
     private bucle: Bucle;
-    private formulas: IFormulas;
+    private gestorBola: GestorBola;
     private canvas: HTMLCanvasElement;
-    private estadoBola: EstadoBola;
     private menu?: IMenu;
     private dibujadorMenu?: IDibujarMenu;
 
     constructor(
         pantalla: IPantalla,
-        puntoSujecion: PuntoSujecion,
-        mapa: Mapa,
         bucle: Bucle,
-        formulas: IFormulas,
-        estadoBola?: EstadoBola,
-        menu?: IMenu,
-        dibujadorMenu?: IDibujarMenu
+        gestorBola: GestorBola
     ) {
-        this.puntoSujecion = puntoSujecion;
-        this.mapa = mapa;
-        this.bucle = bucle;
-        this.formulas = formulas;
         this.canvas = pantalla.getCanvas();
-        this.menu = menu;
-        this.dibujadorMenu = dibujadorMenu;
-        this.estadoBola = estadoBola ?? new EstadoBola(
-            'sujeto',
-            puntoSujecion,
-            mapa,
-            formulas,
-            this.canvas,
-            bucle
-        );
+        this.bucle = bucle;
+        this.gestorBola = gestorBola;
     }
 
     public setMenu(menu: IMenu, dibujadorMenu: IDibujarMenu): void {
@@ -70,51 +44,42 @@ export class ControladorSimulacion implements IControlador {
 
     private obtenerCoordenadas(e: MouseEvent): { x: number; y: number } {
         const rect = this.canvas.getBoundingClientRect();
-        const escalaX = this.canvas.width / rect.width;
-        const escalaY = this.canvas.height / rect.height;
         return {
-            x: (e.clientX - rect.left) * escalaX,
-            y: (e.clientY - rect.top) * escalaY
+            x: (e.clientX - rect.left) * (this.canvas.width / rect.width),
+            y: (e.clientY - rect.top) * (this.canvas.height / rect.height)
         };
     }
 
+    private estaSobreBotonConfig(x: number, y: number): boolean {
+        return Boolean(this.dibujadorMenu?.estaSobreBotonConfig(x, y, this.canvas.width, this.canvas.height));
+    }
+
+    private estaSobrePanelAbierto(x: number, y: number): boolean {
+        if (!this.menu?.estaAbierto()) return false;
+        return Boolean(this.dibujadorMenu?.estaSobrePanel(x, y, this.canvas.width, this.canvas.height));
+    }
+
     private manejarClick = (e: MouseEvent): void => {
-        // Si la pestaña emergente de impacto está activa, ignoramos clics sobre la simulación
-        if (this.bucle.getImpacto().estaActivo()) {
-            return;
-        }
+        if (this.bucle.getImpacto().estaActivo()) return;
 
         const { x, y } = this.obtenerCoordenadas(e);
+        if (this.estaSobreBotonConfig(x, y) || this.estaSobrePanelAbierto(x, y)) return;
 
-        // Si el clic es sobre la rueda de configuración o dentro del menú abierto, no interferir
-        if (this.dibujadorMenu?.estaSobreBotonConfig(x, y, this.canvas.width, this.canvas.height)) {
-            return;
-        }
-        if (this.menu?.estaAbierto() && this.dibujadorMenu?.estaSobrePanel(x, y, this.canvas.width, this.canvas.height)) {
-            return;
-        }
-
-        const bola = this.bucle.getCalculos();
-
-        if (bola === null || bola.getEstadoBola().esDetenido()) {
-            if (bola !== null) {
-                this.bucle.setCalculos(null);
-            }
-            this.estadoBola.crearBolaEnSuelo(
-                this.puntoSujecion,
-                this.mapa,
-                this.formulas,
-                this.canvas,
-                this.bucle
-            );
-            return;
-        }
-
-        if (bola.getEstadoBola().esEnSuelo() && this.estadoBola.puntoSobreBola(bola, x, y, this.mapa)) {
-            this.puntoSujecion.seguirMouse(x, y);
-            bola.getEstadoBola().sujetar();
-        }
+        this.procesarClickEscena(x, y);
     };
+
+    private procesarClickEscena(x: number, y: number): void {
+        const bola = this.bucle.getCalculos();
+        if (!bola || bola.getEstadoBola().esDetenido()) {
+            if (bola) this.bucle.setCalculos(null);
+            this.gestorBola.crearEnSuelo();
+            return;
+        }
+
+        if (bola.getEstadoBola().esEnSuelo() && this.gestorBola.puntoSobreBola(bola, x, y)) {
+            this.gestorBola.sujetarBola(bola, x, y);
+        }
+    }
 
     private manejarMouseMove = (e: MouseEvent): void => {
         if (this.bucle.getImpacto().estaActivo()) {
@@ -123,60 +88,53 @@ export class ControladorSimulacion implements IControlador {
         }
 
         const { x, y } = this.obtenerCoordenadas(e);
-
-        if (this.dibujadorMenu?.estaSobreBotonConfig(x, y, this.canvas.width, this.canvas.height)) {
-            this.canvas.style.cursor = 'pointer';
-            return;
-        }
-
-        if (this.menu?.estaAbierto() && this.dibujadorMenu?.estaSobrePanel(x, y, this.canvas.width, this.canvas.height)) {
-            this.canvas.style.cursor = 'default';
-            return;
-        }
-
-        const bola = this.bucle.getCalculos();
-
-        let pointer = false;
-        if (bola === null || bola.getEstadoBola().esDetenido()) {
-            pointer = true;
-        } else if (bola.getEstadoBola().esEnSuelo()) {
-            pointer = this.estadoBola.puntoSobreBola(bola, x, y, this.mapa);
-        } else if (bola.getEstadoBola().esSujeto()) {
-            pointer = true;
-        }
-
-        this.canvas.style.cursor = pointer ? 'pointer' : 'default';
+        this.canvas.style.cursor = this.obtenerCursor(x, y);
     };
 
-    private manejarKeyDown = (e: KeyboardEvent): void => {
-        if (this.menu?.estaAbierto() && this.dibujadorMenu?.tieneInputActivo()) {
-            return;
-        }
+    private obtenerCursor(x: number, y: number): string {
+        if (this.estaSobreBotonConfig(x, y)) return 'pointer';
+        if (this.estaSobrePanelAbierto(x, y)) return 'default';
+        return this.esEscenaInteractuable(x, y) ? 'pointer' : 'default';
+    }
 
+    private esEscenaInteractuable(x: number, y: number): boolean {
         const bola = this.bucle.getCalculos();
+        if (!bola) return true;
+
+        const estado = bola.getEstadoBola();
+        if (estado.esDetenido() || estado.esSujeto()) return true;
+        return estado.esEnSuelo() && this.gestorBola.puntoSobreBola(bola, x, y);
+    }
+
+    private manejarKeyDown = (e: KeyboardEvent): void => {
+        if (this.menu?.estaAbierto() && this.dibujadorMenu?.tieneInputActivo()) return;
 
         if (e.code === 'Space') {
             e.preventDefault();
+            this.manejarTeclaEspacio();
+            return;
+        }
 
-            // Si la ventana de impacto está abierta, espacio la cierra y volvemos a la simulación
-            if (this.bucle.getImpacto().estaActivo()) {
-                this.bucle.getImpacto().desactivar();
-                return;
-            }
-
-            if (!bola) return;
-            const estado = bola.getEstadoBola();
-            if (estado.esSujeto()) {
-                this.puntoSujecion.fijarPosicionMundo();
-                estado.soltar();
-            } else if (estado.esCayendo()) {
-                estado.pausar();
-            } else if (estado.esPausado()) {
-                estado.reanudar();
-            }
-        } else if (e.key === 'r' || e.key === 'R') {
+        if (e.key.toLowerCase() === 'r') {
             e.preventDefault();
             this.bucle.setCalculos(null);
         }
     };
+
+    private manejarTeclaEspacio(): void {
+        if (this.bucle.getImpacto().estaActivo()) {
+            this.bucle.getImpacto().desactivar();
+            return;
+        }
+
+        const bola = this.bucle.getCalculos();
+        if (!bola) return;
+
+        const estado = bola.getEstadoBola();
+        if (estado.esSujeto()) {
+            this.gestorBola.soltarBola(bola);
+            return;
+        }
+        estado.alternarPausa();
+    }
 }

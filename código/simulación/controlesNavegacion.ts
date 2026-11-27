@@ -54,92 +54,56 @@ export class ControlesNavegacion implements IActualizable {
     }
 
     private configurarEventos(): void {
-        // Clic para la rueda de configuración y elementos del menú
-        this.canvas.addEventListener('click', (e: MouseEvent) => {
-            const { x, y } = this.obtenerCoordenadas(e);
+        this.canvas.addEventListener('click', (e: MouseEvent) => this.manejarClick(e));
+        this.canvas.addEventListener('mousemove', (e: MouseEvent) => this.manejarMouseMove(e));
+        window.addEventListener('keydown', (e: KeyboardEvent) => this.manejarKeyDown(e));
+        window.addEventListener('keyup', (e: KeyboardEvent) => this.actualizarTeclaNavegacion(e.key, false));
+        window.addEventListener('blur', () => this.limpiarTeclas());
+    }
 
-            // Interacción con la rueda de configuración
-            if (this.dibujadorMenu?.estaSobreBotonConfig(x, y, this.canvas.width, this.canvas.height)) {
-                this.menu?.alternar();
-                return;
-            }
+    private manejarClick(e: MouseEvent): void {
+        const { x, y } = this.obtenerCoordenadas(e);
+        if (this.dibujadorMenu?.estaSobreBotonConfig(x, y, this.canvas.width, this.canvas.height)) {
+            this.menu?.alternar();
+            return;
+        }
+        if (!this.menu?.estaAbierto() || !this.dibujadorMenu) return;
+        (this.dibujadorMenu as any).manejarClick(x, y, this.menu);
+    }
 
-            // Si el menú está abierto, delegar clic en el menú
-            if (this.menu?.estaAbierto() && this.dibujadorMenu) {
-                (this.dibujadorMenu as any).manejarClick(x, y, this.menu);
-            }
-        });
+    private manejarMouseMove(e: MouseEvent): void {
+        if (this.bloqueado) return;
+        const { x, y } = this.obtenerCoordenadas(e);
+        if (this.menu?.estaAbierto() && this.dibujadorMenu?.estaSobrePanel(x, y, this.canvas.width, this.canvas.height)) {
+            return;
+        }
+        this.puntoSujecion.seguirMouse(x, y);
+    }
 
-        this.canvas.addEventListener('mousedown', (e: MouseEvent) => {
-            if (this.menu?.estaAbierto() && this.dibujadorMenu) {
-                const { x, y } = this.obtenerCoordenadas(e);
-                (this.dibujadorMenu as any).manejarMouseDown(x, y);
-            }
-        });
+    private manejarKeyDown(e: KeyboardEvent): void {
+        if (this.intentarTeclaMenu(e)) return;
+        if (this.bloqueado) return;
+        this.actualizarTeclaNavegacion(e.key, true);
+    }
 
-        window.addEventListener('mouseup', () => {
-            if (this.menu?.estaAbierto() && this.dibujadorMenu) {
-                (this.dibujadorMenu as any).manejarMouseUp();
-            }
-        });
+    private intentarTeclaMenu(e: KeyboardEvent): boolean {
+        if (!this.menu?.estaAbierto() || !this.dibujadorMenu?.tieneInputActivo()) return false;
+        const consumido = (this.dibujadorMenu as any).manejarKeyDown(e, this.menu);
+        if (!consumido) return false;
+        e.preventDefault();
+        e.stopPropagation();
+        return true;
+    }
 
-        this.canvas.addEventListener('mousemove', (e: MouseEvent) => {
-            const { x, y } = this.obtenerCoordenadas(e);
+    private actualizarTeclaNavegacion(tecla: string, presionada: boolean): void {
+        const k = tecla.toLowerCase();
+        if (k === 'w') this.teclaArriba = presionada;
+        else if (k === 's') this.teclaAbajo = presionada;
+    }
 
-            if (this.menu?.estaAbierto() && this.dibujadorMenu) {
-                (this.dibujadorMenu as any).manejarMouseMove(x, y);
-            }
-
-            if (this.bloqueado) return;
-
-            // Si el mouse no está manipulando el interior del menú abierto, actualizar sujeción
-            if (!(this.menu?.estaAbierto() && this.dibujadorMenu?.estaSobrePanel(x, y, this.canvas.width, this.canvas.height))) {
-                this.puntoSujecion.seguirMouse(x, y);
-            }
-        });
-
-        // Soporte de rueda de ratón para la barra deslizante del menú
-        this.canvas.addEventListener('wheel', (e: WheelEvent) => {
-            if (this.menu?.estaAbierto() && this.dibujadorMenu) {
-                const { x, y } = this.obtenerCoordenadas(e);
-                if (this.dibujadorMenu.estaSobrePanel(x, y, this.canvas.width, this.canvas.height)) {
-                    (this.dibujadorMenu as any).manejarWheel(e.deltaY);
-                    e.preventDefault();
-                }
-            }
-        }, { passive: false });
-
-        window.addEventListener('keydown', (e: KeyboardEvent) => {
-            // Si el usuario está tipeando en algún campo del menú, enviar tecla al menú
-            if (this.menu?.estaAbierto() && this.dibujadorMenu?.tieneInputActivo()) {
-                const consumido = (this.dibujadorMenu as any).manejarKeyDown(e, this.menu);
-                if (consumido) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return;
-                }
-            }
-
-            if (this.bloqueado) return;
-            if (e.key === 'w' || e.key === 'W') {
-                this.teclaArriba = true;
-            } else if (e.key === 's' || e.key === 'S') {
-                this.teclaAbajo = true;
-            }
-        });
-
-        window.addEventListener('keyup', (e: KeyboardEvent) => {
-            if (e.key === 'w' || e.key === 'W') {
-                this.teclaArriba = false;
-            } else if (e.key === 's' || e.key === 'S') {
-                this.teclaAbajo = false;
-            }
-        });
-
-        window.addEventListener('blur', () => {
-            this.teclaArriba = false;
-            this.teclaAbajo = false;
-        });
+    private limpiarTeclas(): void {
+        this.teclaArriba = false;
+        this.teclaAbajo = false;
     }
 
     private obtenerCoordenadas(e: MouseEvent): { x: number; y: number } {

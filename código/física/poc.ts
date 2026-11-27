@@ -1,4 +1,10 @@
-import { IPOC, IResultadoCalculo } from '../simulación/interfaces';
+import {
+    IPOC,
+    IPropiedadesCuerpo,
+    IDinamicaAire,
+    ICondicionesInicialesPOC,
+    IResultadoCalculo
+} from '../simulación/interfaces';
 
 
 /**
@@ -12,9 +18,9 @@ import { IPOC, IResultadoCalculo } from '../simulación/interfaces';
  * - coeficiente de arrastre (Cd = 0.47 por defecto)
  * - velocidad (v)
  * - aceleración neta (a), fuerza de arrastre (Fd) y densidad del aire (d).
- * Cumple con OCP, LSP e ISP a través de la interfaz IPOC.
+ * Cumple con OCP, LSP e ISP a través de interfaces segregadas.
  */
-export class POC implements IPOC {
+export class POC implements IPOC, IPropiedadesCuerpo, IDinamicaAire, ICondicionesInicialesPOC {
     private altura: number = 0;
     private velocidadInicial: number = 0;
     private tiempoCaida: number = 0;
@@ -136,38 +142,5 @@ export class POC implements IPOC {
         this.aceleracion = resultado.aceleracionNeta;
         this.fuerzaArrastre = resultado.fuerzaArrastre;
         this.densidadAire = resultado.densidadAire;
-    }
-
-    // Métodos de compatibilidad y alias con el contrato IPOC
-    public getH0(): number {
-        return this.altura;
-    }
-
-    public setH0(h0: number): void {
-        this.setAltura(h0);
-    }
-
-    public getV0(): number {
-        return this.velocidadInicial;
-    }
-
-    public setV0(v0: number): void {
-        this.setVelocidadInicial(v0);
-    }
-
-    public getT(): number {
-        return this.tiempoCaida;
-    }
-
-    public setT(t: number): void {
-        this.setTiempoCaida(t);
-    }
-
-    public getV(): number {
-        return this.velocidad;
-    }
-
-    public setV(v: number): void {
-        this.setVelocidad(v);
     }
 }
